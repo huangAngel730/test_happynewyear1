@@ -1,0 +1,348 @@
+:root {
+    /* 通用变量 */
+    --transition-speed: 0.8s;
+    --font-std: 'Noto Sans SC', sans-serif;
+}
+
+/* ================== 风格1：新春国风 (.style-china) ================== */
+.style-china {
+    --primary-color: #d93a28; /* 中国红 */
+    --secondary-color: #ffd700; /* 鎏金 */
+    --bg-color: #f7f1e3; /* 米白 */
+    --text-color: #2c0e0e;
+    --font-family: 'Ma Shan Zheng', 'Noto Serif SC', serif;
+    --bg-image: radial-gradient(circle at 20% 20%, #e6dace 0%, transparent 20%),
+                radial-gradient(circle at 80% 80%, #e6dace 0%, transparent 20%);
+    --btn-shape: 4px; /* 略微圆角 */
+    --btn-border: 2px solid var(--secondary-color);
+    --shadow: 0 4px 12px rgba(168, 26, 26, 0.3);
+}
+.style-china body {
+    background-image: var(--bg-image);
+    background-size: 50px 50px; /* 模拟纹样 */
+}
+
+/* ================== 风格2：科技未来 (.style-tech) ================== */
+.style-tech {
+    --primary-color: #00f3ff; /* 荧光蓝 */
+    --secondary-color: #bc13fe; /* 霓虹紫 */
+    --bg-color: #050b14; /* 深空黑 */
+    --text-color: #e0f7fa;
+    --font-family: 'Orbitron', monospace;
+    --bg-image: linear-gradient(rgba(0, 243, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.1) 1px, transparent 1px);
+    --btn-shape: 0px; /* 硬朗直角 */
+    --btn-border: 1px solid var(--primary-color);
+    --shadow: 0 0 15px rgba(0, 243, 255, 0.5);
+}
+.style-tech body {
+    background-size: 40px 40px; /* 网格大小 */
+}
+
+/* ================== 风格3：可爱卡通 (.style-cute) ================== */
+.style-cute {
+    --primary-color: #ff9a9e; /* 粉嫩 */
+    --secondary-color: #fad0c4; /* 浅桃 */
+    --bg-color: #fff1f2; /* 浅粉背景 */
+    --text-color: #555;
+    --font-family: 'ZCOOL KuaiLe', cursive;
+    --bg-image: radial-gradient(#ffd1ff 15%, transparent 16%),
+                radial-gradient(#fff5b2 15%, transparent 16%);
+    --btn-shape: 25px; /* 圆润 */
+    --btn-border: none;
+    --shadow: 4px 4px 0px rgba(255, 154, 158, 0.4);
+}
+.style-cute body {
+    background-size: 60px 60px;
+    background-position: 0 0, 30px 30px;
+}
+
+/* ================== 基础重置 ================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    transition: background-color var(--transition-speed), color var(--transition-speed), border-radius var(--transition-speed), transform 0.3s;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--font-family);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    background-image: var(--bg-image);
+}
+
+/* ================== 导航栏 ================== */
+.theme-switcher {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+    z-index: 100;
+}
+
+.theme-btn {
+    padding: 10px 20px;
+    font-family: inherit;
+    font-size: 1rem;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.2);
+    border: var(--btn-border);
+    border-radius: var(--btn-shape);
+    color: var(--text-color);
+    backdrop-filter: blur(5px);
+}
+
+.theme-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+/* 国风 hover 特效 */
+.style-china .theme-btn:hover {
+    border-color: #c0392b;
+    color: #c0392b;
+}
+/* 科技 hover 特效 */
+.style-tech .theme-btn:hover {
+    box-shadow: 0 0 20px var(--primary-color);
+    text-shadow: 0 0 5px var(--primary-color);
+}
+/* 卡通 hover 特效 */
+.style-cute .theme-btn:hover {
+    transform: scale(1.1) rotate(-3deg);
+    background: #fff;
+    color: var(--primary-color);
+}
+
+/* ================== 主视觉区 ================== */
+.container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    padding: 20px;
+}
+
+.visual-center {
+    margin-bottom: 2rem;
+    width: 200px;
+    height: 200px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 视觉元素显示逻辑 */
+.horse-wrapper > * {
+    display: none; /* 默认隐藏所有 */
+    animation: fadeIn 1s ease;
+}
+
+.style-china .china-horse { display: block; width: 100%; height: 100%; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2)); }
+.style-tech .tech-horse-container { display: flex; flex-direction: column; align-items: center; color: var(--primary-color); }
+.style-cute .cute-horse-container { display: block; font-size: 8rem; animation: bounce 2s infinite; }
+
+/* 科技风格特定动画 */
+.tech-circle {
+    width: 150px;
+    height: 150px;
+    border: 2px dashed var(--primary-color);
+    border-radius: 50%;
+    animation: spin 10s linear infinite;
+    position: absolute;
+}
+.tech-text {
+    font-size: 2rem;
+    font-weight: bold;
+    text-shadow: 0 0 10px var(--primary-color);
+}
+
+/* ================== 文本排版 ================== */
+.main-title {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.year {
+    font-size: 4rem;
+    font-weight: 800;
+    color: var(--primary-color);
+}
+
+/* 祝福语卡片 */
+.wish-card {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2rem;
+    border-radius: var(--btn-shape);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    max-width: 600px;
+    width: 90%;
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow);
+}
+
+.style-china .wish-card {
+    background: rgba(255, 245, 230, 0.9);
+    border: 2px solid var(--primary-color);
+    background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1h2v2H1V1zm4 0h2v2H5V1zm4 0h2v2H9V1z' fill='%23d93a28' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+}
+
+.style-tech .wish-card {
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid var(--primary-color);
+    box-shadow: inset 0 0 20px rgba(0, 243, 255, 0.2);
+}
+
+.style-cute .wish-card {
+    background: #fff;
+    border: 4px solid var(--secondary-color);
+    border-radius: 30px;
+}
+
+#wishText {
+    font-size: 1.5rem;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.6;
+}
+
+/* 按钮组 */
+.action-buttons {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.action-btn {
+    padding: 10px 25px;
+    border: none;
+    border-radius: 50px;
+    background: var(--primary-color);
+    color: #fff; /* 按钮文字保持白色或对比色 */
+    font-family: inherit;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+.style-china .action-btn { background: var(--primary-color); color: #fff; }
+.style-tech .action-btn { background: transparent; border: 1px solid var(--primary-color); color: var(--primary-color); }
+.style-tech .action-btn:hover { background: var(--primary-color); color: #000; box-shadow: 0 0 15px var(--primary-color); }
+.style-cute .action-btn { background: var(--primary-color); box-shadow: 4px 4px 0 var(--secondary-color); }
+.style-cute .action-btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--secondary-color); }
+
+
+/* ================== 下落特效容器 ================== */
+#falling-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 999;
+    overflow: hidden;
+}
+.falling-item {
+    position: absolute;
+    animation: fall linear forwards;
+}
+
+/* ================== 音乐控制 ================== */
+.music-controls {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    z-index: 500;
+}
+.music-icon {
+    width: 50px;
+    height: 50px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    transition: transform 0.5s;
+    animation: rotateMusic 4s linear infinite;
+    animation-play-state: paused;
+}
+.music-icon.playing {
+    animation-play-state: running;
+}
+
+.control-panel {
+    position: absolute;
+    bottom: 60px;
+    left: 0;
+    background: rgba(255,255,255,0.9);
+    padding: 10px;
+    border-radius: 10px;
+    display: none; /* 默认隐藏 */
+    flex-direction: column;
+    gap: 5px;
+    width: 120px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+.music-controls:hover .control-panel {
+    display: flex;
+}
+.style-tech .control-panel { background: rgba(0,0,0,0.8); border: 1px solid var(--primary-color); }
+
+/* ================== 动画定义 ================== */
+@keyframes fall {
+    0% { transform: translateY(-100px) rotate(0deg); opacity: 0; }
+    10% { opacity: 1; }
+    100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+}
+@keyframes spin { 100% { transform: rotate(360deg); } }
+@keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+@keyframes rotateMusic { 100% { transform: rotate(360deg); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ================== 模态框 ================== */
+.modal {
+    display: none; /* 默认隐藏 */
+    position: fixed; 
+    z-index: 2000; 
+    left: 0; top: 0; width: 100%; height: 100%; 
+    background-color: rgba(0,0,0,0.5); 
+    align-items: center; justify-content: center;
+}
+.modal-content {
+    background-color: var(--bg-color);
+    padding: 20px;
+    border: 2px solid var(--primary-color);
+    border-radius: var(--btn-shape);
+    width: 80%;
+    max-width: 500px;
+    position: relative;
+    box-shadow: var(--shadow);
+}
+.close-btn { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;}
+.close-btn:hover { color: var(--primary-color); }
+
+/* ================== 移动端适配 ================== */
+@media screen and (max-width: 768px) {
+    .main-title { font-size: 2rem; }
+    .year { font-size: 3rem; }
+    .wish-card { padding: 1rem; }
+    .action-btn { padding: 8px 15px; font-size: 0.9rem; }
+    .music-controls { bottom: 15px; left: 15px; }
+}

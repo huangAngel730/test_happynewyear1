@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026 丙午马年新春祝福</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts for diverse styles -->
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@300;700&family=ZCOOL+KuaiLe&family=Orbitron:wght@500&display=swap" rel="stylesheet">
+</head>
+<body class="style-china"> <!-- 默认国风 -->
+
+    <!-- 风格切换器 -->
+    <nav class="theme-switcher">
+        <button class="theme-btn" data-theme="style-china" onclick="switchTheme('style-china')">🏮 新春国风</button>
+        <button class="theme-btn" data-theme="style-tech" onclick="switchTheme('style-tech')">🚀 科技未来</button>
+        <button class="theme-btn" data-theme="style-cute" onclick="switchTheme('style-cute')">🦄 可爱卡通</button>
+    </nav>
+
+    <!-- 音乐控制悬浮球 -->
+    <div class="music-controls hover-trigger">
+        <div class="music-icon" id="musicToggle">🎵</div>
+        <div class="control-panel">
+            <button id="playPauseBtn">暂停</button>
+            <button id="nextTrackBtn">切歌</button>
+            <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="0.5">
+        </div>
+    </div>
+    
+    <!-- 隐藏的音频元素 -->
+    <audio id="bgm" loop preload="auto">
+        <!-- 默认源，JS会动态修改 -->
+        <source src="https://music.163.com/song/media/outer/url?id=496527237.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- 主要内容区 -->
+    <main class="container">
+        <!-- 马年视觉元素 (SVG绘制，确保无外部依赖) -->
+        <div class="visual-center">
+            <div class="horse-wrapper">
+                <!-- 国风剪纸马 -->
+                <svg class="horse-svg china-horse" viewBox="0 0 100 100">
+                    <path d="M20,60 Q30,40 50,30 T80,40 L90,60 L80,80 L50,90 L20,80 Z" fill="var(--primary-color)" />
+                    <text x="50" y="65" text-anchor="middle" fill="gold" font-size="30">马</text>
+                    <title>剪纸骏马</title>
+                </svg>
+
+                <!-- 科技数字马 -->
+                <div class="tech-horse-container">
+                    <div class="tech-circle"></div>
+                    <div class="tech-text">2026<br>HORSE</div>
+                </div>
+
+                <!-- 卡通小马 -->
+                <div class="cute-horse-container">
+                    <div class="cute-head">🐴</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 标题 -->
+        <h1 class="main-title">
+            <span class="year">2026</span>
+            <span class="zodiac">丙午马年</span>
+            <span class="greeting-text">新春快乐</span>
+        </h1>
+
+        <!-- 祝福语卡片 -->
+        <div class="wish-card">
+            <p id="wishText" class="typing-effect">策马奔腾赴前程，春风得意马蹄疾！祝您2026年万事如意！</p>
+            <div class="action-buttons">
+                <button class="action-btn" onclick="generateWish()">✨ 生成祝福</button>
+                <button class="action-btn" onclick="copyWish()">📋 复制文本</button>
+                <button class="action-btn" onclick="copyPageLink()">🔗 分享网页</button>
+            </div>
+            <div id="customWishArea" style="display:none; margin-top:10px;">
+                <input type="text" id="customInput" placeholder="输入您的祝福..." style="width:70%; padding:5px;">
+                <button onclick="confirmCustomBase()">确认</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- 飘落物容器 -->
+    <div id="falling-container"></div>
+
+    <!-- 使用指南模态框 -->
+    <div id="guideModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeGuide()">×</span>
+            <h2>🧧 使用指南</h2>
+            <ul>
+                <li><strong>切换风格</strong>：点击顶部按钮切换 国风/科技/卡通 风格。</li>
+                <li><strong>背景音乐</strong>：左下角悬浮球控制音乐播放/暂停及音量。</li>
+                <li><strong>互动特效</strong>：点击页面任意空白处触发特效（红包/光效/糖果）。</li>
+                <li><strong>自定义</strong>：修改HTML内的JS配置区即可替换祝福语。</li>
+            </ul>
+        </div>
+        <div class="modal-footer">
+            <button onclick="closeGuide()">我知道了</button>
+        </div>
+    </div>
+
+    <!-- 脚本引用 -->
+    <script src="script.js"></script>
+</body>
+</html>
