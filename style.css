@@ -346,3 +346,52 @@ body {
     .action-btn { padding: 8px 15px; font-size: 0.9rem; }
     .music-controls { bottom: 15px; left: 15px; }
 }
+
+/* 更小屏幕（手机）进一步优化 */
+@media screen and (max-width: 480px) {
+    .visual-center {
+        width: 40vw;
+        height: 40vw;
+        margin-bottom: 1rem;
+    }
+
+    .style-china .china-horse,
+    .style-tech .tech-horse-container,
+    .style-cute .cute-horse-container {
+        width: 100%;
+        height: 100%;
+    }
+
+    .main-title { font-size: 1.6rem; }
+    .year { font-size: 2.2rem; }
+
+    .wish-card { padding: 0.8rem; max-width: 95%; width: 95%; }
+
+    .theme-switcher {
+        position: fixed;
+        top: 8px;
+        left: 8px;
+        right: 8px;
+        gap: 8px;
+        padding: 8px;
+        background: rgba(255,255,255,0.06);
+        backdrop-filter: blur(6px);
+        border-radius: 999px;
+        z-index: 1500;
+        overflow-x: auto;
+        justify-content: flex-start;
+    }
+
+    .theme-btn { padding: 8px 12px; font-size: 0.95rem; min-width: 64px; }
+
+    .music-controls { bottom: 15px; right: 15px; left: auto; }
+    .music-icon { width: 44px; height: 44px; font-size: 18px; }
+
+    #wishText { font-size: 1.1rem; min-height: 60px; }
+
+    .action-buttons { flex-wrap: wrap; gap: 10px; padding: 4px; }
+
+    /* 在手机上禁用大型持续旋转等消耗动画 */
+    .tech-circle { display: none; }
+    .cute-horse-container { animation: none; }
+}

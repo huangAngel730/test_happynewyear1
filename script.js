@@ -69,8 +69,10 @@ window.addEventListener('DOMContentLoaded', () => {
         // document.getElementById('guideModal').style.display = 'flex';
     }, 1000);
 
-    // 点击页面生成特效
+    // 点击页面生成特效（移动端禁用爆破以节省性能）
+    const isMobile = window.matchMedia('(max-width: 768px)').matches || ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
     document.addEventListener('click', (e) => {
+        if (isMobile) return; // 移动端不生成大量爆破特效
         if(e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT') {
             createBurst(e.clientX, e.clientY);
         }
@@ -79,7 +81,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // 移动端优化：减少粒子
     if (window.innerWidth < 768) {
         clearInterval(particleInterval);
-        startFallingEffect(1500); // 降低频率
+        startFallingEffect(1600); // 降低频率
     }
 });
 
@@ -302,7 +304,8 @@ function createParticle() {
     // 随机位置和属性
     const startLeft = Math.random() * 100;
     const duration = Math.random() * 3 + 3; // 3-6s
-    const size = Math.random() * 20 + 15; // 15-35px
+    let size = Math.random() * 20 + 15; // 15-35px
+    if (window.innerWidth < 768) size = Math.max(12, size * 0.7); // 手机上更小尺寸
     
     particle.style.left = startLeft + 'vw';
     particle.style.fontSize = size + 'px';
