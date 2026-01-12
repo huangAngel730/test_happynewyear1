@@ -179,19 +179,52 @@ function copyWish() {
 function copyPageLink() {
     const url = window.location.href;
     const btn = document.querySelector('button[onclick="copyPageLink()"]');
-    const originalText = btn.innerText;
+    const originalText = btn ? btn.innerText : '🔗 分享网页';
 
-    // 提示用户本地链接不可用
+    // 如果是本地 file:// 模式，提示用户输入可分享的基础 URL（如 GitHub Pages）
+    let shareUrl = url;
     if (url.startsWith('file://')) {
-        alert('⚠️ 提示：\n当前是“本地文件”预览模式。\n此链接只能在您的电脑上打开，发给手机是打不开的。\n\n请先将网页发布到服务器（如 GitHub Pages）再分享！');
+        // 优先使用页面内注入的 GitHub Pages 地址（如果存在）
+        if (window.__SHARE_BASE__) {
+            const base = window.__SHARE_BASE__.toString().replace(/\/\/+$/,'');
+            const page = (window.location.pathname.split('/').pop() || 'index.html') + window.location.search;
+            shareUrl = base + '/' + page;
+        } else {
+            const userBase = prompt('检测到本地预览。请输入用于分享的站点基础 URL（例如 https://username.github.io/repo/），或留空复制本地链接：', '');
+            if (userBase && userBase.trim()) {
+                const base = userBase.trim().replace(/\/\/+$/,'');
+                const page = (window.location.pathname.split('/').pop() || 'index.html') + window.location.search;
+                shareUrl = base + '/' + page;
+            } else {
+                alert('将复制本地链接（手机可能无法打开）。');
+            }
+        }
     }
 
-    copyTextToClipboard(url, () => {
-        btn.innerText = "✅ 链接已复制";
-        setTimeout(() => {
-            btn.innerText = originalText;
-        }, 2000);
-    });
+    // 优先使用 Web Share API（移动端原生分享），不可用则回退到复制到剪贴板
+    if (navigator.share) {
+        navigator.share({
+            title: document.title,
+            text: (wishText && wishText.innerText) ? wishText.innerText : '',
+            url: shareUrl
+        }).then(() => {
+            // 分享成功，按钮状态可保持不变
+        }).catch(() => {
+            copyTextToClipboard(shareUrl, () => {
+                if (btn) {
+                    btn.innerText = "✅ 链接已复制";
+                    setTimeout(() => { btn.innerText = originalText; }, 2000);
+                }
+            });
+        });
+    } else {
+        copyTextToClipboard(shareUrl, () => {
+            if (btn) {
+                btn.innerText = "✅ 链接已复制";
+                setTimeout(() => { btn.innerText = originalText; }, 2000);
+            }
+        });
+    }
 }
 
 function toggleEdit() {
