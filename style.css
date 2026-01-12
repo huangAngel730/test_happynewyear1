@@ -57,6 +57,23 @@
     background-position: 0 0, 30px 30px;
 }
 
+/* ================== 风格4：极简先锋 (.style-minimalist) ================== */
+.style-minimalist {
+    --primary-color: #1a1a1a; /* 纯黑 */
+    --secondary-color: #d4af37; /* 金色 */
+    --bg-color: #fafafa; /* 极浅灰 */
+    --text-color: #2a2a2a;
+    --font-family: 'Noto Sans SC', sans-serif;
+    --bg-image: linear-gradient(90deg, transparent 24%, rgba(212, 175, 55, 0.05) 25%, rgba(212, 175, 55, 0.05) 26%, transparent 27%, transparent 74%, rgba(212, 175, 55, 0.05) 75%, rgba(212, 175, 55, 0.05) 76%, transparent 77%, transparent),
+                linear-gradient(transparent 24%, rgba(212, 175, 55, 0.05) 25%, rgba(212, 175, 55, 0.05) 26%, transparent 27%, transparent 74%, rgba(212, 175, 55, 0.05) 75%, rgba(212, 175, 55, 0.05) 76%, transparent 77%, transparent);
+    --btn-shape: 2px; /* 极简直角 */
+    --btn-border: 1px solid var(--primary-color);
+    --shadow: none;
+}
+.style-minimalist body {
+    background-size: 50px 50px;
+}
+
 /* ================== 基础重置 ================== */
 * {
     box-sizing: border-box;
@@ -117,6 +134,12 @@ body {
     background: #fff;
     color: var(--primary-color);
 }
+/* 极简 hover 特效 */
+.style-minimalist .theme-btn:hover {
+    background: var(--primary-color);
+    color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
 
 /* ================== 主视觉区 ================== */
 .container {
@@ -149,6 +172,7 @@ body {
 .style-china .china-horse { display: block; width: 100%; height: 100%; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2)); }
 .style-tech .tech-horse-container { display: flex; flex-direction: column; align-items: center; color: var(--primary-color); }
 .style-cute .cute-horse-container { display: block; font-size: 8rem; animation: bounce 2s infinite; }
+.style-minimalist .china-horse { display: block; width: 80%; height: 80%; filter: saturate(0) brightness(1.2); stroke: var(--primary-color); }
 
 /* 科技风格特定动画 */
 .tech-circle {
@@ -210,6 +234,12 @@ body {
     border-radius: 30px;
 }
 
+.style-minimalist .wish-card {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid var(--primary-color);
+    box-shadow: none;
+}
+
 #wishText {
     font-size: 1.5rem;
     min-height: 80px;
@@ -243,6 +273,8 @@ body {
 .style-tech .action-btn:hover { background: var(--primary-color); color: #000; box-shadow: 0 0 15px var(--primary-color); }
 .style-cute .action-btn { background: var(--primary-color); box-shadow: 4px 4px 0 var(--secondary-color); }
 .style-cute .action-btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--secondary-color); }
+.style-minimalist .action-btn { background: var(--primary-color); color: var(--secondary-color); border: 1px solid var(--primary-color); }
+.style-minimalist .action-btn:hover { background: var(--secondary-color); color: var(--primary-color); }
 
 
 /* ================== 下落特效容器 ================== */
