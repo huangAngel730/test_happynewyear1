@@ -4,6 +4,15 @@
     --font-std: 'Noto Sans SC', sans-serif;
 }
 
+/* 优先尊重系统的“减少动态效果”设置，统一关闭大部分动画/过渡 */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+    }
+}
+
 /* ================== 风格1：新春国风 (.style-china) ================== */
 .style-china {
     --primary-color: #d93a28; /* 中国红 */
@@ -100,6 +109,8 @@ body {
     gap: 20px;
     padding: 20px;
     z-index: 100;
+    overflow-x: auto;
+    scrollbar-width: thin;
 }
 
 .theme-btn {
@@ -112,6 +123,7 @@ body {
     border-radius: var(--btn-shape);
     color: var(--text-color);
     backdrop-filter: blur(5px);
+    min-width: 72px;
 }
 
 .theme-btn:hover {
@@ -191,7 +203,7 @@ body {
 
 /* ================== 文本排版 ================== */
 .main-title {
-    font-size: 3rem;
+    font-size: clamp(2.4rem, 4vw, 3rem);
     margin-bottom: 1.5rem;
     display: flex;
     flex-direction: column;
@@ -199,7 +211,7 @@ body {
 }
 
 .year {
-    font-size: 4rem;
+    font-size: clamp(3rem, 6vw, 4rem);
     font-weight: 800;
     color: var(--primary-color);
 }
@@ -241,7 +253,7 @@ body {
 }
 
 #wishText {
-    font-size: 1.5rem;
+    font-size: clamp(1.1rem, 3.8vw, 1.5rem);
     min-height: 80px;
     display: flex;
     align-items: center;
@@ -255,6 +267,7 @@ body {
     display: flex;
     gap: 15px;
     justify-content: center;
+    flex-wrap: wrap;
 }
 
 .action-btn {
@@ -296,8 +309,8 @@ body {
 /* ================== 音乐控制 ================== */
 .music-controls {
     position: fixed;
-    bottom: 30px;
-    left: 30px;
+    bottom: calc(20px + env(safe-area-inset-bottom));
+    right: 20px;
     z-index: 500;
 }
 .music-icon {
@@ -322,17 +335,20 @@ body {
 .control-panel {
     position: absolute;
     bottom: 60px;
-    left: 0;
+    right: 0;
     background: rgba(255,255,255,0.9);
     padding: 10px;
     border-radius: 10px;
-    display: none; /* 默认隐藏 */
+    display: none; /* 默认隐藏，移动端点击音乐球展开 */
     flex-direction: column;
     gap: 5px;
     width: 120px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 .music-controls:hover .control-panel {
+    display: flex;
+}
+.music-controls.controls-open .control-panel {
     display: flex;
 }
 .style-tech .control-panel { background: rgba(0,0,0,0.8); border: 1px solid var(--primary-color); }
@@ -372,11 +388,12 @@ body {
 
 /* ================== 移动端适配 ================== */
 @media screen and (max-width: 768px) {
-    .main-title { font-size: 2rem; }
-    .year { font-size: 3rem; }
+    .main-title { font-size: clamp(2rem, 5vw, 2.4rem); }
+    .year { font-size: clamp(2.6rem, 6vw, 3rem); }
     .wish-card { padding: 1rem; }
-    .action-btn { padding: 8px 15px; font-size: 0.9rem; }
-    .music-controls { bottom: 15px; left: 15px; }
+    .action-btn { padding: 10px 14px; font-size: 0.95rem; flex: 1 1 44%; min-width: 140px; }
+    .music-controls { bottom: calc(12px + env(safe-area-inset-bottom)); right: 12px; left: auto; }
+    .music-icon { width: 46px; height: 46px; font-size: 18px; }
 }
 
 /* 更小屏幕（手机）进一步优化 */
@@ -416,10 +433,10 @@ body {
 
     .theme-btn { padding: 8px 12px; font-size: 0.95rem; min-width: 64px; }
 
-    .music-controls { bottom: 15px; right: 15px; left: auto; }
+    .music-controls { bottom: calc(10px + env(safe-area-inset-bottom)); right: 10px; left: auto; }
     .music-icon { width: 44px; height: 44px; font-size: 18px; }
 
-    #wishText { font-size: 1.1rem; min-height: 60px; }
+    #wishText { font-size: 1.05rem; min-height: 60px; }
 
     .action-buttons { flex-wrap: wrap; gap: 10px; padding: 4px; }
 

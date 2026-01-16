@@ -50,6 +50,8 @@ const assets = {
 let currentTheme = 'style-china';
 let isMusicPlaying = false;
 let particleInterval = null;
+const isMobile = window.matchMedia('(max-width: 768px)').matches || ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // DOM 元素
 const body = document.body;
@@ -59,6 +61,8 @@ const musicIcon = document.getElementById('musicToggle');
 const playBtn = document.getElementById('playPauseBtn');
 const volSlider = document.getElementById('volumeSlider');
 const fallingContainer = document.getElementById('falling-container');
+const controlPanel = document.querySelector('.control-panel');
+const musicControls = document.querySelector('.music-controls');
 
 // 初始化
 window.addEventListener('DOMContentLoaded', () => {
@@ -81,16 +85,15 @@ window.addEventListener('DOMContentLoaded', () => {
     }, 1000);
 
     // 点击页面生成特效（移动端禁用爆破以节省性能）
-    const isMobile = window.matchMedia('(max-width: 768px)').matches || ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
     document.addEventListener('click', (e) => {
-        if (isMobile) return; // 移动端不生成大量爆破特效
+        if (isMobile || prefersReducedMotion) return; // 移动端与减动效禁用爆破
         if(e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT') {
             createBurst(e.clientX, e.clientY);
         }
     });
 
     // 移动端优化：减少粒子
-    if (window.innerWidth < 768) {
+    if (isMobile) {
         clearInterval(particleInterval);
         startFallingEffect(1600); // 降低频率
     }
@@ -256,6 +259,9 @@ function confirmCustomBase() {
 // ================== 音乐逻辑 ==================
 function initMusic() {
     bgm.volume = 0.5;
+    if (isMobile || prefersReducedMotion) {
+        bgm.preload = 'metadata';
+    }
     
     // 尝试自动播放（静音）
     bgm.muted = true;
@@ -269,7 +275,23 @@ function initMusic() {
 
     // 播放/暂停控制
     playBtn.onclick = toggleMusic;
-    musicIcon.onclick = toggleMusic;
+
+    // 桌面：点击图标切换播放；移动端：点击展开控制面板
+    if (musicIcon && musicControls) {
+        if (isMobile) {
+            musicIcon.onclick = toggleControlPanel;
+        } else {
+            musicIcon.onclick = toggleMusic;
+        }
+    }
+
+    // 点击外部关闭控制面板（移动端）
+    document.addEventListener('click', (e) => {
+        if (!isMobile) return;
+        if (!musicControls.contains(e.target) && musicControls.classList.contains('controls-open')) {
+            musicControls.classList.remove('controls-open');
+        }
+    });
 
     // 音量控制
     volSlider.oninput = (e) => {
@@ -298,14 +320,20 @@ function toggleMusic() {
     }
 }
 
+function toggleControlPanel() {
+    musicControls.classList.toggle('controls-open');
+}
+
 // ================== 飘落特效系统 ==================
 function startFallingEffect(interval = 800) {
+    if (prefersReducedMotion) return; // 尊重系统设置
     particleInterval = setInterval(() => {
         createParticle();
     }, interval);
 }
 
 function createParticle() {
+    if (prefersReducedMotion) return;
     const particle = document.createElement('div');
     const items = assets[currentTheme].particles;
     
@@ -338,6 +366,7 @@ function createParticle() {
 
 // 点击爆破特效
 function createBurst(x, y) {
+    if (prefersReducedMotion) return;
     const count = 8;
     for (let i = 0; i < count; i++) {
         const p = document.createElement('div');
