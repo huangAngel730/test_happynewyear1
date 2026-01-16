@@ -1340,6 +1340,8 @@ function finishGame() {
     stopGame();
     const bless = wishText ? wishText.textContent : '';
     setDesc(`本轮结束！得分 ${gameScore}，连击 ${combo}x，生命 ${gameLives}，送上一句祝福：${bless}`);
+    // 游戏结束音效
+    window.dispatchEvent(new Event('sfx-success'));
     
     // 成就检查
     if (typeof achievementManager !== 'undefined' && achievementManager) {
@@ -1350,7 +1352,10 @@ function finishGame() {
 
 function updateScore(delta = 0) {
     gameScore = Math.max(0, gameScore + delta);
-    if (gameScoreEl) gameScoreEl.textContent = gameScore;
+    if (// 轻微得分音效（如果可以复用playClick，或者pop）
+        if(window.soundManager) window.soundManager.playClick();
+        
+        gameScoreEl) gameScoreEl.textContent = gameScore;
     if (delta > 0) {
         combo += 1;
         updateCombo();
@@ -1639,6 +1644,9 @@ class AchievementManager {
         this.renderList();
         this.updateStats();
         if (this.dot) this.dot.classList.add('active');
+        
+        // 播放成就音效
+        window.dispatchEvent(new Event('sfx-success'));
     }
 
     showToast(ach) {
@@ -1876,6 +1884,7 @@ class UserRetentionManager {
             setTimeout(() => {
                 if (typeof achievementManager !== 'undefined' && achievementManager.showCustomToast) {
                     achievementManager.showCustomToast('📅 每日签到', `打卡成功！获得 ${rewardPoints} 积分 (连签 ${this.checkInStreak} 天)`, '💰');
+                    window.dispatchEvent(new Event('sfx-success'));
                 }
             }, 2500);
         }
@@ -2015,6 +2024,8 @@ class RelayManager {
         this.shareBtn.style.display = 'block';
 
         if (achievementManager) achievementManager.showCustomToast('接力成功', '快去分享给好友吧！', '🏃');
+        // 播放音效
+        window.dispatchEvent(new Event('sfx-success'));
     }
 
     updateView() {
