@@ -267,20 +267,37 @@ function initMusic() {
     if (isMobile || prefersReducedMotion) {
         bgm.preload = 'metadata';
     }
-    
-    // 尝试自动播放（静音）
-    bgm.muted = true;
-    bgm.play().then(() => {
-        isMusicPlaying = true;
-        musicIcon.classList.add('playing');
-        playBtn.innerText = "暂停";
-        // 如果仍然静音，提示用户点击恢复音量
-        if (musicPrompt) {
-            musicPrompt.classList.add('show');
+    bgm.playsInline = true;
+
+    // 尝试先以正常音量播放，不行则回退静音播放
+    const attemptPlay = async (mutedFirst = false) => {
+        bgm.muted = mutedFirst;
+        try {
+            await bgm.play();
+            return true;
+        } catch (e) {
+            return false;
         }
-    }).catch(() => {
-        showMusicPrompt();
-    });
+    };
+
+    (async () => {
+        let ok = await attemptPlay(false); // 优先尝试直接有声播放
+        if (!ok) ok = await attemptPlay(true); // 失败则静音播放以通过策略
+
+        if (ok) {
+            isMusicPlaying = true;
+            musicIcon.classList.add('playing');
+            playBtn.innerText = "暂停";
+            if (bgm.muted) {
+                showMusicPrompt(true); // 正在播放但静音，提示点击恢复音量
+            } else {
+                hideMusicPrompt();
+                userActivatedAudio = true;
+            }
+        } else {
+            showMusicPrompt(true);
+        }
+    })();
 
     // 播放/暂停控制
     playBtn.onclick = toggleMusic;
@@ -303,8 +320,14 @@ function initMusic() {
     });
 
     // 首次用户交互后尝试解除静音并播放
-    ['pointerdown', 'touchstart', 'keydown'].forEach(evt => {
+    ['pointerdown', 'touchstart', 'keydown', 'click', 'wheel', 'scroll'].forEach(evt => {
         document.addEventListener(evt, handleFirstUserInteraction, { once: true, passive: true });
+    });
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            ensureAudioPlaying();
+        }
     });
 
     // 音量控制
@@ -324,10 +347,14 @@ function initMusic() {
 function toggleMusic() {
     if (bgm.paused) {
         bgm.muted = false; // 用户手动点击后取消静音
-        bgm.play();
-        musicIcon.classList.add('playing');
-        playBtn.innerText = "暂停";
-        hideMusicPrompt();
+        bgm.play().then(() => {
+            musicIcon.classList.add('playing');
+            playBtn.innerText = "暂停";
+            hideMusicPrompt();
+            userActivatedAudio = true;
+        }).catch(() => {
+            showMusicPrompt(true);
+        });
     } else {
         bgm.pause();
         musicIcon.classList.remove('playing');
