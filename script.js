@@ -291,6 +291,9 @@ const fortuneCounter = document.getElementById('fortuneCounter');
 
 // 初始化
 window.addEventListener('DOMContentLoaded', () => {
+    // 实例化音效管理器
+    new SoundManager();
+
     // 解析URL参数，优先使用分享链接中的风格
     const urlParams = new URLSearchParams(window.location.search);
     const sharedStyle = urlParams.get('style');

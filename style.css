@@ -1058,6 +1058,156 @@ body::after {
     }
 }
 
+/* ================== 分享卡片纯净模式 ================== */
+.share-card-box {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.share-card-container {
+    background: var(--card-bg); /* Use theme bg */
+    width: 320px;
+    min-height: 480px;
+    border-radius: 16px;
+    padding: 24px;
+    position: relative;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    border: 4px solid var(--primary-color);
+    overflow: hidden;
+    color: var(--text-color);
+}
+
+/* Decorative corners */
+.card-decoration {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--secondary-color);
+    opacity: 0.8;
+}
+.top-left { top: 10px; left: 10px; border-right: none; border-bottom: none; border-radius: 8px 0 0 0; }
+.top-right { top: 10px; right: 10px; border-left: none; border-bottom: none; border-radius: 0 8px 0 0; }
+.bottom-left { bottom: 10px; left: 10px; border-right: none; border-top: none; border-radius: 0 0 0 8px; }
+.bottom-right { bottom: 10px; right: 10px; border-left: none; border-top: none; border-radius: 0 0 8px 0; }
+
+.card-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+.card-year {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: var(--primary-color);
+    font-family: 'Ma Shan Zheng', cursive;
+}
+
+.card-divider {
+    width: 40%;
+    height: 2px;
+    background: var(--secondary-color);
+    margin-bottom: 30px;
+}
+
+.card-wish {
+    font-size: 1.4rem;
+    line-height: 1.6;
+    text-align: center;
+    margin-bottom: 40px;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    font-family: 'Noto Sans SC', sans-serif;
+}
+
+.card-footer {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: 15px;
+    border-top: 1px dashed rgba(0,0,0,0.1);
+}
+
+.card-qr-box {
+    width: 60px;
+    height: 60px;
+    background: #fff;
+    padding: 2px;
+}
+.qr-placeholder {
+    width: 100%;
+    height: 100%;
+    background: #333;
+    color: #fff;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-sign {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+}
+.card-sign span { font-weight: bold; font-size: 0.9rem; }
+.card-sign small { font-size: 0.7rem; opacity: 0.7; }
+
+.share-tips {
+    color: #fff;
+    margin-top: 20px;
+    font-size: 1rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    background: rgba(0,0,0,0.5);
+    padding: 8px 20px;
+    border-radius: 20px;
+    animation: pulse 1.5s infinite;
+}
+
+.close-btn-round {
+    margin-top: 15px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    background: rgba(0,0,0,0.4);
+    color: #fff;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+/* 主题适配卡片 */
+.style-tech .share-card-container {
+    background: #0f172a;
+    border-color: #00f3ff;
+    color: white;
+}
+.style-tech .card-year, .style-tech .card-wish { color: #00f3ff; text-shadow: 0 0 5px #00f3ff; }
+.style-warm .share-card-container {
+    background: #fff8e1;
+    border-color: #e67e22;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
 /* 更小屏幕（手机）进一步优化 */
 @media screen and (max-width: 480px) {
     .visual-center {

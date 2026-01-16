@@ -75,6 +75,35 @@
         </div>
     </div>
     
+    <!-- 截图分享卡片模态框 -->
+    <div id="shareCardModal" class="modal-overlay" aria-hidden="true" onclick="closeShareCard()">
+        <div class="modal-content share-card-box">
+            <div class="share-card-container" id="shareCardNode">
+                <div class="card-decoration top-left"></div>
+                <div class="card-decoration top-right"></div>
+                <div class="card-decoration bottom-left"></div>
+                <div class="card-decoration bottom-right"></div>
+                
+                <div class="card-content">
+                    <h3 class="card-year">2026 丙午马年</h3>
+                    <div class="card-divider"></div>
+                    <div class="card-wish" id="cardWishText">祝福语加载中...</div>
+                    <div class="card-footer">
+                        <div class="card-qr-box">
+                            <div class="qr-placeholder">二维码</div>
+                        </div>
+                        <div class="card-sign">
+                            <span>扫码接收祝福</span>
+                            <small>Created with 2026 New Year Wish</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="share-tips">✨ 请直接截图分享图片 ✨</div>
+            <button class="close-btn-round" onclick="closeShareCard()">关闭</button>
+        </div>
+    </div>
+
     <!-- 音乐控制悬浮球 -->
     <div class="music-controls hover-trigger">
         <div class="music-icon" id="musicToggle">🎵</div>
@@ -265,6 +294,7 @@
             <div class="action-buttons">
                 <button class="action-btn" onclick="generateWish(true, true)">✨ 生成祝福</button>
                 <button class="action-btn" onclick="toggleEdit()">✍ 自定义</button>
+                <button class="action-btn" onclick="openShareCard()">📸 生成卡片</button>
                 <button class="action-btn" onclick="openRelayModal()" style="background:var(--secondary-color); color:#000;">🏃 祝福接力</button>
                 <button class="action-btn" onclick="copyWish()">📋 复制文本</button>
                 <button class="action-btn" onclick="copyPageLink()">🔗 分享网页</button>
