@@ -52,6 +52,7 @@ let isMusicPlaying = false;
 let particleInterval = null;
 const isMobile = window.matchMedia('(max-width: 768px)').matches || ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let userActivatedAudio = false;
 
 // DOM 元素
 const body = document.body;
@@ -63,6 +64,9 @@ const volSlider = document.getElementById('volumeSlider');
 const fallingContainer = document.getElementById('falling-container');
 const controlPanel = document.querySelector('.control-panel');
 const musicControls = document.querySelector('.music-controls');
+const root = document.documentElement;
+const guideModal = document.getElementById('guideModal');
+const musicPrompt = document.getElementById('musicPrompt');
 
 // 初始化
 window.addEventListener('DOMContentLoaded', () => {
@@ -78,6 +82,7 @@ window.addEventListener('DOMContentLoaded', () => {
     initMusic();
     generateWish();
     startFallingEffect();
+    initEnhancements();
     
     // 显示指南（仅首次或演示用）
     setTimeout(() => {
@@ -269,8 +274,12 @@ function initMusic() {
         isMusicPlaying = true;
         musicIcon.classList.add('playing');
         playBtn.innerText = "暂停";
-    }).catch(e => {
-        console.log("Auto-play blocked, waiting for user interaction");
+        // 如果仍然静音，提示用户点击恢复音量
+        if (musicPrompt) {
+            musicPrompt.classList.add('show');
+        }
+    }).catch(() => {
+        showMusicPrompt();
     });
 
     // 播放/暂停控制
@@ -293,6 +302,11 @@ function initMusic() {
         }
     });
 
+    // 首次用户交互后尝试解除静音并播放
+    ['pointerdown', 'touchstart', 'keydown'].forEach(evt => {
+        document.addEventListener(evt, handleFirstUserInteraction, { once: true, passive: true });
+    });
+
     // 音量控制
     volSlider.oninput = (e) => {
         bgm.volume = e.target.value;
@@ -313,15 +327,21 @@ function toggleMusic() {
         bgm.play();
         musicIcon.classList.add('playing');
         playBtn.innerText = "暂停";
+        hideMusicPrompt();
     } else {
         bgm.pause();
         musicIcon.classList.remove('playing');
         playBtn.innerText = "播放";
+        showMusicPrompt(true);
     }
 }
 
 function toggleControlPanel() {
     musicControls.classList.toggle('controls-open');
+    if (musicControls.classList.contains('controls-open')) {
+        hideMusicPrompt();
+        ensureAudioPlaying();
+    }
 }
 
 // ================== 飘落特效系统 ==================
@@ -394,7 +414,149 @@ function createBurst(x, y) {
     }
 }
 
+// ================== 额外沉浸增强 ==================
+function initEnhancements() {
+    setupSpotlight();
+    setupTilt();
+    setupReveal();
+    setupCounters();
+    bindKeyboardShortcuts();
+}
+
+function setupSpotlight() {
+    if (prefersReducedMotion || isMobile) return;
+    const update = (e) => {
+        const x = (e.clientX / window.innerWidth) * 100;
+        const y = (e.clientY / window.innerHeight) * 100;
+        root.style.setProperty('--cursor-x', `${x}%`);
+        root.style.setProperty('--cursor-y', `${y}%`);
+    };
+    document.addEventListener('pointermove', update);
+}
+
+function setupTilt() {
+    if (prefersReducedMotion || isMobile) return;
+    const card = document.querySelector('.wish-card');
+    if (!card) return;
+    const strength = 14;
+    card.addEventListener('pointermove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const rotateY = ((e.clientX - rect.left) / rect.width - 0.5) * strength;
+        const rotateX = ((e.clientY - rect.top) / rect.height - 0.5) * -strength;
+        card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(8px)`;
+    });
+    card.addEventListener('pointerleave', () => {
+        card.style.transform = '';
+    });
+}
+
+function setupReveal() {
+    const revealEls = document.querySelectorAll('.reveal');
+    if (!revealEls.length) return;
+    if (!('IntersectionObserver' in window)) {
+        revealEls.forEach(el => el.classList.add('visible'));
+        return;
+    }
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.2 });
+    revealEls.forEach(el => observer.observe(el));
+}
+
+function setupCounters() {
+    const counters = document.querySelectorAll('[data-counter]');
+    if (!counters.length) return;
+    if (!('IntersectionObserver' in window)) {
+        counters.forEach(animateCounter);
+        return;
+    }
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                animateCounter(entry.target);
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.6 });
+    counters.forEach(el => observer.observe(el));
+}
+
+function animateCounter(el) {
+    const target = Number(el.dataset.target) || 0;
+    const suffix = el.dataset.suffix || '';
+    const duration = 1300;
+    const start = performance.now();
+    const tick = (now) => {
+        const progress = Math.min((now - start) / duration, 1);
+        const value = Math.floor(progress * target);
+        el.textContent = `${value}${suffix}`;
+        if (progress < 1) {
+            requestAnimationFrame(tick);
+        } else {
+            el.textContent = `${target}${suffix}`;
+        }
+    };
+    requestAnimationFrame(tick);
+}
+
+function bindKeyboardShortcuts() {
+    document.addEventListener('keydown', (e) => {
+        const tag = document.activeElement && document.activeElement.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+        if (e.code === 'Space') {
+            e.preventDefault();
+            toggleMusic();
+        }
+        if (e.key === 'Escape') closeGuide();
+        if (e.key && e.key.toLowerCase() === 'g' && e.ctrlKey) {
+            openGuide();
+        }
+    });
+}
+
+function handleFirstUserInteraction() {
+    ensureAudioPlaying();
+}
+
+function ensureAudioPlaying() {
+    if (userActivatedAudio) return;
+    bgm.muted = false;
+    bgm.play().then(() => {
+        isMusicPlaying = true;
+        musicIcon.classList.add('playing');
+        playBtn.innerText = "暂停";
+        hideMusicPrompt();
+        userActivatedAudio = true;
+    }).catch(() => {
+        showMusicPrompt();
+    });
+}
+
+function userEnableMusic() {
+    ensureAudioPlaying();
+}
+
+function showMusicPrompt(force = false) {
+    if (!musicPrompt) return;
+    if (prefersReducedMotion && !force) return;
+    musicPrompt.classList.add('show');
+}
+
+function hideMusicPrompt() {
+    if (!musicPrompt) return;
+    musicPrompt.classList.remove('show');
+}
+
 // 打开和关闭模态框
+function openGuide() {
+    if (guideModal) guideModal.style.display = 'flex';
+}
+
 function closeGuide() {
-    document.getElementById('guideModal').style.display = 'none';
+    if (guideModal) guideModal.style.display = 'none';
 }

@@ -16,6 +16,14 @@
 </head>
 <body class="style-china"> <!-- 默认国风 -->
 
+    <!-- 氛围背景层：柔和光斑与网格 -->
+    <div class="ambient">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div class="grid-overlay"></div>
+    </div>
+
     <!-- 风格切换器 -->
     <nav class="theme-switcher">
         <button class="theme-btn" data-theme="style-china" onclick="switchTheme('style-china')">🏮 新春国风</button>
@@ -33,6 +41,9 @@
             <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="0.5">
         </div>
     </div>
+
+    <!-- 音乐提示（自动播放受阻时显示） -->
+    <div id="musicPrompt" class="music-prompt" onclick="userEnableMusic()">🔊 点击播放音乐</div>
     
     <!-- 隐藏的音频元素 -->
     <audio id="bgm" loop preload="auto">
@@ -71,20 +82,63 @@
             <span class="zodiac">丙午马年</span>
             <span class="greeting-text">新春快乐</span>
         </h1>
+        <p class="tagline reveal">借鉴优秀网页的灵感，用国风与未来感为你送上沉浸式新春祝福。</p>
+
+        <div class="status-pills reveal">
+            <span class="pill">⚡ 即刻开跑</span>
+            <span class="pill">🎧 沉浸聆听</span>
+            <span class="pill">🪄 灵感随心</span>
+        </div>
 
         <!-- 祝福语卡片 -->
-        <div class="wish-card">
+        <div class="wish-card reveal" aria-live="polite">
             <p id="wishText" class="typing-effect">策马奔腾赴前程，春风得意马蹄疾！祝您2026年万事如意！</p>
             <div class="action-buttons">
                 <button class="action-btn" onclick="generateWish()">✨ 生成祝福</button>
+                <button class="action-btn" onclick="toggleEdit()">✍ 自定义</button>
                 <button class="action-btn" onclick="copyWish()">📋 复制文本</button>
                 <button class="action-btn" onclick="copyPageLink()">🔗 分享网页</button>
+                <button class="action-btn ghost" onclick="openGuide()">❔ 使用指南</button>
             </div>
             <div id="customWishArea" style="display:none; margin-top:10px;">
                 <input type="text" id="customInput" placeholder="输入您的祝福..." style="width:70%; padding:5px;">
                 <button onclick="confirmCustomBase()">确认</button>
             </div>
         </div>
+
+        <section class="highlight-meta reveal" aria-label="氛围与进度">
+            <div class="progress-track">
+                <div class="progress-label">祝福能量</div>
+                <div class="progress-bar">
+                    <span class="progress-fill" style="width: 82%;"></span>
+                </div>
+                <small class="progress-hint">灵感来自优秀站点的发光进度条，随主题变色。</small>
+            </div>
+        </section>
+
+        <section class="info-grid reveal" aria-label="今年亮点">
+            <article class="info-card">
+                <div class="card-top">福气指数</div>
+                <div class="card-body">
+                    <div class="counter" data-counter data-target="99" data-suffix="%">0%</div>
+                    <p>好运值拉满，出发即巅峰。</p>
+                </div>
+            </article>
+            <article class="info-card">
+                <div class="card-top">心愿达成</div>
+                <div class="card-body">
+                    <div class="counter" data-counter data-target="26" data-suffix="/26">0/26</div>
+                    <p>小目标稳步完成，迎接惊喜。</p>
+                </div>
+            </article>
+            <article class="info-card">
+                <div class="card-top">活力时刻</div>
+                <div class="card-body">
+                    <div class="counter" data-counter data-target="520">0</div>
+                    <p>保持热爱与速度，策马扬鞭向前。</p>
+                </div>
+            </article>
+        </section>
     </main>
 
     <!-- 飘落物容器 -->
