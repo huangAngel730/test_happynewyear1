@@ -40,7 +40,7 @@ const assets = {
         }
     },
     'style-simple': {
-        music: 'https://music.163.com/song/media/outer/url?id=1904492095.mp3',
+        music: 'https://music.163.com/song/media/outer/url?id=25842278.mp3',
         wishes: [
             "浅浅春风，轻轻心愿，2026 纯净而来。",
             "简约不简单，新一年保持松弛与热爱。",
@@ -151,7 +151,7 @@ const assets = {
         }
     },
     'style-warm': {
-        music: 'https://music.163.com/song/media/outer/url?id=1954344646.mp3',
+        music: 'https://music.163.com/song/media/outer/url?id=28949052.mp3',
         wishes: [
             "围炉煮茶，灯火可亲，马年人间烟火最暖心。",
             "祝你新年每一顿饭都有人陪，每一句话都被温柔接住。",
@@ -1937,13 +1937,12 @@ class RelayManager {
         const encoded = encodeURIComponent(btoa(jsonStr));
         const cleanUrl = window.location.origin + window.location.pathname; // Remove existing query
         const shareUrl = `${cleanUrl}?relayData=${encoded}&style=${currentTheme}`; // Also keep theme
-        
-        if (navigator.clipboard) {
-            navigator.clipboard.writeText(`🏃 我发起了新春祝福接力！已经传到第 ${this.chain.length} 棒啦！\n快来点击加入：${shareUrl}`);
-            if (achievementManager) achievementManager.showCustomToast('复制成功', '链接已复制，去发送给好友吧！', '🔗');
-        } else {
-            prompt('长按复制链接分享：', shareUrl);
-        }
+        const shareText = `🏃 我发起了新春祝福接力！已经传到第 ${this.chain.length} 棒啦！\n快来点击加入：${shareUrl}`;
+
+        // 使用通用的 copyTextToClipboard 函数，支持 fallback
+        copyTextToClipboard(shareText, () => {
+             if (achievementManager) achievementManager.showCustomToast('复制成功', '链接已复制，去发送给好友吧！', '🔗');
+        });
     }
 
     open(isInvite = false) {
