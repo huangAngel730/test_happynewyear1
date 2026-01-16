@@ -356,6 +356,7 @@ window.addEventListener('DOMContentLoaded', () => {
 function startExperience(triggeredByPill = false) {
     if (!experienceStarted) {
         experienceStarted = true;
+        setEnergy(0);
         if (entryOverlay) {
             entryOverlay.classList.add('hidden');
             setTimeout(() => {
@@ -363,6 +364,7 @@ function startExperience(triggeredByPill = false) {
             }, 650);
         }
         ensureAudioPlaying();
+        generateWish(true, true);
         boostFortune(10, 'entry-start', 4000);
     }
     if (triggeredByPill) {
@@ -902,6 +904,112 @@ function toggleControlPanel() {
         hideMusicPrompt();
         ensureAudioPlaying();
     }
+}
+
+/* ================== Sound Manager (SFX) ================== */
+class SoundManager {
+    constructor() {
+        this.ctx = null;
+        this.masterVolume = 0.4;
+        this.enabled = true;
+        
+        // 绑定全局点击事件播放音效
+        document.addEventListener('click', (e) => {
+            if (!this.enabled) return;
+            // 简单的点击反馈，排除音乐控制防止太吵
+            if (e.target.closest('button') || e.target.closest('.choice-btn') || e.target.closest('nav')) {
+                this.playClick();
+            }
+        });
+        
+        // 监听自定义事件
+        window.addEventListener('sfx-success', () => this.playSuccess());
+        window.addEventListener('sfx-pop', () => this.playPop());
+        
+        // 挂载到全局以便手动调用
+        window.soundManager = this;
+    }
+
+    initCtx() {
+        if (!this.ctx) {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (AudioContext) {
+                this.ctx = new AudioContext();
+            }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+            this.ctx.resume();
+        }
+    }
+
+    playOscillator(type, freqStart, freqEnd, duration, vol = 1) {
+        this.initCtx();
+        if (!this.ctx) return;
+
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = type;
+        osc.frequency.setValueAtTime(freqStart, this.ctx.currentTime);
+        if (freqEnd) {
+            osc.frequency.exponentialRampToValueAtTime(freqEnd, this.ctx.currentTime + duration);
+        }
+
+        gain.gain.setValueAtTime(vol * this.masterVolume, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + duration);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start();
+        osc.stop(this.ctx.currentTime + duration);
+    }
+
+    playClick() {
+        this.playOscillator('triangle', 600, 300, 0.08, 0.5);
+    }
+
+    playSuccess() {
+        this.playOscillator('sine', 523.25, null, 0.2, 0.6); // C5
+        setTimeout(() => {
+             this.playOscillator('sine', 659.25, null, 0.4, 0.6); // E5
+        }, 150);
+    }
+    
+    playPop() {
+        this.playOscillator('sine', 800, 400, 0.1, 0.4);
+    }
+}
+
+/* ================== Share Card Logic ================== */
+function openShareCard() {
+    const modal = document.getElementById('shareCardModal');
+    const wishEl = document.getElementById('cardWishText');
+    const bg = document.getElementById('shareCardNode');
+    
+    if (wishEl) wishEl.textContent = wishText ? wishText.textContent : '新春快乐！';
+    
+    // 生成二维码 (这里用简单 API 做个真二维码)
+    const qrBox = document.querySelector('.card-qr-box');
+    if (qrBox) {
+        qrBox.innerHTML = '';
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(window.location.href)}`;
+        const img = document.createElement('img');
+        img.src = qrUrl;
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.display = 'block';
+        qrBox.appendChild(img);
+    }
+    
+    // 播放音效
+    window.dispatchEvent(new Event('sfx-pop'));
+    if (modal) modal.style.display = 'flex';
+}
+
+function closeShareCard() {
+    const modal = document.getElementById('shareCardModal');
+    if (modal) modal.style.display = 'none';
 }
 
 // ================== 飘落特效系统 ==================
