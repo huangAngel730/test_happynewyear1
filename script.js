@@ -1,7 +1,7 @@
 // 资源配置
 const assets = {
     'style-china': {
-        music: 'https://music.163.com/song/media/outer/url?id=26217171.mp3', // 喜庆民乐
+        music: 'https://music.163.com/song/media/outer/url?id=26217171.mp3',
         wishes: [
             "2026丙午马年，愿您：马到功成，前程似锦！",
             "春风得意马蹄疾，一日看尽长安花。新春快乐！",
@@ -9,7 +9,13 @@ const assets = {
             "龙马精神，万事如意。阖家欢乐，福寿安康！",
             "一马当先，步步高升！财源广进，五福临门！"
         ],
-        particles: ['🧧', '🏮', '✨', '🐴', '🧨'],
+        fuWishes: [
+            "福到新春到，马啸九州添鸿运！",
+            "鎏金赐福，红运相随；龙马精神，稳步腾飞！",
+            "祥云缭绕，家兴业旺；春风得意，万事顺遂！",
+            "福气临门，金玉满堂；马到成功，步步高升！"
+        ],
+        particles: ['🧧', '🏮', '✨', '🐴', '🧨', '福', '云'],
         deep: {
             career: [
                 "丹心执笔，事业添锦绣；骏马奔程，步步踏高台。",
@@ -29,14 +35,51 @@ const assets = {
             ]
         }
     },
+    'style-simple': {
+        music: 'https://music.163.com/song/media/outer/url?id=1904492095.mp3',
+        wishes: [
+            "浅浅春风，轻轻心愿，2026 纯净而来。",
+            "简约不简单，新一年保持松弛与热爱。",
+            "留白里有光，步伐里有梦，马年清爽启程。",
+            "三分忙碌七分闲，日子慢慢，好运悄悄来。",
+            "愿你心如晨光，干净通透，万事清甜。"
+        ],
+        fuWishes: [
+            "轻盈一岁，心愿缓缓落地。",
+            "保持松弛，福气自来。"
+        ],
+        particles: ['✦', '☁', '🪽', '✨', '𓅯'],
+        deep: {
+            career: [
+                "做减法聚焦要点，效率与成果双提升。",
+                "线条般清晰的规划，项目顺滑落地。"
+            ],
+            health: [
+                "多晒太阳多喝水，作息如晨风般规律。",
+                "身心柔软，心率平稳，睡个好觉。"
+            ],
+            family: [
+                "留白给家人，简简单单的陪伴最安心。",
+                "饭后散步、周末小聚，温柔又满足。"
+            ],
+            fortune: [
+                "理财如素描，线条清晰，收益稳定。",
+                "小额积累，复利生长，财富轻盈向上。"
+            ]
+        }
+    },
     'style-tech': {
-        music: 'https://music.163.com/song/media/outer/url?id=443875283.mp3', // 电子风格
+        music: 'https://music.163.com/song/media/outer/url?id=443875283.mp3',
         wishes: [
             "System.out.println('Happy New Year 2026');",
             "Loading 2026... 100% Complete. Success!",
             "愿你的快乐像无限循环，没有跳出条件！",
             "2026.exe 启动成功，Bug全消除，性能优化100%！",
             "马年赋能，迭代升级，愿你的人生算法最优解！"
+        ],
+        fuWishes: [
+            "福气代码已编译，部署成功！",
+            "霓虹 Buffer 充满，幸运在线。"
         ],
         particles: ['0', '1', '{ }', '⚡', '💾'],
         deep: {
@@ -59,13 +102,17 @@ const assets = {
         }
     },
     'style-cute': {
-        music: 'https://music.163.com/song/media/outer/url?id=1387581250.mp3', // 轻快可爱
+        music: 'https://music.163.com/song/media/outer/url?id=1387581250.mp3',
         wishes: [
-            "哒哒哒~ 小马来送福啦！祝你天天开心鸭！",
+            "哒哒哒~ Q 版小马来送福啦！祝你天天开心鸭！",
             "2026，要做一个可爱的干饭马！🍚",
-            "祝你新的一年，甜得像糖，暖得像光！✨",
-            "马年好运biu biu biu~ 发射给你！💖",
+            "干饭不胖，睡觉暴富，暴击好运！",
+            "马年好运 biu biu biu~ 发射给你！💖",
             "摸摸小马头，万事不发愁！🦄"
+        ],
+        fuWishes: [
+            "小马打滚送上软萌福气！",
+            "抱一抱，福气到。"
         ],
         particles: ['🍬', '🎈', '🍭', '💖', '🦄'],
         deep: {
@@ -78,8 +125,8 @@ const assets = {
                 "快乐加倍，焦虑减半，身体状态棒棒哒。"
             ],
             family: [
-                "家人像棉花糖，软软甜甜给你拥抱。",
-                "聚会多多，笑声满屋，团圆快乐抱枕抱紧。"
+                "聚会多多，笑声满屋，团圆快乐抱枕抱紧。",
+                "家人像棉花糖，软软甜甜给你拥抱。"
             ],
             fortune: [
                 "红包像气球越攒越多，钱包像仓鼠仓库塞满。",
@@ -87,32 +134,69 @@ const assets = {
             ]
         }
     },
-    'style-minimalist': {
-        music: 'https://music.163.com/song/media/outer/url?id=1928763783.mp3', // 极简爵士乐
+    'style-warm': {
+        music: 'https://music.163.com/song/media/outer/url?id=1950449170.mp3',
         wishes: [
-            "2026年，保持简单，专注前行。",
-            "去繁就简，驾驭这匹快马。",
-            "极简生活，极致体验。祝您2026非凡。",
-            "放下执念，策马扬鞭。人生如马，需要节奏。",
-            "简而不凡。2026，做自己的骑手。"
+            "围炉煮茶，灯火可亲，马年人间烟火最暖心。",
+            "祝你新年每一顿饭都有人陪，每一句话都被温柔接住。",
+            "回家路有灯，餐桌有汤，所念之人皆在旁。",
+            "团圆是答案，马年是章节，愿你写下温暖一整年。",
+            "把祝福放进汤里，暖暖地喝下一整年好运。"
         ],
-        particles: ['✦', '·', '◆', '—', '★'],
+        fuWishes: [
+            "炉火未熄，福气不散。",
+            "人间烟火味，就是最暖的福。"
+        ],
+        particles: ['🕯️', '🧧', '🍊', '✨', '🕊️'],
         deep: {
             career: [
-                "聚焦核心，删繁就简，每一步都落在关键节点。",
-                "少即是多，成果清晰可见，成就自然递增。"
+                "有节奏地奔跑，懂休息也懂发力，事业稳稳向前。",
+                "同事如家人，协作顺畅，收获认同与成长。"
             ],
             health: [
-                "规律作息，饮食克制，身体轻盈如风。",
-                "心率平稳，步伐轻快，气沉丹田。"
+                "早睡不熬夜，三餐有温度，身体和心都被好好照顾。",
+                "保持散步和拉伸，气色红润，精神饱满。"
             ],
             family: [
-                "回归本心，陪伴留白，安静共处也温暖。",
-                "不喧不闹，彼此懂得，日常如简洁的诗。"
+                "一日三餐的烟火气，织出一年四季的安心感。",
+                "常回家看看，拥抱和微笑是最好的礼物。"
             ],
             fortune: [
-                "理财分散，风险可控，收益平滑上扬。",
-                "资金流简洁明晰，账户稳健增值。"
+                "稳健理财，温柔增值，安心感就是最好的收益。",
+                "好运像围炉的暖意，源源不绝，悄悄变多。"
+            ]
+        }
+    },
+    'style-pixel': {
+        music: 'https://music.163.com/song/media/outer/url?id=1901371647.mp3',
+        wishes: [
+            "↑↑↓↓←→←→AB，解锁 2026 好运彩蛋！",
+            "像素马跳一跳，福气值 +99！",
+            "复古街机上线，祝你打出人生连击。",
+            "马到成功・福气满格，插入好运币继续！",
+            "Start Game: 2026，祝你满血开局。"
+        ],
+        fuWishes: [
+            "收集到福袋 ×5，隐藏祝福解锁！",
+            "像素福气加成，暴击好运 999。"
+        ],
+        particles: ['▢', '✜', '🧧', '🪙', '☆'],
+        deep: {
+            career: [
+                "任务列表全绿，关卡连胜，升职像通关一样顺滑。",
+                "打怪掉落好机会，队友 Buff 满格，项目超神。"
+            ],
+            health: [
+                "满血复活，连击不掉帧，保持好心情就是最佳护盾。",
+                "多存档（休息）、多回血（睡觉），状态拉满。"
+            ],
+            family: [
+                "在家的每一关都是剧情关，爱与陪伴的数值拉满。",
+                "亲友全体在线，语音欢笑，温暖同步。"
+            ],
+            fortune: [
+                "金币掉落率上升，理财暴击，资产升级。",
+                "隐藏宝箱就在前方，保持探索就有惊喜。"
             ]
         }
     }
@@ -125,11 +209,16 @@ let particleInterval = null;
 const isMobile = window.matchMedia('(max-width: 768px)').matches || ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 let userActivatedAudio = false;
+let experienceStarted = false;
+let pixelCount = 0;
+const pixelTarget = 5;
+let pixelItems = [];
 
 // DOM 元素
 const body = document.body;
 const bgm = document.getElementById('bgm');
 const wishText = document.getElementById('wishText');
+const wishCard = document.querySelector('.wish-card');
 const musicIcon = document.getElementById('musicToggle');
 const playBtn = document.getElementById('playPauseBtn');
 const volSlider = document.getElementById('volumeSlider');
@@ -139,7 +228,28 @@ const musicControls = document.querySelector('.music-controls');
 const root = document.documentElement;
 const guideModal = document.getElementById('guideModal');
 const musicPrompt = document.getElementById('musicPrompt');
+const gameOverlay = document.getElementById('gameOverlay');
+const gameArea = document.getElementById('gameArea');
+const gameScoreEl = document.getElementById('gameScore');
+const gameTimerEl = document.getElementById('gameTimer');
+const gameModeEl = document.getElementById('gameMode');
+const gameDescEl = document.getElementById('gameDescription');
+
+let gameType = null;
+let gameScore = 0;
+let gameTime = 25;
+let gameIntervals = [];
+let gameTimeouts = [];
+let gameTimerHandle = null;
+let basketEl = null;
+let activeTargets = new Set();
 const deepCards = document.querySelectorAll('[data-deep-key]');
+const entryOverlay = document.getElementById('entryOverlay');
+const statusPills = document.querySelectorAll('[data-action-pill]');
+const fuBadge = document.getElementById('fuBadge');
+const toastEl = document.getElementById('toast');
+const pixelHud = document.getElementById('pixelHud');
+const pixelCountEl = document.getElementById('pixelCount');
 
 // 初始化
 window.addEventListener('DOMContentLoaded', () => {
@@ -150,6 +260,8 @@ window.addEventListener('DOMContentLoaded', () => {
         currentTheme = sharedStyle;
         body.className = currentTheme;
         bgm.src = assets[currentTheme].music; // 同步音乐源
+    } else {
+        bgm.src = assets[currentTheme].music;
     }
 
     initMusic();
@@ -157,16 +269,31 @@ window.addEventListener('DOMContentLoaded', () => {
     renderDeepWishes();
     startFallingEffect();
     initEnhancements();
+    bindFuBadge();
+    resetPixelQuest();
+
+    // 等待入口按钮确认后再真正开始有声播放
+    if (entryOverlay) {
+        bgm.pause();
+        bgm.currentTime = 0;
+        bgm.muted = true;
+        isMusicPlaying = false;
+        musicIcon.classList.remove('playing');
+        playBtn.innerText = "播放";
+        if (musicPrompt) musicPrompt.classList.remove('show');
+    }
+    addActionPillHandlers();
     
     // 显示指南（仅首次或演示用）
     setTimeout(() => {
         // document.getElementById('guideModal').style.display = 'flex';
     }, 1000);
 
-    // 点击页面生成特效（移动端禁用爆破以节省性能）
+    // 点击页面生成特效（尊重系统减动效；入口遮罩未关闭时不触发）
     document.addEventListener('click', (e) => {
-        if (isMobile || prefersReducedMotion) return; // 移动端与减动效禁用爆破
-        if(e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT') {
+        const overlayActive = entryOverlay && !entryOverlay.classList.contains('hidden') && entryOverlay.style.display !== 'none';
+        if (prefersReducedMotion || overlayActive) return;
+        if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT' && !e.target.closest('.deep-copy')) {
             createBurst(e.clientX, e.clientY);
         }
     });
@@ -177,6 +304,143 @@ window.addEventListener('DOMContentLoaded', () => {
         startFallingEffect(1600); // 降低频率
     }
 });
+
+// 开场入口
+function startExperience(triggeredByPill = false) {
+    if (!experienceStarted) {
+        experienceStarted = true;
+        if (entryOverlay) {
+            entryOverlay.classList.add('hidden');
+            setTimeout(() => {
+                entryOverlay.style.display = 'none';
+            }, 650);
+        }
+        ensureAudioPlaying();
+    }
+    if (triggeredByPill) {
+        scrollToMain();
+    }
+}
+
+function scrollToMain() {
+    const main = document.querySelector('main.container, .container');
+    if (main) {
+        main.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+function addActionPillHandlers() {
+    if (!statusPills.length) return;
+    statusPills.forEach(btn => {
+        btn.addEventListener('click', () => handleStatusAction(btn.dataset.actionPill));
+    });
+}
+
+function handleStatusAction(action) {
+    switch (action) {
+        case 'start':
+            startExperience(true);
+            break;
+        case 'listen':
+            ensureAudioPlaying();
+            if (musicControls) {
+                if (isMobile) {
+                    musicControls.classList.add('controls-open');
+                }
+                musicControls.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            break;
+        case 'inspire':
+            generateWish();
+            flashWishCard();
+            break;
+        default:
+            break;
+    }
+}
+
+function flashWishCard() {
+    if (!wishCard) return;
+    wishCard.classList.remove('flash');
+    void wishCard.offsetWidth; // reset animation
+    wishCard.classList.add('flash');
+    wishCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function bindFuBadge() {
+    if (fuBadge) {
+        fuBadge.addEventListener('click', handleFuClick);
+    }
+}
+
+function handleFuClick() {
+    const pool = assets[currentTheme].fuWishes || assets[currentTheme].wishes || [];
+    const msg = pool[Math.floor(Math.random() * pool.length)];
+    wishText.textContent = msg;
+    flashWishCard();
+    showToast(msg);
+}
+
+function showToast(msg) {
+    if (!toastEl) return;
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    setTimeout(() => toastEl.classList.remove('show'), 2400);
+}
+
+// 像素收集任务
+function resetPixelQuest() {
+    clearPixelItems();
+    pixelCount = 0;
+    updatePixelHud();
+    if (pixelHud) {
+        pixelHud.style.display = currentTheme === 'style-pixel' ? 'flex' : 'none';
+    }
+    if (currentTheme === 'style-pixel') {
+        spawnPixelItems(pixelTarget);
+    }
+}
+
+function updatePixelHud() {
+    if (pixelCountEl) pixelCountEl.textContent = `${pixelCount}/${pixelTarget}`;
+}
+
+function spawnPixelItems(count = 5) {
+    clearPixelItems();
+    const symbols = ['🧧', '💥', '🪙', '福', '☆'];
+    for (let i = 0; i < count; i++) {
+        const item = document.createElement('button');
+        item.type = 'button';
+        item.className = 'pixel-item';
+        item.textContent = symbols[i % symbols.length];
+        item.style.left = Math.random() * 80 + 10 + 'vw';
+        item.style.top = Math.random() * 60 + 20 + 'vh';
+        item.onclick = () => handlePixelCollect(item);
+        document.body.appendChild(item);
+        pixelItems.push(item);
+    }
+}
+
+function clearPixelItems() {
+    pixelItems.forEach(el => el.remove());
+    pixelItems = [];
+}
+
+function handlePixelCollect(el) {
+    if (el) el.remove();
+    pixelItems = pixelItems.filter(node => node !== el);
+    pixelCount = Math.min(pixelTarget, pixelCount + 1);
+    updatePixelHud();
+    showToast(`福袋 +1 （${pixelCount}/${pixelTarget}）`);
+    if (pixelCount >= pixelTarget) {
+        const bonusPool = assets['style-pixel'].fuWishes || assets['style-pixel'].wishes;
+        const msg = bonusPool[Math.floor(Math.random() * bonusPool.length)];
+        wishText.textContent = msg;
+        flashWishCard();
+        showToast(msg);
+        clearPixelItems();
+    }
+}
 
 // ================== 风格切换 ==================
 function switchTheme(themeName) {
@@ -199,24 +463,32 @@ function switchTheme(themeName) {
     }
     
     // 刷新祝福语 style
-    generateWish();
+    generateWish(true);
     renderDeepWishes();
     
     // 更新粒子效果
     clearInterval(particleInterval);
     startFallingEffect();
+
+    // 主题特定互动
+    resetPixelQuest();
 }
 
 // ================== 祝福语逻辑 ==================
-function generateWish() {
-    const list = assets[currentTheme].wishes;
+function generateWish(withFlash = false) {
+    const list = assets[currentTheme].wishes || [];
     const randomWish = list[Math.floor(Math.random() * list.length)];
     
+    if (withFlash && wishCard) {
+        wishCard.classList.remove('flash');
+        void wishCard.offsetWidth;
+        wishCard.classList.add('flash');
+    }
+
     wishText.style.opacity = 0;
     setTimeout(() => {
         wishText.textContent = randomWish;
         wishText.style.opacity = 1;
-        // 简单的打字机效果重置
         wishText.classList.remove('typing-effect');
         void wishText.offsetWidth; // trigger reflow
         wishText.classList.add('typing-effect');
@@ -234,7 +506,17 @@ function renderDeepWishes() {
         const items = deep[key] || [];
         items.forEach(text => {
             const li = document.createElement('li');
-            li.textContent = text;
+            const span = document.createElement('span');
+            span.className = 'deep-text';
+            span.textContent = text;
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'deep-copy';
+            btn.dataset.copy = text;
+            btn.title = '复制祝福';
+            btn.textContent = '📋';
+            li.appendChild(span);
+            li.appendChild(btn);
             listEl.appendChild(li);
         });
     });
@@ -275,6 +557,23 @@ function fallbackCopyText(text, onSuccess) {
     
     document.body.removeChild(textArea);
 }
+
+// 分场景祝福复制按钮事件委托
+document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.deep-copy');
+    if (!btn) return;
+    const text = btn.dataset.copy || '';
+    if (!text) return;
+    copyTextToClipboard(text, () => {
+        btn.classList.add('copied');
+        const original = btn.textContent;
+        btn.textContent = '✅';
+        setTimeout(() => {
+            btn.textContent = original || '📋';
+            btn.classList.remove('copied');
+        }, 1400);
+    });
+});
 
 function copyWish() {
     const text = wishText.innerText;
@@ -430,8 +729,9 @@ function initMusic() {
 
     // 切歌=切换风格
     document.getElementById('nextTrackBtn').onclick = () => {
-        const themes = ['style-china', 'style-tech', 'style-cute'];
-        const nextIndex = (themes.indexOf(currentTheme) + 1) % 3;
+        const themes = Object.keys(assets);
+        const currentIndex = themes.indexOf(currentTheme);
+        const nextIndex = (currentIndex + 1) % themes.length;
         switchTheme(themes[nextIndex]);
     };
 }
@@ -678,4 +978,231 @@ function openGuide() {
 
 function closeGuide() {
     if (guideModal) guideModal.style.display = 'none';
+}
+
+// ================== 跨年小游戏 ==================
+function openGameOverlay() {
+    if (!gameOverlay) return;
+    resetGame();
+    gameOverlay.classList.add('show');
+}
+
+function closeGameOverlay() {
+    stopGame();
+    if (gameOverlay) gameOverlay.classList.remove('show');
+}
+
+function resetGame() {
+    stopGame();
+    gameScore = 0;
+    updateScore();
+    setTimerDisplay('--');
+    setModeDisplay('待选择');
+    setDesc('点击开始，随机体验接福袋 / 点灯笼 / 烟花快点。');
+    if (gameArea) gameArea.innerHTML = '';
+    activeTargets.clear();
+    basketEl = null;
+}
+
+function stopGame() {
+    gameIntervals.forEach(clearInterval);
+    gameTimeouts.forEach(clearTimeout);
+    gameIntervals = [];
+    gameTimeouts = [];
+    if (gameTimerHandle) clearInterval(gameTimerHandle);
+    gameTimerHandle = null;
+    if (gameArea) {
+        gameArea.onclick = null;
+        gameArea.onpointermove = null;
+        gameArea.onpointerdown = null;
+    }
+    document.onkeydown = null;
+}
+
+function startRandomGame() {
+    const modes = ['catch', 'lantern', 'fireworks'];
+    const pick = modes[Math.floor(Math.random() * modes.length)];
+    startGame(pick);
+}
+
+function startGame(type) {
+    if (!gameArea) return;
+    resetGame();
+    gameType = type;
+    gameScore = 0;
+    updateScore();
+    setModeDisplay(type === 'catch' ? '接福袋' : type === 'lantern' ? '点灯笼' : '烟花快点');
+    const duration = prefersReducedMotion ? 18 : 25;
+    setTimerDisplay(duration);
+    setDesc(getGameDesc(type));
+    gameArea.focus();
+
+    if (type === 'catch') {
+        setupCatchGame();
+    } else if (type === 'lantern') {
+        setupLanternGame();
+    } else {
+        setupFireworkGame();
+    }
+
+    startTimer(duration);
+}
+
+function startTimer(seconds) {
+    gameTime = seconds;
+    setTimerDisplay(gameTime);
+    gameTimerHandle = setInterval(() => {
+        gameTime -= 1;
+        setTimerDisplay(Math.max(gameTime, 0));
+        if (gameTime <= 0) {
+            finishGame();
+        }
+    }, 1000);
+}
+
+function finishGame() {
+    stopGame();
+    setDesc(`本轮结束！得分 ${gameScore}，送上一句祝福：${wishText.textContent}`);
+}
+
+function updateScore(delta = 0) {
+    gameScore = Math.max(0, gameScore + delta);
+    if (gameScoreEl) gameScoreEl.textContent = gameScore;
+}
+
+function setTimerDisplay(val) {
+    if (gameTimerEl) gameTimerEl.textContent = val;
+}
+
+function setModeDisplay(text) {
+    if (gameModeEl) gameModeEl.textContent = text;
+}
+
+function setDesc(text) {
+    if (gameDescEl) gameDescEl.textContent = text;
+}
+
+// --- Game: Catch 福袋 ---
+function setupCatchGame() {
+    basketEl = document.createElement('div');
+    basketEl.className = 'game-basket';
+    basketEl.style.left = '50%';
+    gameArea.appendChild(basketEl);
+
+    let basketX = gameArea.clientWidth / 2;
+
+    const moveBasket = (x) => {
+        basketX = Math.max(30, Math.min(gameArea.clientWidth - 30, x));
+        basketEl.style.left = `${basketX}px`;
+    };
+
+    gameArea.onpointermove = (e) => moveBasket(e.offsetX);
+    document.onkeydown = (e) => {
+        if (e.key === 'ArrowLeft') moveBasket(basketX - 18);
+        if (e.key === 'ArrowRight') moveBasket(basketX + 18);
+    };
+
+    // 生成掉落物
+    const drop = () => {
+        const item = document.createElement('div');
+        item.className = 'game-item';
+        item.textContent = ['🧧','💰','🪙','✨'][Math.floor(Math.random()*4)];
+        const left = Math.random() * (gameArea.clientWidth - 30);
+        item.style.left = `${left}px`;
+        item.style.top = '-40px';
+        item.style.fontSize = '24px';
+        item.style.transition = `transform ${prefersReducedMotion ? 2.5 : 3.5}s linear`;
+        gameArea.appendChild(item);
+        activeTargets.add(item);
+        requestAnimationFrame(() => {
+            item.style.transform = `translateY(${gameArea.clientHeight + 60}px)`;
+        });
+        const removeT = setTimeout(() => {
+            activeTargets.delete(item);
+            item.remove();
+        }, (prefersReducedMotion ? 2500 : 3500));
+        gameTimeouts.push(removeT);
+    };
+
+    gameIntervals.push(setInterval(drop, prefersReducedMotion ? 900 : 650));
+    gameIntervals.push(setInterval(checkCatchCollision, 120));
+}
+
+function checkCatchCollision() {
+    if (!basketEl) return;
+    const basketRect = basketEl.getBoundingClientRect();
+    activeTargets.forEach(item => {
+        const rect = item.getBoundingClientRect();
+        if (rect.bottom >= basketRect.top && rect.left <= basketRect.right && rect.right >= basketRect.left) {
+            updateScore(2);
+            activeTargets.delete(item);
+            item.remove();
+        }
+    });
+}
+
+// --- Game: 点灯笼 ---
+function setupLanternGame() {
+    const spawn = () => {
+        const lan = document.createElement('div');
+        lan.className = 'game-item game-lantern';
+        lan.textContent = Math.random() > 0.5 ? '🏮' : '✨';
+        const x = Math.random() * (gameArea.clientWidth - 64);
+        const y = Math.random() * (gameArea.clientHeight - 120);
+        lan.style.left = `${x}px`;
+        lan.style.top = `${y}px`;
+        lan.onclick = () => {
+            updateScore(3);
+            lan.style.opacity = '0';
+            setTimeout(() => lan.remove(), 180);
+        };
+        gameArea.appendChild(lan);
+        const t = setTimeout(() => lan.remove(), 2600);
+        gameTimeouts.push(t);
+    };
+    gameIntervals.push(setInterval(spawn, prefersReducedMotion ? 1200 : 800));
+}
+
+// --- Game: 烟花快点 ---
+function setupFireworkGame() {
+    gameArea.onclick = (e) => {
+        createFirework(e.offsetX, e.offsetY, true);
+    };
+    const spawnFloating = () => {
+        const dot = document.createElement('div');
+        dot.className = 'game-item firework-dot';
+        const x = Math.random() * (gameArea.clientWidth - 20) + 10;
+        dot.style.left = `${x}px`;
+        dot.style.bottom = '0px';
+        dot.style.transition = `transform ${prefersReducedMotion ? 1.5 : 2.2}s ease-out, opacity 0.6s`; 
+        gameArea.appendChild(dot);
+        requestAnimationFrame(() => {
+            dot.style.transform = `translateY(-${Math.random()*200 + 160}px)`;
+            dot.style.opacity = '0';
+        });
+        const t = setTimeout(() => {
+            dot.remove();
+        }, prefersReducedMotion ? 1600 : 2300);
+        gameTimeouts.push(t);
+    };
+    gameIntervals.push(setInterval(spawnFloating, prefersReducedMotion ? 900 : 650));
+}
+
+function createFirework(x, y, addScore = false) {
+    const burst = document.createElement('div');
+    burst.className = 'firework-burst';
+    burst.style.left = `${x - 12}px`;
+    burst.style.top = `${y - 12}px`;
+    burst.style.width = '24px';
+    burst.style.height = '24px';
+    burst.style.background = `radial-gradient(circle, ${getComputedStyle(body).getPropertyValue('--primary-color') || '#ff4'} 0%, transparent 70%)`;
+    gameArea.appendChild(burst);
+    setTimeout(() => burst.remove(), 900);
+    if (addScore) updateScore(1);
+}
+
+function getGameDesc(type) {
+    if (type === 'catch') return '左右移动接福袋，躲开空白掉落，30s 内多多得分。';
+    if (type === 'lantern') return '点击/轻点灯笼得分，灯笼会随机出现与消失。';
+    return '点击游戏区域触发烟花并得分，背景会有缓慢上升的光点。';
 }

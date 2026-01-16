@@ -12,7 +12,7 @@
         window.__SHARE_BASE__ = 'https://huangAngel730.github.io/test_happynewyear1';
     </script>
     <!-- Google Fonts for diverse styles -->
-    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@300;700&family=ZCOOL+KuaiLe&family=Orbitron:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@300;700&family=ZCOOL+KuaiLe&family=Orbitron:wght@500&family=Press+Start+2P&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
 </head>
 <body class="style-china"> <!-- 默认国风 -->
 
@@ -24,12 +24,24 @@
         <div class="grid-overlay"></div>
     </div>
 
+    <!-- 入口引导 -->
+    <section class="entry-overlay" id="entryOverlay" aria-label="进入体验">
+        <div class="entry-box">
+            <p class="entry-kicker">马年限定体验</p>
+            <h1>你准备好了吗？</h1>
+            <p class="entry-note">点击开始，将解锁音乐与国风主题，随后可自由切换风格。</p>
+            <button class="entry-btn" onclick="startExperience()">开始旅程</button>
+        </div>
+    </section>
+
     <!-- 风格切换器 -->
     <nav class="theme-switcher">
-        <button class="theme-btn" data-theme="style-china" onclick="switchTheme('style-china')">🏮 新春国风</button>
+        <button class="theme-btn" data-theme="style-china" onclick="switchTheme('style-china')">🏮 传统国风</button>
+        <button class="theme-btn" data-theme="style-simple" onclick="switchTheme('style-simple')">🌿 简约清新</button>
+        <button class="theme-btn" data-theme="style-cute" onclick="switchTheme('style-cute')">🦄 活泼卡通</button>
         <button class="theme-btn" data-theme="style-tech" onclick="switchTheme('style-tech')">🚀 科技未来</button>
-        <button class="theme-btn" data-theme="style-cute" onclick="switchTheme('style-cute')">🦄 可爱卡通</button>
-        <button class="theme-btn" data-theme="style-minimalist" onclick="switchTheme('style-minimalist')">🌟 极简先锋</button>
+        <button class="theme-btn" data-theme="style-warm" onclick="switchTheme('style-warm')">🧧 温馨治愈</button>
+        <button class="theme-btn" data-theme="style-pixel" onclick="switchTheme('style-pixel')">🕹️ 像素复古</button>
     </nav>
 
     <!-- 音乐控制悬浮球 -->
@@ -73,8 +85,13 @@
                 <div class="cute-horse-container">
                     <div class="cute-head">🐴</div>
                 </div>
+
+                <!-- 像素马 -->
+                <div class="pixel-horse-container" aria-label="像素马">▥▥<br>▥█▥<br>▥▥</div>
             </div>
         </div>
+
+        <div class="fu-badge" id="fuBadge" aria-label="点福得祝福">福</div>
 
         <!-- 标题 -->
         <h1 class="main-title">
@@ -84,10 +101,27 @@
         </h1>
         <p class="tagline reveal">借鉴优秀网页的灵感，用国风与未来感为你送上沉浸式新春祝福。</p>
 
+        <!-- 场景切换器：不同场景生成对应祝福 -->
+        <div class="scenario-switcher reveal" aria-label="选择祝福场景">
+            <button class="scenario-btn active" data-scenario="general" onclick="switchScenario('general')">通用</button>
+            <button class="scenario-btn" data-scenario="career" onclick="switchScenario('career')">事业</button>
+            <button class="scenario-btn" data-scenario="study" onclick="switchScenario('study')">学业</button>
+            <button class="scenario-btn" data-scenario="health" onclick="switchScenario('health')">健康</button>
+            <button class="scenario-btn" data-scenario="family" onclick="switchScenario('family')">家庭</button>
+            <button class="scenario-btn" data-scenario="wealth" onclick="switchScenario('wealth')">财富</button>
+            <button class="scenario-btn" data-scenario="travel" onclick="switchScenario('travel')">出行</button>
+            <button class="scenario-btn" data-scenario="friends" onclick="switchScenario('friends')">友情</button>
+        </div>
+
         <div class="status-pills reveal">
-            <span class="pill">⚡ 即刻开跑</span>
-            <span class="pill">🎧 沉浸聆听</span>
-            <span class="pill">🪄 灵感随心</span>
+            <button class="pill" data-action-pill="start">⚡ 即刻开跑</button>
+            <button class="pill" data-action-pill="listen">🎧 沉浸聆听</button>
+            <button class="pill" data-action-pill="inspire">🪄 灵感随心</button>
+        </div>
+
+        <div class="pixel-hud" id="pixelHud" aria-label="像素收集进度" style="display:none;">
+            <span class="pixel-label">福袋进度</span>
+            <span id="pixelCount">0/5</span>
         </div>
 
         <!-- 祝福语卡片 -->
@@ -99,6 +133,7 @@
                 <button class="action-btn" onclick="copyWish()">📋 复制文本</button>
                 <button class="action-btn" onclick="copyPageLink()">🔗 分享网页</button>
                 <button class="action-btn ghost" onclick="openGuide()">❔ 使用指南</button>
+                <button class="action-btn ghost" onclick="openGameOverlay()">🎮 跨年小游戏</button>
             </div>
             <div id="customWishArea" style="display:none; margin-top:10px;">
                 <input type="text" id="customInput" placeholder="输入您的祝福..." style="width:70%; padding:5px;">
@@ -169,6 +204,8 @@
     <!-- 飘落物容器 -->
     <div id="falling-container"></div>
 
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
     <!-- 使用指南模态框 -->
     <div id="guideModal" class="modal">
         <div class="modal-content">
@@ -183,6 +220,28 @@
         </div>
         <div class="modal-footer">
             <button onclick="closeGuide()">我知道了</button>
+        </div>
+    </div>
+
+    <!-- 跨年小游戏全屏弹层 -->
+    <div id="gameOverlay" class="game-overlay" aria-modal="true" role="dialog" aria-label="跨年小游戏">
+        <div class="game-panel">
+            <div class="game-header">
+                <h2>🎮 跨年小游戏</h2>
+                <span class="close-btn" onclick="closeGameOverlay()">×</span>
+            </div>
+            <p id="gameDescription" class="game-desc">点击开始，随机体验接福袋 / 点灯笼 / 烟花快点三款轻量小游戏。</p>
+            <div class="game-info">
+                <span>模式：<strong id="gameMode">待选择</strong></span>
+                <span>得分：<strong id="gameScore">0</strong></span>
+                <span>时间：<strong id="gameTimer">--</strong>s</span>
+            </div>
+            <div id="gameArea" class="game-area" tabindex="0"></div>
+            <div class="game-actions">
+                <button class="action-btn" onclick="startRandomGame()">▶ 开始</button>
+                <button class="action-btn ghost" onclick="closeGameOverlay()">退出</button>
+            </div>
+            <p class="game-hint">提示：竖屏体验最佳，移动端用左右滑动/轻点，桌面可用左右键。</p>
         </div>
     </div>
 
