@@ -242,6 +242,7 @@ let deepState = {};
 let fortuneScore = 0;
 const fortuneMax = 100;
 const fortuneCooldown = new Map();
+let currentScenario = 'general';
 
 // DOM 元素
 const body = document.body;
@@ -540,13 +541,45 @@ function switchTheme(themeName) {
     // 主题特定交互：像素收集和暖心火花
     resetPixelQuest();
 
-    // 主题特定互动
-    resetPixelQuest();
+    // The pixel quest reset was duplicated in original code, keeping it clean
+}
+
+function switchScenario(scenario) {
+    if (currentScenario === scenario) return;
+    currentScenario = scenario;
+    
+    // Update UI
+    const btns = document.querySelectorAll('.scenario-btn');
+    btns.forEach(btn => {
+        if(btn.dataset.scenario === scenario) btn.classList.add('active');
+        else btn.classList.remove('active');
+    });
+    
+    generateWish(true, true);
+    flashWishCard();
 }
 
 // ================== 祝福语逻辑 ==================
 function generateWish(withFlash = false, isUserTriggered = false) {
-    const list = assets[currentTheme].wishes || [];
+    let list = [];
+    // 优先尝试场景专属祝福
+    if (currentScenario && currentScenario !== 'general') {
+        // Map scenario keys to deep keys if needed, or use direct match
+        // keys in buttons: general, career, study, health, family, wealth, travel, friends
+        // keys in assets.deep: general, career, health, family, fortune (wealth)
+        let mapKey = currentScenario;
+        if (mapKey === 'wealth') mapKey = 'fortune';
+        
+        if (assets[currentTheme].deep && assets[currentTheme].deep[mapKey]) {
+            list = assets[currentTheme].deep[mapKey];
+        }
+    }
+    
+    // 如果没有特定场景祝福或列表为空，使用默认池
+    if (!list || list.length === 0) {
+        list = assets[currentTheme].wishes || [];
+    }
+
     const randomWish = list[Math.floor(Math.random() * list.length)];
     
     if (withFlash && wishCard) {

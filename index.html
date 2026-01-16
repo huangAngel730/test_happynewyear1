@@ -43,12 +43,7 @@
         <button class="theme-btn" data-theme="style-warm" onclick="switchTheme('style-warm')">🧧 温馨治愈</button>
         <button class="theme-btn" data-theme="style-pixel" onclick="switchTheme('style-pixel')">🕹️ 像素复古</button>
     </nav>
-
-    <!-- 祝福接力入口 -->
-    <button class="action-btn relay-btn-trigger" onclick="openRelayModal()" style="background:var(--secondary-color); color:#333; margin-top:10px;">
-        🏃 祝福接力
-    </button>
-
+    
     <!-- 祝福接力弹窗 -->
     <div id="relayModal" class="modal-overlay" aria-hidden="true" onclick="closeRelayModal(event)">
         <div class="modal-content relay-box">
@@ -270,6 +265,7 @@
             <div class="action-buttons">
                 <button class="action-btn" onclick="generateWish(true, true)">✨ 生成祝福</button>
                 <button class="action-btn" onclick="toggleEdit()">✍ 自定义</button>
+                <button class="action-btn" onclick="openRelayModal()" style="background:var(--secondary-color); color:#000;">🏃 祝福接力</button>
                 <button class="action-btn" onclick="copyWish()">📋 复制文本</button>
                 <button class="action-btn" onclick="copyPageLink()">🔗 分享网页</button>
                 <button class="action-btn ghost" onclick="openGuide()">❔ 使用指南</button>
