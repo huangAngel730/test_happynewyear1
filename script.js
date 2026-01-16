@@ -1196,6 +1196,12 @@ function finishGame() {
     stopGame();
     const bless = wishText ? wishText.textContent : '';
     setDesc(`本轮结束！得分 ${gameScore}，连击 ${combo}x，生命 ${gameLives}，送上一句祝福：${bless}`);
+    
+    // 成就检查
+    if (typeof achievementManager !== 'undefined' && achievementManager) {
+        achievementManager.check('game_novice');
+        achievementManager.check('score_100');
+    }
 }
 
 function updateScore(delta = 0) {
@@ -1204,6 +1210,10 @@ function updateScore(delta = 0) {
     if (delta > 0) {
         combo += 1;
         updateCombo();
+        if (typeof achievementManager !== 'undefined' && achievementManager) {
+            achievementManager.check('combo_master');
+            achievementManager.check('score_100'); // 实时检查是否破百
+        }
         if (comboTimeout) clearTimeout(comboTimeout);
         comboTimeout = setTimeout(() => { combo = 0; updateCombo(); }, 2000);
     }
@@ -1368,3 +1378,274 @@ function getGameDesc(type) {
     if (type === 'lantern') return '点击/轻点灯笼得分，灯笼会随机出现与消失。';
     return '点击游戏区域触发烟花并得分，背景会有缓慢上升的光点。';
 }
+
+/* ================== 成就系统逻辑 ================== */
+const achievementsDefinition = {
+    first_visit: {
+        id: 'first_visit',
+        name: '初次见面',
+        description: '第一次开启马年新春祝福',
+        icon: '🎉',
+        points: 10,
+        condition: () => true // 只要运行检查就解锁（初始化时）
+    },
+    theme_collector: {
+        id: 'theme_collector',
+        name: '风格探索家',
+        description: '解锁并体验过所有 6 种主题风格',
+        icon: '🎨',
+        points: 50,
+        condition: () => {
+            const usedThemes = JSON.parse(localStorage.getItem('usedThemes') || '[]');
+            return usedThemes.length >= 6;
+        }
+    },
+    game_novice: {
+        id: 'game_novice',
+        name: '游戏初体验',
+        description: '完成任意一次小游戏',
+        icon: '🎮',
+        points: 20,
+        condition: () => true // 在 finishGame 中手动触发
+    },
+    score_100: {
+        id: 'score_100',
+        name: '百里挑一',
+        description: '单局游戏中获得 100 分以上',
+        icon: '💯',
+        points: 30,
+        condition: () => gameScore >= 100
+    },
+    combo_master: {
+        id: 'combo_master',
+        name: '连击大师',
+        description: '达成 10 次以上连击',
+        icon: '🔥',
+        points: 40,
+        condition: () => combo >= 10
+    },
+    midnight_party: {
+        id: 'midnight_party',
+        name: '午夜守岁',
+        description: '在除夕零点前后（23:00-01:00）访问',
+        icon: '🌙',
+        points: 100,
+        condition: () => {
+             const h = new Date().getHours();
+             return h >= 23 || h < 1;
+        }
+    }
+};
+
+class AchievementManager {
+    constructor() {
+        this.unlocked = JSON.parse(localStorage.getItem('achievements') || '[]');
+        this.modal = document.getElementById('achievementModal');
+        this.listEl = document.getElementById('achievementList');
+        this.toast = document.getElementById('achievementToast');
+        this.dot = document.getElementById('achievementDot');
+        
+        // 记录已使用的主题
+        this.usedThemes = new Set(JSON.parse(localStorage.getItem('usedThemes') || '[]'));
+        
+        this.init();
+    }
+
+    init() {
+        this.renderList();
+        this.updateStats();
+        // 初次访问检查
+        if (!localStorage.getItem('hasVisited')) {
+            this.check('first_visit');
+            localStorage.setItem('hasVisited', 'true');
+        }
+        // 记录当前主题
+        this.logTheme(currentTheme);
+    }
+
+    logTheme(theme) {
+        if (!this.usedThemes.has(theme)) {
+            this.usedThemes.add(theme);
+            localStorage.setItem('usedThemes', JSON.stringify([...this.usedThemes]));
+            this.check('theme_collector');
+        }
+    }
+
+    check(id) {
+        // 如果传了具体ID，只检查该ID
+        if (id && achievementsDefinition[id]) {
+            if (this.unlocked.includes(id)) return;
+            if (achievementsDefinition[id].condition()) {
+                this.unlock(achievementsDefinition[id]);
+            }
+        } else {
+            // 检查所有
+            Object.values(achievementsDefinition).forEach(ach => {
+                if (!this.unlocked.includes(ach.id) && ach.condition()) {
+                    this.unlock(ach);
+                }
+            });
+        }
+    }
+
+    unlock(achievement) {
+        this.unlocked.push(achievement.id);
+        localStorage.setItem('achievements', JSON.stringify(this.unlocked));
+        this.showToast(achievement);
+        this.renderList();
+        this.updateStats();
+        if (this.dot) this.dot.classList.add('active');
+    }
+
+    showToast(ach) {
+        const title = this.toast.querySelector('.toast-title');
+        const desc = this.toast.querySelector('.toast-desc');
+        const icon = this.toast.querySelector('.toast-icon');
+        
+        title.textContent = '成就解锁！';
+        desc.textContent = ach.name;
+        icon.textContent = ach.icon;
+        
+        this.toast.classList.add('show');
+        setTimeout(() => this.toast.classList.remove('show'), 3000);
+        
+        // 播放音效（可选，复用现有的简单提示音逻辑？）
+    }
+
+    renderList() {
+        if (!this.listEl) return;
+        this.listEl.innerHTML = '';
+        Object.values(achievementsDefinition).forEach(ach => {
+            const isUnlocked = this.unlocked.includes(ach.id);
+            const div = document.createElement('div');
+            div.className = `achievement-item ${isUnlocked ? 'unlocked' : ''}`;
+            div.innerHTML = `
+                <div class="ach-icon">${isUnlocked ? ach.icon : '🔒'}</div>
+                <div class="ach-info">
+                    <div class="ach-name">${ach.name}</div>
+                    <div class="ach-desc">${ach.description}</div>
+                </div>
+                ${isUnlocked ? `<div class="ach-points">+${ach.points}</div>` : ''}
+            `;
+            this.listEl.appendChild(div);
+        });
+    }
+
+    updateStats() {
+        const count = this.unlocked.length;
+        let points = 0;
+        this.unlocked.forEach(id => {
+            if (achievementsDefinition[id]) points += achievementsDefinition[id].points;
+        });
+        
+        const countEl = document.getElementById('achieveCount');
+        const pointsEl = document.getElementById('totalPoints');
+        if (countEl) countEl.innerText = count;
+        if (pointsEl) pointsEl.innerText = points;
+    }
+
+    open() {
+        this.renderList();
+        this.modal.style.display = 'flex';
+        // 清除红点
+        if (this.dot) this.dot.classList.remove('active');
+    }
+
+    close() {
+        this.modal.style.display = 'none';
+    }
+}
+
+// 初始化成就系统
+let achievementManager;
+document.addEventListener('DOMContentLoaded', () => {
+    achievementManager = new AchievementManager();
+    // 额外检查一次除夕成就
+    achievementManager.check('midnight_party');
+});
+
+// UI 调用
+function openAchievements() {
+    if (achievementManager) achievementManager.open();
+}
+function closeAchievements(e) {
+    if (!e || e.target.id === 'achievementModal' || e.target.classList.contains('close-btn')) {
+        if (achievementManager) achievementManager.close();
+    }
+}
+
+/* ================== 钩子挂载 ================== */
+// Hook into switchTheme
+const originalSwitchTheme = window.switchTheme;
+window.switchTheme = function(themeName) {
+    if (typeof originalSwitchTheme === 'function') originalSwitchTheme(themeName);
+    if (achievementManager) achievementManager.logTheme(themeName);
+};
+
+// Hook into game updates (通过定时检查或修改 updateScore)
+const originalUpdateScore = window.updateScore; // 假设 updateScore 是全局定义的
+// 注意：updateScore 在 script.js 可能是局部函数或未导出。
+// 如果 updateScore 是在 file 内部定义的 function updateScore() {...}，则 window.updateScore 可能是 undefined。
+// 我们需要在 updateScore 定义的地方直接插入 achievementManager.check()。
+// 由于不能直接在这里重写内部函数，我们使用定期检查或寻找 updateScore 定义位置进行修改。
+// 为了简单，我们只在 finishGame 时检查分数相关成就，
+// 实时连击成就需要在 updateCombo 中处理。
+
+// 我们会在 updateCombo 和 finishGame 中手动添加 check 调用
+// (这需要使用 edit 或在已有代码中插入，下面是一个补充函数，请确保在 updateCombo 中调用)
+function checkGameAchievements() {
+    if (!achievementManager) return;
+    achievementManager.check('score_100');
+    achievementManager.check('combo_master');
+}
+
+/* ================== 除夕倒计时狂欢 ================== */
+class NewYearsEveParty {
+    constructor() {
+        this.targetDate = new Date('2026-02-17T00:00:00'); // 2026 春节是 2月17日
+        this.isActive = false;
+        this.checkTimer = setInterval(() => this.checkTime(), 60000);
+        this.checkTime();
+    }
+
+    checkTime() {
+        const now = new Date();
+        const diff = this.targetDate - now;
+        // 倒数 24 小时内开启
+        if (diff > 0 && diff < 24 * 60 * 60 * 1000) {
+            this.startParty();
+        }
+    }
+
+    startParty() {
+        if (this.isActive) return;
+        this.isActive = true;
+        console.log("Party Mode Activated!");
+        // 增加额外粒子
+        if (typeof createParticles === 'function') {
+            // 假设有粒子创建函数，这里简单模拟
+            const style = document.createElement('style');
+            style.innerHTML = `
+                .party-confetti {
+                    position: fixed;
+                    top: -10px;
+                    width: 10px; height: 10px;
+                    background: gold;
+                    animation: fall 3s linear infinite;
+                    z-index: 999;
+                }
+            `;
+            document.head.appendChild(style);
+            setInterval(() => {
+                const c = document.createElement('div');
+                c.className = 'party-confetti';
+                c.style.left = Math.random() * 100 + 'vw';
+                c.style.backgroundColor = `hsl(${Math.random()*360}, 100%, 50%)`;
+                document.body.appendChild(c);
+                setTimeout(() => c.remove(), 3000);
+            }, 200);
+        }
+    }
+}
+new NewYearsEveParty();
+
