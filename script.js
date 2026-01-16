@@ -1352,11 +1352,11 @@ function finishGame() {
 
 function updateScore(delta = 0) {
     gameScore = Math.max(0, gameScore + delta);
-    if (// 轻微得分音效（如果可以复用playClick，或者pop）
+    if (gameScoreEl) gameScoreEl.textContent = gameScore;
+    if (delta > 0) {
+        // 轻微得分音效（如果可以复用playClick，或者pop）
         if(window.soundManager) window.soundManager.playClick();
         
-        gameScoreEl) gameScoreEl.textContent = gameScore;
-    if (delta > 0) {
         combo += 1;
         updateCombo();
         if (typeof achievementManager !== 'undefined' && achievementManager) {
