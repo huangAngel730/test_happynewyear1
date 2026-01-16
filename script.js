@@ -17,6 +17,10 @@ const assets = {
         ],
         particles: ['🧧', '🏮', '✨', '🐴', '🧨', '福', '云'],
         deep: {
+            general: [
+                "春风得意马蹄疾，福运随行步步高。",
+                "龙马精神常相伴，阖家欢乐好运连。"
+            ],
             career: [
                 "丹心执笔，事业添锦绣；骏马奔程，步步踏高台。",
                 "贵人同行，项目顺利落地，前路光明万里。"
@@ -50,6 +54,10 @@ const assets = {
         ],
         particles: ['✦', '☁', '🪽', '✨', '𓅯'],
         deep: {
+            general: [
+                "留白里有光，日常也有柔软好运。",
+                "步子轻，心也轻，好运不声不响靠近。"
+            ],
             career: [
                 "做减法聚焦要点，效率与成果双提升。",
                 "线条般清晰的规划，项目顺滑落地。"
@@ -83,6 +91,10 @@ const assets = {
         ],
         particles: ['0', '1', '{ }', '⚡', '💾'],
         deep: {
+            general: [
+                "Booting 2026... 状态良好，Happy Run！",
+                "Deploy 成功，福气 CI/CD 持续上线。"
+            ],
             career: [
                 "版本迭代顺滑，需求零返工，代码即价值。",
                 "路由清晰，节点高可用，晋升通路全绿灯。"
@@ -116,6 +128,10 @@ const assets = {
         ],
         particles: ['🍬', '🎈', '🍭', '💖', '🦄'],
         deep: {
+            general: [
+                "可爱运爆棚，全年软萌好运！",
+                "抱抱你，福气满兜兜！"
+            ],
             career: [
                 "工作像贴纸一样顺滑黏住好运，收获一堆表扬贴纸。",
                 "同事超友好，老板送彩虹，升职加薪蹦蹦跳跳来。"
@@ -135,7 +151,7 @@ const assets = {
         }
     },
     'style-warm': {
-        music: 'https://music.163.com/song/media/outer/url?id=1950449170.mp3',
+        music: 'https://music.163.com/song/media/outer/url?id=1954344646.mp3',
         wishes: [
             "围炉煮茶，灯火可亲，马年人间烟火最暖心。",
             "祝你新年每一顿饭都有人陪，每一句话都被温柔接住。",
@@ -149,6 +165,10 @@ const assets = {
         ],
         particles: ['🕯️', '🧧', '🍊', '✨', '🕊️'],
         deep: {
+            general: [
+                "灯火人间，温柔岁岁，福气缓缓来。",
+                "围炉夜话，家与福都在身边。"
+            ],
             career: [
                 "有节奏地奔跑，懂休息也懂发力，事业稳稳向前。",
                 "同事如家人，协作顺畅，收获认同与成长。"
@@ -182,6 +202,10 @@ const assets = {
         ],
         particles: ['▢', '✜', '🧧', '🪙', '☆'],
         deep: {
+            general: [
+                "像素加成 Buff，福气值连击！",
+                "Collect 福袋，解锁隐藏好运！"
+            ],
             career: [
                 "任务列表全绿，关卡连胜，升职像通关一样顺滑。",
                 "打怪掉落好机会，队友 Buff 满格，项目超神。"
@@ -206,6 +230,7 @@ const assets = {
 let currentTheme = 'style-china';
 let isMusicPlaying = false;
 let particleInterval = null;
+let blessingEnergy = 0;
 const isMobile = window.matchMedia('(max-width: 768px)').matches || ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 let userActivatedAudio = false;
@@ -213,6 +238,10 @@ let experienceStarted = false;
 let pixelCount = 0;
 const pixelTarget = 5;
 let pixelItems = [];
+let deepState = {};
+let fortuneScore = 0;
+const fortuneMax = 100;
+const fortuneCooldown = new Map();
 
 // DOM 元素
 const body = document.body;
@@ -233,7 +262,11 @@ const gameArea = document.getElementById('gameArea');
 const gameScoreEl = document.getElementById('gameScore');
 const gameTimerEl = document.getElementById('gameTimer');
 const gameModeEl = document.getElementById('gameMode');
+const energyFill = document.getElementById('energyFill');
+const energyNumber = document.getElementById('energyNumber');
 const gameDescEl = document.getElementById('gameDescription');
+const gameLivesEl = document.getElementById('gameLives');
+const gameComboEl = document.getElementById('gameCombo');
 
 let gameType = null;
 let gameScore = 0;
@@ -243,6 +276,9 @@ let gameTimeouts = [];
 let gameTimerHandle = null;
 let basketEl = null;
 let activeTargets = new Set();
+let gameLives = 3;
+let combo = 0;
+let comboTimeout = null;
 const deepCards = document.querySelectorAll('[data-deep-key]');
 const entryOverlay = document.getElementById('entryOverlay');
 const statusPills = document.querySelectorAll('[data-action-pill]');
@@ -250,6 +286,7 @@ const fuBadge = document.getElementById('fuBadge');
 const toastEl = document.getElementById('toast');
 const pixelHud = document.getElementById('pixelHud');
 const pixelCountEl = document.getElementById('pixelCount');
+const fortuneCounter = document.getElementById('fortuneCounter');
 
 // 初始化
 window.addEventListener('DOMContentLoaded', () => {
@@ -267,10 +304,12 @@ window.addEventListener('DOMContentLoaded', () => {
     initMusic();
     generateWish();
     renderDeepWishes();
+    setEnergy(0);
     startFallingEffect();
     initEnhancements();
     bindFuBadge();
     resetPixelQuest();
+    updateFortuneDisplay();
 
     // 等待入口按钮确认后再真正开始有声播放
     if (entryOverlay) {
@@ -293,8 +332,12 @@ window.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('click', (e) => {
         const overlayActive = entryOverlay && !entryOverlay.classList.contains('hidden') && entryOverlay.style.display !== 'none';
         if (prefersReducedMotion || overlayActive) return;
-        if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'INPUT' && !e.target.closest('.deep-copy')) {
+        const isControl = e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT' || e.target.closest('.deep-copy') || e.target.closest('.deep-next');
+        if (!isControl) {
             createBurst(e.clientX, e.clientY);
+            if (currentTheme === 'style-warm') {
+                createWarmSparkle(e.clientX, e.clientY);
+            }
         }
     });
 
@@ -316,6 +359,7 @@ function startExperience(triggeredByPill = false) {
             }, 650);
         }
         ensureAudioPlaying();
+        boostFortune(10, 'entry-start', 4000);
     }
     if (triggeredByPill) {
         scrollToMain();
@@ -349,9 +393,10 @@ function handleStatusAction(action) {
                 }
                 musicControls.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
+            boostFortune(2, 'pill-listen', 1600);
             break;
         case 'inspire':
-            generateWish();
+            generateWish(true, true);
             flashWishCard();
             break;
         default:
@@ -379,6 +424,7 @@ function handleFuClick() {
     wishText.textContent = msg;
     flashWishCard();
     showToast(msg);
+    boostFortune(5, 'fu-badge', 1200);
 }
 
 function showToast(msg) {
@@ -386,6 +432,23 @@ function showToast(msg) {
     toastEl.textContent = msg;
     toastEl.classList.add('show');
     setTimeout(() => toastEl.classList.remove('show'), 2400);
+}
+
+function updateFortuneDisplay() {
+    if (!fortuneCounter) return;
+    const clamped = Math.min(fortuneMax, Math.max(0, fortuneScore));
+    fortuneCounter.textContent = `${clamped}%`;
+    fortuneCounter.setAttribute('aria-label', `当前福气指数 ${clamped}%`);
+}
+
+function boostFortune(amount = 2, source = 'generic', cooldown = 900) {
+    if (!fortuneCounter) return;
+    const now = Date.now();
+    const last = fortuneCooldown.get(source) || 0;
+    if (now - last < cooldown) return;
+    fortuneCooldown.set(source, now);
+    fortuneScore = Math.min(fortuneMax, fortuneScore + amount);
+    updateFortuneDisplay();
 }
 
 // 像素收集任务
@@ -431,6 +494,7 @@ function handlePixelCollect(el) {
     pixelItems = pixelItems.filter(node => node !== el);
     pixelCount = Math.min(pixelTarget, pixelCount + 1);
     updatePixelHud();
+    boostFortune(2, 'pixel-collect', 500);
     showToast(`福袋 +1 （${pixelCount}/${pixelTarget}）`);
     if (pixelCount >= pixelTarget) {
         const bonusPool = assets['style-pixel'].fuWishes || assets['style-pixel'].wishes;
@@ -445,6 +509,7 @@ function handlePixelCollect(el) {
 // ================== 风格切换 ==================
 function switchTheme(themeName) {
     if (currentTheme === themeName) return;
+    boostFortune(5, 'switch-theme', 1200);
     
     // 更新URL参数状态（方便分享）
     const newUrl = new URL(window.location);
@@ -454,6 +519,8 @@ function switchTheme(themeName) {
     // 切换 Class
     body.className = themeName;
     currentTheme = themeName;
+    deepState = {};
+    resetPixelQuest();
     
     // 切换音乐（如果在播放，则平滑切换）
     const wasPlaying = !bgm.paused;
@@ -470,12 +537,15 @@ function switchTheme(themeName) {
     clearInterval(particleInterval);
     startFallingEffect();
 
+    // 主题特定交互：像素收集和暖心火花
+    resetPixelQuest();
+
     // 主题特定互动
     resetPixelQuest();
 }
 
 // ================== 祝福语逻辑 ==================
-function generateWish(withFlash = false) {
+function generateWish(withFlash = false, isUserTriggered = false) {
     const list = assets[currentTheme].wishes || [];
     const randomWish = list[Math.floor(Math.random() * list.length)];
     
@@ -492,6 +562,12 @@ function generateWish(withFlash = false) {
         wishText.classList.remove('typing-effect');
         void wishText.offsetWidth; // trigger reflow
         wishText.classList.add('typing-effect');
+        if (isUserTriggered) {
+            boostFortune(3, 'generate-wish', 900);
+        }
+        if (experienceStarted && (isUserTriggered || withFlash)) {
+            increaseEnergy();
+        }
     }, 300);
 }
 
@@ -504,23 +580,48 @@ function renderDeepWishes() {
         if (!key || !listEl) return;
         listEl.innerHTML = '';
         const items = deep[key] || [];
-        items.forEach(text => {
-            const li = document.createElement('li');
-            const span = document.createElement('span');
-            span.className = 'deep-text';
-            span.textContent = text;
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'deep-copy';
-            btn.dataset.copy = text;
-            btn.title = '复制祝福';
-            btn.textContent = '📋';
-            li.appendChild(span);
-            li.appendChild(btn);
-            listEl.appendChild(li);
-        });
+        if (!items.length) return;
+        const idx = deepState[key] ? deepState[key] % items.length : 0;
+        const text = items[idx];
+        const li = document.createElement('li');
+        const span = document.createElement('span');
+        span.className = 'deep-text';
+        span.textContent = text;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'deep-copy';
+        btn.dataset.copy = text;
+        btn.title = '复制祝福';
+        btn.textContent = '📋';
+        li.appendChild(span);
+        li.appendChild(btn);
+        listEl.appendChild(li);
     });
 }
+
+function setEnergy(value) {
+    blessingEnergy = Math.max(0, Math.min(100, value));
+    if (energyFill) energyFill.style.width = `${blessingEnergy}%`;
+    if (energyNumber) energyNumber.textContent = `${Math.round(blessingEnergy)}%`;
+}
+
+function increaseEnergy() {
+    const gain = Math.max(3, Math.floor(Math.random() * 9) + 4); // 4-12
+    setEnergy(blessingEnergy + gain);
+}
+
+document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('deep-next')) {
+        const key = e.target.dataset.deepKey;
+        const deep = assets[currentTheme].deep;
+        if (!deep || !deep[key] || !deep[key].length) return;
+        const len = deep[key].length;
+        deepState[key] = ((deepState[key] || 0) + 1) % len;
+        renderDeepWishes();
+        flashWishCard();
+        boostFortune(2, 'deep-next', 800);
+    }
+});
 
 // 通用复制函数（兼容移动端和非HTTPS环境）
 function copyTextToClipboard(text, onSuccess) {
@@ -572,6 +673,7 @@ document.addEventListener('click', (e) => {
             btn.textContent = original || '📋';
             btn.classList.remove('copied');
         }, 1400);
+        boostFortune(3, 'deep-copy', 1200);
     });
 });
 
@@ -585,6 +687,7 @@ function copyWish() {
         setTimeout(() => {
             btn.innerText = originalText;
         }, 2000);
+        boostFortune(4, 'copy-wish', 1200);
     });
 }
 
@@ -620,13 +723,14 @@ function copyPageLink() {
             text: (wishText && wishText.innerText) ? wishText.innerText : '',
             url: shareUrl
         }).then(() => {
-            // 分享成功，按钮状态可保持不变
+            boostFortune(5, 'share-success', 3000);
         }).catch(() => {
             copyTextToClipboard(shareUrl, () => {
                 if (btn) {
                     btn.innerText = "✅ 链接已复制";
                     setTimeout(() => { btn.innerText = originalText; }, 2000);
                 }
+                boostFortune(4, 'share-copy', 2000);
             });
         });
     } else {
@@ -635,6 +739,7 @@ function copyPageLink() {
                 btn.innerText = "✅ 链接已复制";
                 setTimeout(() => { btn.innerText = originalText; }, 2000);
             }
+            boostFortune(4, 'share-copy', 2000);
         });
     }
 }
@@ -833,6 +938,26 @@ function createBurst(x, y) {
     }
 }
 
+function createWarmSparkle(x, y) {
+    if (prefersReducedMotion) return;
+    const items = ['🕯️', '✨', '🧧', '🍊'];
+    const p = document.createElement('div');
+    p.innerText = items[Math.floor(Math.random() * items.length)];
+    p.style.position = 'fixed';
+    p.style.left = x + 'px';
+    p.style.top = y + 'px';
+    p.style.fontSize = '28px';
+    p.style.pointerEvents = 'none';
+    p.style.transition = 'all 1s ease-out';
+    p.style.zIndex = 1200;
+    fallingContainer.appendChild(p);
+    requestAnimationFrame(() => {
+        p.style.transform = 'translateY(-60px) scale(1.4)';
+        p.style.opacity = '0';
+    });
+    setTimeout(() => p.remove(), 1000);
+}
+
 // ================== 额外沉浸增强 ==================
 function initEnhancements() {
     setupSpotlight();
@@ -974,6 +1099,7 @@ function hideMusicPrompt() {
 // 打开和关闭模态框
 function openGuide() {
     if (guideModal) guideModal.style.display = 'flex';
+    boostFortune(2, 'guide-open', 2500);
 }
 
 function closeGuide() {
@@ -995,6 +1121,10 @@ function closeGameOverlay() {
 function resetGame() {
     stopGame();
     gameScore = 0;
+    gameLives = 3;
+    combo = 0;
+    updateLives();
+    updateCombo();
     updateScore();
     setTimerDisplay('--');
     setModeDisplay('待选择');
@@ -1002,6 +1132,7 @@ function resetGame() {
     if (gameArea) gameArea.innerHTML = '';
     activeTargets.clear();
     basketEl = null;
+    if (comboTimeout) clearTimeout(comboTimeout);
 }
 
 function stopGame() {
@@ -1031,6 +1162,7 @@ function startGame(type) {
     gameType = type;
     gameScore = 0;
     updateScore();
+    boostFortune(4, 'game-start', 2500);
     setModeDisplay(type === 'catch' ? '接福袋' : type === 'lantern' ? '点灯笼' : '烟花快点');
     const duration = prefersReducedMotion ? 18 : 25;
     setTimerDisplay(duration);
@@ -1062,12 +1194,19 @@ function startTimer(seconds) {
 
 function finishGame() {
     stopGame();
-    setDesc(`本轮结束！得分 ${gameScore}，送上一句祝福：${wishText.textContent}`);
+    const bless = wishText ? wishText.textContent : '';
+    setDesc(`本轮结束！得分 ${gameScore}，连击 ${combo}x，生命 ${gameLives}，送上一句祝福：${bless}`);
 }
 
 function updateScore(delta = 0) {
     gameScore = Math.max(0, gameScore + delta);
     if (gameScoreEl) gameScoreEl.textContent = gameScore;
+    if (delta > 0) {
+        combo += 1;
+        updateCombo();
+        if (comboTimeout) clearTimeout(comboTimeout);
+        comboTimeout = setTimeout(() => { combo = 0; updateCombo(); }, 2000);
+    }
 }
 
 function setTimerDisplay(val) {
@@ -1082,6 +1221,16 @@ function setDesc(text) {
     if (gameDescEl) gameDescEl.textContent = text;
 }
 
+function updateLives(delta = 0) {
+    gameLives = Math.max(0, gameLives + delta);
+    if (gameLivesEl) gameLivesEl.textContent = gameLives;
+    if (gameLives <= 0) finishGame();
+}
+
+function updateCombo() {
+    if (gameComboEl) gameComboEl.textContent = combo;
+}
+
 // --- Game: Catch 福袋 ---
 function setupCatchGame() {
     basketEl = document.createElement('div');
@@ -1090,6 +1239,7 @@ function setupCatchGame() {
     gameArea.appendChild(basketEl);
 
     let basketX = gameArea.clientWidth / 2;
+    let speed = prefersReducedMotion ? 2.4 : 3.8;
 
     const moveBasket = (x) => {
         basketX = Math.max(30, Math.min(gameArea.clientWidth - 30, x));
@@ -1106,12 +1256,16 @@ function setupCatchGame() {
     const drop = () => {
         const item = document.createElement('div');
         item.className = 'game-item';
-        item.textContent = ['🧧','💰','🪙','✨'][Math.floor(Math.random()*4)];
+        const good = ['🧧','💰','🪙','✨'];
+        const bad = ['💣','🧨'];
+        const pickBad = Math.random() < 0.18;
+        item.dataset.bad = pickBad ? '1' : '';
+        item.textContent = pickBad ? bad[Math.floor(Math.random()*bad.length)] : good[Math.floor(Math.random()*good.length)];
         const left = Math.random() * (gameArea.clientWidth - 30);
         item.style.left = `${left}px`;
         item.style.top = '-40px';
         item.style.fontSize = '24px';
-        item.style.transition = `transform ${prefersReducedMotion ? 2.5 : 3.5}s linear`;
+        item.style.transition = `transform ${prefersReducedMotion ? 2.2 : 3}s linear`;
         gameArea.appendChild(item);
         activeTargets.add(item);
         requestAnimationFrame(() => {
@@ -1120,21 +1274,29 @@ function setupCatchGame() {
         const removeT = setTimeout(() => {
             activeTargets.delete(item);
             item.remove();
-        }, (prefersReducedMotion ? 2500 : 3500));
+        }, (prefersReducedMotion ? 2200 : 3000));
         gameTimeouts.push(removeT);
     };
 
-    gameIntervals.push(setInterval(drop, prefersReducedMotion ? 900 : 650));
-    gameIntervals.push(setInterval(checkCatchCollision, 120));
+    gameIntervals.push(setInterval(drop, prefersReducedMotion ? 950 : 620));
+    gameIntervals.push(setInterval(() => {
+        speed *= 1.004; // 逐渐加速
+    }, 200));
+    gameIntervals.push(setInterval(() => checkCatchCollision(speed), 120));
 }
 
-function checkCatchCollision() {
+function checkCatchCollision(speed = 4) {
     if (!basketEl) return;
     const basketRect = basketEl.getBoundingClientRect();
     activeTargets.forEach(item => {
         const rect = item.getBoundingClientRect();
         if (rect.bottom >= basketRect.top && rect.left <= basketRect.right && rect.right >= basketRect.left) {
-            updateScore(2);
+            if (item.dataset.bad) {
+                updateLives(-1);
+                combo = 0; updateCombo();
+            } else {
+                updateScore(2 + (combo >= 3 ? 1 : 0));
+            }
             activeTargets.delete(item);
             item.remove();
         }
@@ -1152,15 +1314,15 @@ function setupLanternGame() {
         lan.style.left = `${x}px`;
         lan.style.top = `${y}px`;
         lan.onclick = () => {
-            updateScore(3);
+            updateScore(3 + (combo >= 4 ? 1 : 0));
             lan.style.opacity = '0';
             setTimeout(() => lan.remove(), 180);
         };
         gameArea.appendChild(lan);
-        const t = setTimeout(() => lan.remove(), 2600);
+        const t = setTimeout(() => lan.remove(), prefersReducedMotion ? 2000 : 2400);
         gameTimeouts.push(t);
     };
-    gameIntervals.push(setInterval(spawn, prefersReducedMotion ? 1200 : 800));
+    gameIntervals.push(setInterval(spawn, prefersReducedMotion ? 1100 : 720));
 }
 
 // --- Game: 烟花快点 ---
@@ -1185,7 +1347,7 @@ function setupFireworkGame() {
         }, prefersReducedMotion ? 1600 : 2300);
         gameTimeouts.push(t);
     };
-    gameIntervals.push(setInterval(spawnFloating, prefersReducedMotion ? 900 : 650));
+    gameIntervals.push(setInterval(spawnFloating, prefersReducedMotion ? 950 : 600));
 }
 
 function createFirework(x, y, addScore = false) {
@@ -1198,7 +1360,7 @@ function createFirework(x, y, addScore = false) {
     burst.style.background = `radial-gradient(circle, ${getComputedStyle(body).getPropertyValue('--primary-color') || '#ff4'} 0%, transparent 70%)`;
     gameArea.appendChild(burst);
     setTimeout(() => burst.remove(), 900);
-    if (addScore) updateScore(1);
+    if (addScore) updateScore(1 + (combo >= 5 ? 1 : 0));
 }
 
 function getGameDesc(type) {

@@ -128,7 +128,7 @@
         <div class="wish-card reveal" aria-live="polite">
             <p id="wishText" class="typing-effect">策马奔腾赴前程，春风得意马蹄疾！祝您2026年万事如意！</p>
             <div class="action-buttons">
-                <button class="action-btn" onclick="generateWish()">✨ 生成祝福</button>
+                <button class="action-btn" onclick="generateWish(true, true)">✨ 生成祝福</button>
                 <button class="action-btn" onclick="toggleEdit()">✍ 自定义</button>
                 <button class="action-btn" onclick="copyWish()">📋 复制文本</button>
                 <button class="action-btn" onclick="copyPageLink()">🔗 分享网页</button>
@@ -143,9 +143,12 @@
 
         <section class="highlight-meta reveal" aria-label="氛围与进度">
             <div class="progress-track">
-                <div class="progress-label">祝福能量</div>
+                <div class="progress-label-row">
+                    <div class="progress-label">祝福能量</div>
+                    <div class="progress-value" id="energyNumber">0%</div>
+                </div>
                 <div class="progress-bar">
-                    <span class="progress-fill" style="width: 82%;"></span>
+                    <span class="progress-fill" id="energyFill"></span>
                 </div>
                 <small class="progress-hint">灵感来自优秀站点的发光进度条，随主题变色。</small>
             </div>
@@ -155,8 +158,8 @@
             <article class="info-card">
                 <div class="card-top">福气指数</div>
                 <div class="card-body">
-                    <div class="counter" data-counter data-target="99" data-suffix="%">0%</div>
-                    <p>好运值拉满，出发即巅峰。</p>
+                    <div class="counter" id="fortuneCounter" aria-live="polite">0%</div>
+                    <p>互动越多，福气越高，从 0% 起步。</p>
                 </div>
             </article>
             <article class="info-card">
@@ -178,23 +181,27 @@
         <section class="deep-wishes reveal" aria-label="分场景祝福">
             <div class="section-head">
                 <h2>分场景祝福</h2>
-                <p>下滑查看事业、健康、家庭、财富的专属祝愿，随风格同步切换。</p>
+                <p>下滑查看通用、事业、健康、家庭、财富祝愿，可一键切换句子，随风格同步。</p>
             </div>
             <div class="deep-grid">
+                <article class="deep-card" data-deep-key="general">
+                    <div class="deep-title">通用祝愿 <button class="deep-next" data-deep-key="general">换一条</button></div>
+                    <ul class="deep-list"></ul>
+                </article>
                 <article class="deep-card" data-deep-key="career">
-                    <div class="deep-title">事业腾飞</div>
+                    <div class="deep-title">事业腾飞 <button class="deep-next" data-deep-key="career">换一条</button></div>
                     <ul class="deep-list"></ul>
                 </article>
                 <article class="deep-card" data-deep-key="health">
-                    <div class="deep-title">健康平安</div>
+                    <div class="deep-title">健康平安 <button class="deep-next" data-deep-key="health">换一条</button></div>
                     <ul class="deep-list"></ul>
                 </article>
                 <article class="deep-card" data-deep-key="family">
-                    <div class="deep-title">家庭团圆</div>
+                    <div class="deep-title">家庭团圆 <button class="deep-next" data-deep-key="family">换一条</button></div>
                     <ul class="deep-list"></ul>
                 </article>
                 <article class="deep-card" data-deep-key="fortune">
-                    <div class="deep-title">财富顺遂</div>
+                    <div class="deep-title">财富顺遂 <button class="deep-next" data-deep-key="fortune">换一条</button></div>
                     <ul class="deep-list"></ul>
                 </article>
             </div>
@@ -232,9 +239,11 @@
             </div>
             <p id="gameDescription" class="game-desc">点击开始，随机体验接福袋 / 点灯笼 / 烟花快点三款轻量小游戏。</p>
             <div class="game-info">
-                <span>模式：<strong id="gameMode">待选择</strong></span>
-                <span>得分：<strong id="gameScore">0</strong></span>
-                <span>时间：<strong id="gameTimer">--</strong>s</span>
+                <span class="game-badge">模式：<strong id="gameMode">待选择</strong></span>
+                <span class="game-badge">得分：<strong id="gameScore">0</strong></span>
+                <span class="game-badge">时间：<strong id="gameTimer">--</strong>s</span>
+                <span class="game-badge">生命：<strong id="gameLives">3</strong></span>
+                <span class="game-badge">连击：<strong id="gameCombo">0</strong>x</span>
             </div>
             <div id="gameArea" class="game-area" tabindex="0"></div>
             <div class="game-actions">
