@@ -1649,3 +1649,349 @@ class NewYearsEveParty {
 }
 new NewYearsEveParty();
 
+/* ================== 用户留存与回访系统 ================== */
+const userVisitMessages = {
+    first: '👋 马年吉祥！快来看看新功能吧～',
+    daily: '🎉 您又来啦！今日运势已更新',
+    weekly: '✨ 老朋友，这周过得怎么样？',
+    return: '🧧 特别的日子里，有特别的祝福给您' 
+};
+
+class UserRetentionManager {
+    constructor() {
+        this.lastVisit = localStorage.getItem('lastVisitTime');
+        this.currentVisit = new Date().getTime();
+        this.visitCount = parseInt(localStorage.getItem('visitCount') || '0');
+        this.lastCheckIn = localStorage.getItem('lastCheckInDate'); // YYYY-MM-DD
+        this.checkInStreak = parseInt(localStorage.getItem('checkInStreak') || '0');
+        
+        // Konami Code State
+        this.inputSequence = [];
+        this.konamiCode = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+    }
+
+    init() {
+        this.handleVisit();
+        this.setupKonamiCode();
+    }
+
+    handleVisit() {
+        this.visitCount++;
+        localStorage.setItem('visitCount', this.visitCount);
+        
+        // Determine welcome message
+        let msg = userVisitMessages.return;
+        let showWelcome = true;
+        
+        if (!this.lastVisit) {
+            msg = userVisitMessages.first;
+        } else {
+            const lastTime = parseInt(this.lastVisit);
+            const daysDiff = (this.currentVisit - lastTime) / (1000 * 60 * 60 * 24);
+            
+            // Only show welcome toast if it has been at least 1 hour since last visit to avoid spam
+            if ((this.currentVisit - lastTime) < 1000 * 60 * 60) {
+                showWelcome = false; 
+            }
+            
+            if (daysDiff < 1) msg = userVisitMessages.daily;
+            else if (daysDiff >= 7) msg = userVisitMessages.weekly;
+        }
+        
+        if (showWelcome && typeof achievementManager !== 'undefined') {
+            setTimeout(() => {
+                if(achievementManager.showCustomToast) 
+                    achievementManager.showCustomToast('✨ 欢迎回来', msg, '👋');
+            }, 1000);
+        }
+
+        // Daily Check-in
+        this.performCheckIn();
+
+        localStorage.setItem('lastVisitTime', this.currentVisit);
+    }
+
+    performCheckIn() {
+        const today = new Date().toLocaleDateString();
+        if (this.lastCheckIn !== today) {
+            // New day check-in
+            // Simple logic: if diff > 2 days, reset streak.
+            if (this.isConsecutiveDay()) {
+                this.checkInStreak++;
+            } else {
+                this.checkInStreak = 1;
+            }
+            localStorage.setItem('checkInStreak', this.checkInStreak);
+            localStorage.setItem('lastCheckInDate', today);
+            
+            // Give Reward
+            const rewardPoints = 10 + Math.min(this.checkInStreak, 7) * 5;
+            this.addPoints(rewardPoints);
+            
+            // Notify
+            setTimeout(() => {
+                if (typeof achievementManager !== 'undefined' && achievementManager.showCustomToast) {
+                    achievementManager.showCustomToast('📅 每日签到', `打卡成功！获得 ${rewardPoints} 积分 (连签 ${this.checkInStreak} 天)`, '💰');
+                }
+            }, 2500);
+        }
+    }
+
+    isConsecutiveDay() {
+        if (!this.lastCheckIn) return false;
+        const last = new Date(this.lastCheckIn);
+        const now = new Date();
+        const diffTime = Math.abs(now - last);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+        return diffDays <= 48; // Slack logic, just check if checkin happened recently? No, let's just say true for now or fix logic:
+        // Actually the browser locale date string might be tricky to parse back reliably across browsers but within same browser should be fine.
+        // Let's iterate: if (now - last < 48 hours) roughly.
+        return (now.getTime() - last.getTime()) < (48 * 60 * 60 * 1000);
+    }
+
+    addPoints(amount) {
+        let currentPoints = parseInt(localStorage.getItem('userPoints') || '0');
+        currentPoints += amount;
+        localStorage.setItem('userPoints', currentPoints);
+    }
+
+    setupKonamiCode() {
+        document.addEventListener('keydown', (e) => {
+            this.inputSequence.push(e.key);
+            if (this.inputSequence.length > this.konamiCode.length) {
+                this.inputSequence.shift();
+            }
+            
+            if (JSON.stringify(this.inputSequence) === JSON.stringify(this.konamiCode)) {
+                this.triggerEasterEgg();
+            }
+        });
+    }
+
+    triggerEasterEgg() {
+        alert('🐰 恭喜发现隐藏菜单！无限生命模式已开启！');
+        gameLives = 999;
+        if (typeof updateLives === 'function') updateLives(0); 
+        if (typeof achievementManager !== 'undefined' && achievementManager.showCustomToast) {
+             achievementManager.showCustomToast('🥚 彩蛋解锁', '获得无限生命！', '🎮');
+        }
+    }
+}
+
+// Extend AchievementManager prototype to support custom toasts if not exists
+if (typeof AchievementManager !== 'undefined') {
+    AchievementManager.prototype.showCustomToast = function(title, desc, icon) {
+        if (!this.toast) return;
+        const titleEl = this.toast.querySelector('.toast-title');
+        const descEl = this.toast.querySelector('.toast-desc');
+        const iconEl = this.toast.querySelector('.toast-icon');
+        
+        titleEl.textContent = title;
+        descEl.textContent = desc;
+        iconEl.textContent = icon;
+        
+        this.toast.classList.add('show');
+        setTimeout(() => this.toast.classList.remove('show'), 4000);
+    };
+}
+
+// Initialize Retention Manager
+let userRetentionManager;
+let relayManager; // Global
+window.addEventListener('load', () => {
+    userRetentionManager = new UserRetentionManager();
+    userRetentionManager.init();
+    relayManager = new RelayManager();
+    relayManager.init();
+});
+
+/* ================== Blessing Relay Logic ================== */
+class RelayManager {
+    constructor() {
+        this.chain = [];
+        this.modal = document.getElementById('relayModal');
+        this.timelineEl = document.getElementById('relayTimeline');
+        this.countEl = document.getElementById('relayCount');
+        this.introEl = document.getElementById('relayIntro');
+        this.chainDisplayEl = document.getElementById('relayChainDisplay');
+        this.shareBtn = document.querySelector('.share-btn');
+        this.joinArea = document.querySelector('.relay-action');
+    }
+
+    init() {
+        // Parse URL Params for relay data
+        const params = new URLSearchParams(window.location.search);
+        const encodedData = params.get('relayData');
+        
+        if (encodedData) {
+            try {
+                // Decode: Base64 -> JSON
+                const jsonStr = atob(decodeURIComponent(encodedData));
+                this.chain = JSON.parse(jsonStr);
+                // Open modal immediately if relay data present
+                this.open(true);
+            } catch (e) {
+                console.error('Invalid Relay Data', e);
+            }
+        }
+    }
+
+    startNew() {
+        this.chain = [{
+            name: '第一棒',
+            blessing: '祝大家新年快乐，万事如意！',
+            time: new Date().toLocaleTimeString().slice(0,5),
+            theme: currentTheme
+        }];
+        this.updateView();
+        this.showChainView();
+    }
+
+    join() {
+        const input = document.getElementById('myRelayBlessing');
+        const text = input.value.trim();
+        if (!text) {
+             if (achievementManager) achievementManager.showCustomToast('提示', '请先写下祝福哦！', '📝');
+             return;
+        }
+
+        const newLink = {
+            name: `第${this.chain.length + 1}位接力者`,
+            blessing: text,
+            time: new Date().toLocaleTimeString().slice(0,5),
+            theme: currentTheme
+        };
+        this.chain.push(newLink);
+        
+        this.updateView();
+        input.value = '';
+        
+        // Disable join, enable share
+        this.joinArea.style.display = 'none';
+        this.shareBtn.style.display = 'block';
+
+        if (achievementManager) achievementManager.showCustomToast('接力成功', '快去分享给好友吧！', '🏃');
+    }
+
+    updateView() {
+        if (!this.timelineEl) return;
+        this.timelineEl.innerHTML = '';
+        this.chain.forEach((node, index) => {
+            const div = document.createElement('div');
+            div.className = 'relay-node';
+            div.innerHTML = `
+                <div class="r-name">${node.name} <span style="float:right; opacity:0.6;">#${index+1}</span></div>
+                <div class="r-bless">${node.blessing}</div>
+                <div class="r-time">${node.time} · ${node.theme || '默认风格'}</div>
+            `;
+            this.timelineEl.appendChild(div);
+        });
+        
+        // Scroll to bottom
+        setTimeout(() => this.timelineEl.scrollTop = this.timelineEl.scrollHeight, 100);
+        
+        if (this.countEl) this.countEl.textContent = this.chain.length;
+    }
+
+    showChainView() {
+        this.introEl.style.display = 'none';
+        this.chainDisplayEl.style.display = 'flex';
+    }
+
+    share() {
+        // Encode state into URL
+        const jsonStr = JSON.stringify(this.chain);
+        const encoded = encodeURIComponent(btoa(jsonStr));
+        const cleanUrl = window.location.origin + window.location.pathname; // Remove existing query
+        const shareUrl = `${cleanUrl}?relayData=${encoded}&style=${currentTheme}`; // Also keep theme
+        
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(`🏃 我发起了新春祝福接力！已经传到第 ${this.chain.length} 棒啦！\n快来点击加入：${shareUrl}`);
+            if (achievementManager) achievementManager.showCustomToast('复制成功', '链接已复制，去发送给好友吧！', '🔗');
+        } else {
+            prompt('长按复制链接分享：', shareUrl);
+        }
+    }
+
+    open(isInvite = false) {
+        this.modal.style.display = 'flex';
+        if (isInvite && this.chain.length > 0) {
+            this.updateView();
+            this.showChainView();
+        } else {
+            // Default reset state if not invite
+            // check if local chain exists? No, keep volatile for simple version
+        }
+    }
+    
+    close() {
+        this.modal.style.display = 'none';
+    }
+}
+
+// UI Helpers for Relay
+function openRelayModal() {
+    if (relayManager) relayManager.open();
+}
+function closeRelayModal(e) {
+    if (!e || e.target.id === 'relayModal' || e.target.classList.contains('close-btn')) {
+        if (relayManager) relayManager.close();
+    }
+}
+function startNewRelay() {
+    if (relayManager) relayManager.startNew();
+}
+function joinRelay() {
+    if (relayManager) relayManager.join();
+}
+function shareRelayLink() {
+    if (relayManager) relayManager.share();
+}
+
+/* ================== UI Tabs Logic ================== */
+window.switchAchTab = function(tab) {
+    const listEl = document.getElementById('achTabList');
+    const statsEl = document.getElementById('achTabStats');
+    const tabs = document.querySelectorAll('.ach-tab');
+    
+    if (tab === 'list') {
+        listEl.style.display = 'block';
+        statsEl.style.display = 'none';
+        tabs[0].style.borderBottom = '2px solid var(--primary-color)';
+        tabs[0].style.opacity = '1';
+        tabs[1].style.borderBottom = 'none';
+        tabs[1].style.opacity = '0.6';
+    } else {
+        listEl.style.display = 'none';
+        statsEl.style.display = 'flex';
+        tabs[1].style.borderBottom = '2px solid var(--primary-color)';
+        tabs[1].style.opacity = '1';
+        tabs[0].style.borderBottom = 'none';
+        tabs[0].style.opacity = '0.6';
+        updateProfileStats();
+    }
+};
+
+function updateProfileStats() {
+    document.getElementById('statVisitCount').textContent = localStorage.getItem('visitCount') || 0;
+    document.getElementById('statStreak').textContent = localStorage.getItem('checkInStreak') || 0;
+    document.getElementById('statPoints').textContent = localStorage.getItem('userPoints') || 0;
+    // Highest game score implies I need to store it first. Currently only 'gameScores' suggested. 
+    // I'll check 'game_high_score' if I implemented storage? 
+    // Wait, script.js has `score_100` condition but no explicit consistent highscore storage except transient.
+    // I should save high score in finishGame.
+    document.getElementById('statHighScore').textContent = localStorage.getItem('highScore') || 0;
+    document.getElementById('statTheme').textContent = currentTheme;
+}
+
+// Update finishGame to save high score
+const originalFinishGameForStats = window.finishGame || finishGame;
+window.finishGame = function() {
+    if (originalFinishGameForStats) originalFinishGameForStats();
+    const cleanScore = parseInt(gameScore) || 0;
+    const oldHigh = parseInt(localStorage.getItem('highScore') || '0');
+    if (cleanScore > oldHigh) {
+        localStorage.setItem('highScore', cleanScore);
+    }
+};
+

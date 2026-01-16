@@ -44,6 +44,42 @@
         <button class="theme-btn" data-theme="style-pixel" onclick="switchTheme('style-pixel')">🕹️ 像素复古</button>
     </nav>
 
+    <!-- 祝福接力入口 -->
+    <button class="action-btn relay-btn-trigger" onclick="openRelayModal()" style="background:var(--secondary-color); color:#333; margin-top:10px;">
+        🏃 祝福接力
+    </button>
+
+    <!-- 祝福接力弹窗 -->
+    <div id="relayModal" class="modal-overlay" aria-hidden="true" onclick="closeRelayModal(event)">
+        <div class="modal-content relay-box">
+            <div class="modal-header">
+                <h2>🏃 新春祝福接力</h2>
+                <button class="close-btn" onclick="closeRelayModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="relay-intro" id="relayIntro">
+                    <p>发起或参与一场祝福接力，让福气传递下去！</p>
+                    <button class="entry-btn small" onclick="startNewRelay()">发起新接力</button>
+                </div>
+                
+                <div class="relay-chain-container" id="relayChainDisplay" style="display:none;">
+                    <div class="chain-header">
+                        当前接力第 <span id="relayCount">1</span> 棒
+                    </div>
+                    <div class="relay-timeline" id="relayTimeline">
+                        <!-- JS 生成接力链 -->
+                    </div>
+                    
+                    <div class="relay-action">
+                        <textarea id="myRelayBlessing" placeholder="写下你的接力祝福..." maxlength="20"></textarea>
+                        <button class="entry-btn" onclick="joinRelay()">加入接力 & 生成海报链接</button>
+                    </div>
+                    <button class="share-btn" onclick="shareRelayLink()">🔗 复制接力链接分享</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <!-- 音乐控制悬浮球 -->
     <div class="music-controls hover-trigger">
         <div class="music-icon" id="musicToggle">🎵</div>
@@ -68,18 +104,40 @@
                 <button class="close-btn" onclick="closeAchievements()">×</button>
             </div>
             <div class="modal-body">
-                <div class="achievement-stats">
-                    <div class="stat-item">
-                        <span class="stat-val" id="achieveCount">0</span>
-                        <span class="stat-label">已解锁</span>
+                <!-- 切换标签 -->
+                <div class="ach-tabs" style="display:flex; gap:10px; margin-bottom:10px; justify-content:center;">
+                    <button class="ach-tab active" onclick="switchAchTab('list')" style="padding:5px 15px; border:none; background:none; font-weight:bold; cursor:pointer; border-bottom:2px solid var(--primary-color);">成就列表</button>
+                    <button class="ach-tab" onclick="switchAchTab('stats')" style="padding:5px 15px; border:none; background:none; opacity:0.6; cursor:pointer;">个人数据</button>
+                </div>
+
+                <div id="achTabList">
+                    <div class="achievement-stats">
+                        <div class="stat-item">
+                            <span class="stat-val" id="achieveCount">0</span>
+                            <span class="stat-label">已解锁</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-val" id="totalPoints">0</span>
+                            <span class="stat-label">成就点</span>
+                        </div>
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-val" id="totalPoints">0</span>
-                        <span class="stat-label">成就点</span>
+                    <div class="achievement-list" id="achievementList">
+                        <!-- JS 生成列表 -->
                     </div>
                 </div>
-                <div class="achievement-list" id="achievementList">
-                    <!-- JS 生成列表 -->
+
+                <div id="achTabStats" style="display:none; flex-direction:column; gap:15px; padding:10px;">
+                    <div class="stat-card" style="background:rgba(0,0,0,0.03); padding:15px; border-radius:8px;">
+                        <h4 style="margin:0 0 10px 0; border-bottom:1px solid #ddd; padding-bottom:5px;">📊 基础数据</h4>
+                        <p>累计访问：<strong id="statVisitCount">0</strong> 次</p>
+                        <p>连续签到：<strong id="statStreak">0</strong> 天</p>
+                        <p>拥有积分：<strong id="statPoints">0</strong> 币</p>
+                    </div>
+                    <div class="stat-card" style="background:rgba(0,0,0,0.03); padding:15px; border-radius:8px;">
+                        <h4 style="margin:0 0 10px 0; border-bottom:1px solid #ddd; padding-bottom:5px;">🎮 游戏记录</h4>
+                        <p>最高得分：<strong id="statHighScore">0</strong></p>
+                        <p>当前风格：<strong id="statTheme">-</strong></p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -341,6 +399,10 @@
             <p class="game-hint">提示：竖屏体验最佳，移动端用左右滑动/轻点，桌面可用左右键。</p>
         </div>
     </div>
+
+    <footer style="text-align: center; padding: 20px; color: var(--text-color); opacity: 0.8; font-size: 0.9rem; margin-top: 30px;">
+        本祝福网站专门送给huangshiqi的亲人朋友
+    </footer>
 
     <!-- 脚本引用 -->
     <script src="script.js"></script>

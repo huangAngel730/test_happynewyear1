@@ -1176,4 +1176,96 @@ body::after {
 
 @media (max-width: 768px) {
     .achievement-entry { bottom: calc(60px + env(safe-area-inset-bottom)); right: 20px; width: 40px; height: 40px; font-size: 20px;}
+    .relay-btn-trigger { width: 100%; }
+}
+
+/* ================== 祝福接力样式 ================== */
+.relay-btn-trigger {
+    width: auto;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.relay-box {
+    width: 95%;
+    max-width: 600px;
+    height: 85vh; /* Taller for timeline */
+}
+.relay-intro {
+    text-align: center;
+    padding: 30px;
+}
+.relay-chain-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+.chain-header {
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 15px;
+}
+.relay-timeline {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px 20px;
+    border-left: 2px dashed var(--secondary-color);
+    margin-left: 20px;
+}
+.relay-node {
+    position: relative;
+    margin-bottom: 25px;
+    background: rgba(255,255,255,0.7);
+    padding: 10px 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    backdrop-filter: blur(5px);
+    animation: slideIn 0.3s ease-out;
+}
+.relay-node::before {
+    content: '';
+    position: absolute;
+    left: -26px; /* 20px padding + 2px border + 4px gap */
+    top: 15px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    border: 2px solid #fff;
+}
+.r-name { font-weight: bold; color: var(--text-color); font-size: 0.9rem; }
+.r-bless { color: var(--primary-color); font-size: 1.1rem; margin: 5px 0; }
+.r-time { font-size: 0.75rem; color: var(--muted-color); }
+
+.relay-action {
+    padding: 15px;
+    background: rgba(0,0,0,0.05);
+    border-top: 1px solid rgba(0,0,0,0.1);
+}
+#myRelayBlessing {
+    width: 100%;
+    height: 60px;
+    padding: 10px;
+    border: 1px solid var(--btn-border);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-family: inherit;
+}
+.share-btn {
+    width: 100%;
+    padding: 12px;
+    background: #07c160; /* WeChat Green */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    margin-top: 10px;
+    cursor: pointer;
+    display: none; /* Hidden until joined */
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
 }
