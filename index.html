@@ -53,6 +53,46 @@
             <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="0.5">
         </div>
     </div>
+    
+    <!-- 成就系统入口 -->
+    <div class="achievement-entry" onclick="openAchievements()">
+        🏆
+        <div class="achievement-dot" id="achievementDot"></div>
+    </div>
+
+    <!-- 成就弹窗 -->
+    <div id="achievementModal" class="modal-overlay" aria-hidden="true" onclick="closeAchievements(event)">
+        <div class="modal-content achievement-box">
+            <div class="modal-header">
+                <h2>🏆 成就里程碑</h2>
+                <button class="close-btn" onclick="closeAchievements()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="achievement-stats">
+                    <div class="stat-item">
+                        <span class="stat-val" id="achieveCount">0</span>
+                        <span class="stat-label">已解锁</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-val" id="totalPoints">0</span>
+                        <span class="stat-label">成就点</span>
+                    </div>
+                </div>
+                <div class="achievement-list" id="achievementList">
+                    <!-- JS 生成列表 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 成就解锁通知 Toast -->
+    <div id="achievementToast" class="achievement-toast">
+        <div class="toast-icon">🎉</div>
+        <div class="toast-content">
+            <div class="toast-title">成就解锁！</div>
+            <div class="toast-desc" id="toastDesc">初次见面</div>
+        </div>
+    </div>
 
     <!-- 音乐提示（自动播放受阻时显示） -->
     <div id="musicPrompt" class="music-prompt" onclick="userEnableMusic()">🔊 点击播放音乐</div>
@@ -68,12 +108,36 @@
         <!-- 马年视觉元素 (SVG绘制，确保无外部依赖) -->
         <div class="visual-center">
             <div class="horse-wrapper">
-                <!-- 国风剪纸马 -->
-                <svg class="horse-svg china-horse" viewBox="0 0 100 100">
-                    <path d="M20,60 Q30,40 50,30 T80,40 L90,60 L80,80 L50,90 L20,80 Z" fill="var(--primary-color)" />
-                    <text x="50" y="65" text-anchor="middle" fill="gold" font-size="30">马</text>
-                    <title>剪纸骏马</title>
-                </svg>
+                <!-- 国风机甲马：融合传统剪纸与科技线路 -->
+                <div class="mecha-horse-group china-horse">
+                    <svg class="horse-svg" viewBox="0 0 100 100">
+                        <defs>
+                            <linearGradient id="mechaGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:var(--primary-color);stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:var(--tech-accent);stop-opacity:1" />
+                            </linearGradient>
+                            <filter id="glow">
+                                <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                        </defs>
+                        <!-- 马身主体 -->
+                        <path d="M20,60 Q30,40 50,30 T80,40 L90,60 L80,80 L50,90 L20,80 Z" fill="url(#mechaGradient)" />
+                        <!-- 科技线条纹路 -->
+                        <path d="M30,50 L50,40 L70,50 M50,40 L50,80 M30,70 L50,80 L70,70" stroke="var(--tech-light)" stroke-width="1.5" fill="none" class="tech-lines" />
+                        <!-- 关节光点 -->
+                        <circle cx="30" cy="50" r="2" fill="#fff" class="tech-dot" />
+                        <circle cx="70" cy="50" r="2" fill="#fff" class="tech-dot" />
+                        <circle cx="50" cy="80" r="2" fill="#fff" class="tech-dot" />
+                        
+                        <text x="50" y="65" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="24" font-family="var(--font-family)" style="filter: url(#glow);">马</text>
+                    </svg>
+                    <!-- 全息光环 -->
+                    <div class="holo-ring"></div>
+                </div>
 
                 <!-- 科技数字马 -->
                 <div class="tech-horse-container">
@@ -87,19 +151,37 @@
                 </div>
 
                 <!-- 像素马 -->
-                <div class="pixel-horse-container" aria-label="像素马">▥▥<br>▥█▥<br>▥▥</div>
+                <div class="pixel-horse-container" aria-label="像素马">
+                    <div class="pixel-art-horse"></div>
+                </div>
             </div>
         </div>
 
         <div class="fu-badge" id="fuBadge" aria-label="点福得祝福">福</div>
 
-        <!-- 标题 -->
+        <!-- 标题区域升级 -->
         <h1 class="main-title">
-            <span class="year">2026</span>
-            <span class="zodiac">丙午马年</span>
-            <span class="greeting-text">新春快乐</span>
+            <div class="year-glitch" data-text="2026">2026</div>
+            <div class="china-title">
+                <span class="char" style="--i:1">丙</span>
+                <span class="char" style="--i:2">午</span>
+                <span class="char" style="--i:3">马</span>
+                <span class="char" style="--i:4">年</span>
+            </div>
+            <div class="sub-title-tech">
+                <span class="line"></span>
+                <span class="text">HAPPY NEW YEAR</span>
+                <span class="line"></span>
+            </div>
         </h1>
-        <p class="tagline reveal">借鉴优秀网页的灵感，用国风与未来感为你送上沉浸式新春祝福。</p>
+        <p class="tagline reveal">国风雅韵 · 科技赋能 · 沉浸式祈福</p>
+
+        <!-- 倒计时挂件 -->
+        <div class="countdown-widget reveal">
+            <span>距离农历新年还剩：</span>
+            <span id="cDay">00</span>天 <span id="cHour">00</span>时 <span id="cMin">00</span>分
+        </div>
+
 
         <!-- 场景切换器：不同场景生成对应祝福 -->
         <div class="scenario-switcher reveal" aria-label="选择祝福场景">
@@ -159,24 +241,30 @@
                 <div class="card-top">福气指数</div>
                 <div class="card-body">
                     <div class="counter" id="fortuneCounter" aria-live="polite">0%</div>
-                    <p>互动越多，福气越高，从 0% 起步。</p>
+                    <p>互动得福气，已击败 <span id="beatPercent">0</span>% 网友</p>
                 </div>
             </article>
-            <article class="info-card">
-                <div class="card-top">心愿达成</div>
+            <article class="info-card mission-card">
+                <div class="card-top">福气任务</div>
                 <div class="card-body">
-                    <div class="counter" data-counter data-target="26" data-suffix="/26">0/26</div>
-                    <p>小目标稳步完成，迎接惊喜。</p>
+                    <div class="mission-header">
+                        <span id="missionProgressText">0/5</span>
+                        <small>完成任务解锁<button onclick="openWelfareModal()" style="border:none;background:none;color:var(--primary-color);text-decoration:underline;cursor:pointer;">福利</button></small>
+                    </div>
+                    <div class="mission-list" id="missionList">
+                        <!-- 动态生成的任务 -->
+                    </div>
                 </div>
             </article>
             <article class="info-card">
                 <div class="card-top">活力时刻</div>
                 <div class="card-body">
-                    <div class="counter" data-counter data-target="520">0</div>
-                    <p>保持热爱与速度，策马扬鞭向前。</p>
+                    <button class="menu-btn" onclick="openMenuModal()">🍽️ 年夜饭推荐</button>
+                    <button class="menu-btn" onclick="openTriviaModal()">🐴 马年冷知识</button>
                 </div>
             </article>
         </section>
+
 
         <section class="deep-wishes reveal" aria-label="分场景祝福">
             <div class="section-head">
