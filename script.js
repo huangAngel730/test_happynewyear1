@@ -114,7 +114,7 @@ const assets = {
         }
     },
     'style-cute': {
-        music: 'http://music.163.com/song/media/outer/url?id=444331505.mp3', // Mii Channel Theme (Funny/Cute)
+        music: 'https://music.163.com/song/media/outer/url?id=444331505.mp3', // Mii Channel Theme (Funny/Cute)
         wishes: [
             "哒哒哒~ Q 版小马来送福啦！祝你天天开心鸭！",
             "2026，要做一个可爱的干饭马！🍚",
@@ -151,7 +151,7 @@ const assets = {
         }
     },
     'style-warm': {
-        music: 'http://music.163.com/song/media/outer/url?id=5239700.mp3', // The Truth That You Leave
+        music: 'https://music.163.com/song/media/outer/url?id=5239700.mp3', // The Truth That You Leave
         wishes: [
             "围炉煮茶，灯火可亲，马年人间烟火最暖心。",
             "祝你新年每一顿饭都有人陪，每一句话都被温柔接住。",
@@ -188,7 +188,7 @@ const assets = {
         }
     },
     'style-pixel': {
-        music: 'http://music.163.com/song/media/outer/url?id=425570952.mp3', // Super Mario Bros
+        music: 'https://music.163.com/song/media/outer/url?id=425570952.mp3', // Super Mario Bros
         wishes: [
             "↑↑↓↓←→←→AB，解锁 2026 好运彩蛋！",
             "像素马跳一跳，福气值 +99！",
@@ -1074,6 +1074,42 @@ class SoundManager {
     
     playPop() {
         this.playOscillator('sine', 800, 400, 0.1, 0.4);
+    }
+
+    playSound(name) {
+        if (!this.enabled) return;
+        switch (name) {
+            case 'click': this.playClick(); break;
+            case 'success': this.playSuccess(); break;
+            case 'pop': this.playPop(); break;
+            case 'coin': this.playCoin(); break;
+            case 'levelUp': this.playLevelUp(); break;
+            case 'shake': this.playShake(); break;
+            default: this.playClick(); break;
+        }
+    }
+
+    playCoin() {
+        this.playOscillator('sine', 987, 1318, 0.1, 0.3);
+        setTimeout(() => this.playOscillator('sine', 1318, 2000, 0.1, 0.3), 100);
+    }
+
+    playLevelUp() {
+        const now = 0; 
+        [523, 659, 783, 1046].forEach((freq, i) => {
+            setTimeout(() => this.playOscillator('triangle', freq, null, 0.1, 0.4), i * 100);
+        });
+    }
+
+    playShake() {
+        // Wood rattle sound simulation
+        this.initCtx();
+        if (!this.ctx) return;
+        for (let i = 0; i < 6; i++) {
+            setTimeout(() => {
+                this.playOscillator('square', 100 + Math.random() * 60, null, 0.03, 0.2);
+            }, i * 50);
+        }
     }
 }
 
@@ -2393,12 +2429,12 @@ window.finishGame = function() {
 };
 
 
-// ================== ��Ļϵͳ ==================
+// ================== 弹幕系统 ==================
 const danmuLayer = document.getElementById('danmuLayer');
 const defaultDanmus = [
-    'ף���2026���������⣡', '����󼪣����彡����', 'offer�õ�������', '��������������', 
-    '����ƽ������', '˳����ҵ��', '��Ҫ���ʳɹ���', '������Bug��',
-    '�һ�����������', '��Ʊ���ǣ�', '���쿪�ģ�', '�����ɹ���'
+    '祝大家2026马年大吉！', '新春快乐，万事如意！', '项目上线顺利，Bug 全消！', '红包拿来！',
+    '年年有余，财源广进！', '身体健康，阖家欢乐！', '签到领积分，天天开心！', '愿你中大礼包！',
+    '心想事成，万事如意！', '好运连连，笑口常开！', '提交代码不报错，测试全通过！', '福气满满来临！'
 ];
 
 function initDanmu() {
@@ -2613,11 +2649,12 @@ function resetFortuneStick() {
 function shakeFortuneStick() {
     const jar = document.querySelector('.divination-jar');
     
-    // 1. Play sound
+    // 1. Play sound (Shaking sound)
     try {
-        soundManager.playSound('click'); 
-        // Ideally loop a shaking sound, but click is distinct for now
-    } catch(e) {}
+        if (window.soundManager) {
+            window.soundManager.playSound('shake');
+        }
+    } catch(e) { console.error(e); }
 
     // 2. Add shake class
     jar.classList.add('shaking');

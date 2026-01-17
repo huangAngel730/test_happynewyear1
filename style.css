@@ -2033,7 +2033,7 @@ body { padding-bottom: env(safe-area-inset-bottom); }
     to { opacity: 1; transform: translateX(0); }
 }
 
-/* ================== Èü²©ÇóÇ© (Fortune Stick) ================== */
+/* ================== ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç© (Fortune Stick) ================== */
 .fortune-stick-entry {
     position: absolute;
     right: 15%;
@@ -2114,7 +2114,7 @@ body { padding-bottom: env(safe-area-inset-bottom); }
 .stick.s3 { left: 50px; transform: rotate(-3deg); height: 45px; }
 .stick.s4 { left: 65px; transform: rotate(5deg); height: 52px; }
 
-/* Ò¡Ç©¶¯»­ */
+/* Ò¡Ç©ï¿½ï¿½ï¿½ï¿½ */
 @keyframes shakeJar {
     0% { transform: rotate(0deg); }
     25% { transform: rotate(15deg) translateY(-10px); }
@@ -2122,11 +2122,11 @@ body { padding-bottom: env(safe-area-inset-bottom); }
     75% { transform: rotate(10deg) translateY(-10px); }
     100% { transform: rotate(0deg); }
 }
-.shaking .divination-jar {
+.shaking.divination-jar {
     animation: shakeJar 0.4s infinite linear;
 }
 
-/* ½âÇ©½á¹û */
+/* ï¿½ï¿½Ç©ï¿½ï¿½ï¿½ */
 .result-card {
     padding: 10px;
     animation: slideUp 0.6s ease;
