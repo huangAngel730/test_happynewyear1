@@ -448,18 +448,24 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // 开场入口
 function startExperience(triggeredByPill = false) {
+    const overlay = document.getElementById('entryOverlay');
     if (!experienceStarted) {
         experienceStarted = true;
         setEnergy(0);
-        if (entryOverlay) {
-            entryOverlay.classList.add('hidden');
+        if (overlay) {
+            overlay.classList.add('hidden');
             setTimeout(() => {
-                entryOverlay.style.display = 'none';
+                overlay.style.display = 'none';
             }, 650);
         }
         ensureAudioPlaying();
         generateWish(true, true);
         boostFortune(10, 'entry-start', 4000);
+        
+        // 触发任务
+        if (typeof checkMission === 'function') {
+            checkMission('start');
+        }
     }
     if (triggeredByPill) {
         scrollToMain();
