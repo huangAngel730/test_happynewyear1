@@ -1458,6 +1458,7 @@ function closeGuide() {
 function openGameOverlay() {
     if (!gameOverlay) return;
     resetGame();
+    renderGameModeSelector(currentTheme);
     gameOverlay.classList.add('show');
 }
 
@@ -1499,8 +1500,9 @@ function stopGame() {
 }
 
 function startRandomGame() {
-    const modes = ['catch', 'lantern', 'fireworks'];
-    const pick = modes[Math.floor(Math.random() * modes.length)];
+    // Prefer theme-specific modes when available
+    const themeModes = THEME_GAME_MAP[currentTheme] || ['catch', 'lantern', 'fireworks'];
+    const pick = themeModes[Math.floor(Math.random() * themeModes.length)];
     startGame(pick);
 }
 
@@ -1522,6 +1524,8 @@ function startGame(type) {
         setupCatchGame();
     } else if (type === 'lantern') {
         setupLanternGame();
+    } else if (type === 'pixel') {
+        setupPixelGame();
     } else {
         setupFireworkGame();
     }
@@ -1814,6 +1818,99 @@ function getGameDesc(type) {
     if (type === 'catch') return '左右移动接福袋，躲开空白掉落，30s 内多多得分。';
     if (type === 'lantern') return '点击/轻点灯笼得分，灯笼会随机出现与消失。';
     return '点击游戏区域触发烟花并得分，背景会有缓慢上升的光点。';
+}
+
+// ============ 主题 -> 可用小游戏 映射 ============
+const THEME_GAME_MAP = {
+    'style-china': ['lantern', 'catch'],
+    'style-tech': ['fireworks', 'catch'],
+    'style-cute': ['catch', 'fireworks'],
+    'style-pixel': ['pixel', 'catch'],
+    'style-warm': ['lantern', 'catch'],
+    'style-simple': ['fireworks', 'lantern'],
+    'style-noble': ['lantern', 'fireworks']
+};
+
+let selectedGameType = null;
+
+function renderGameModeSelector(theme) {
+    if (!gameOverlay) return;
+    // ensure container
+    let container = document.getElementById('gameModeSelector');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'gameModeSelector';
+        container.style.display = 'flex';
+        container.style.gap = '8px';
+        container.style.justifyContent = 'center';
+        container.style.margin = '8px 0 12px 0';
+        const panel = document.querySelector('.game-panel');
+        if (panel) panel.insertBefore(container, document.getElementById('gameArea'));
+    }
+    container.innerHTML = '';
+    const modes = THEME_GAME_MAP[theme] || ['catch','lantern','fireworks'];
+    modes.forEach(m => {
+        const btn = document.createElement('button');
+        btn.className = 'action-btn';
+        btn.textContent = (m === 'catch' ? '接福袋' : m === 'lantern' ? '点灯笼' : m === 'fireworks' ? '烟花' : m === 'pixel' ? '像素收集' : m);
+        btn.onclick = () => {
+            selectedGameType = m;
+            // highlight
+            container.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            setModeDisplay(btn.textContent);
+            setDesc(getGameDesc(m));
+        };
+        container.appendChild(btn);
+    });
+    // default select first
+    selectedGameType = modes[0];
+    const firstBtn = container.querySelector('button');
+    if (firstBtn) { firstBtn.classList.add('active'); setModeDisplay(firstBtn.textContent); setDesc(getGameDesc(selectedGameType)); }
+}
+
+// 在开始前，如果用户通过“开始”按钮触发，优先使用已选择的主题游戏
+const origStartRandom = startRandomGame;
+function startRandomGameForSelected() {
+    if (selectedGameType) startGame(selectedGameType);
+    else startRandomGame();
+}
+
+// 小型：像素风游戏实现（用于 style-pixel）
+function setupPixelGame() {
+    // 在 gameArea 内生成若干可点击的像素物
+    const count = isMobile ? 6 : 10;
+    let collected = 0;
+    for (let i = 0; i < count; i++) {
+        const el = document.createElement('div');
+        el.className = 'game-item pixel-item';
+        el.textContent = ['🧧','福','★','🪙'][i % 4];
+        el.style.position = 'absolute';
+        const w = gameArea.clientWidth, h = gameArea.clientHeight;
+        const x = Math.random() * (w - 40);
+        const y = Math.random() * (h - 40);
+        el.style.left = `${x}px`;
+        el.style.top = `${y}px`;
+        el.style.fontSize = isMobile ? '30px' : '20px';
+        el.onclick = () => {
+            collected += 1;
+            updateScore(2);
+            showScorePop(2);
+            el.remove();
+            if (collected >= Math.ceil(count * 0.6)) {
+                // 达成目标，提前结束并奖励
+                updateScore(8);
+                finishGame();
+            }
+        };
+        gameArea.appendChild(el);
+        // 小幅漂浮动画
+        el.animate([
+            { transform: 'translateY(0)' },
+            { transform: 'translateY(-12px)' },
+            { transform: 'translateY(0)' }
+        ], { duration: 2200 + Math.random()*800, iterations: Infinity, easing: 'ease-in-out' });
+    }
 }
 
 /* ================== 成就系统逻辑 ================== */
@@ -2490,24 +2587,24 @@ function spawnDanmu(text, isSelf = false) {
 function sendDanmu() {
     const input = document.getElementById('danmuInput');
     if (!input || !input.value.trim()) {
-        showToast('����������Ŷ~');
+        showToast('请输入弹幕内容~');
         return;
     }
     const text = input.value.trim();
     spawnDanmu(text, true);
     input.value = '';
-    showToast('���ͳɹ�������ֵ +5');
+    showToast('弹幕发送成功，福气 +5');
     boostFortune(5, 'danmu', 0);
     checkMission('send_danmu');
 }
 
 // ================== ����ϵͳ ==================
 const missions = [
-    { id: 'start', desc: '�����ó�', target: 1, current: 0, done: false },
-    { id: 'click_wish', desc: '�������', target: 1, current: 0, done: false },
-    { id: 'send_danmu', desc: '���͵�Ļ', target: 1, current: 0, done: false },
-    { id: 'theme_switch', desc: '�л����', target: 3, current: 0, done: false },
-    { id: 'game_play', desc: '��С��Ϸ', target: 1, current: 0, done: false }
+    { id: 'start', desc: '开始体验', target: 1, current: 0, done: false },
+    { id: 'click_wish', desc: '点击祝福', target: 1, current: 0, done: false },
+    { id: 'send_danmu', desc: '发送弹幕', target: 1, current: 0, done: false },
+    { id: 'theme_switch', desc: '切换主题', target: 3, current: 0, done: false },
+    { id: 'game_play', desc: '玩小游戏', target: 1, current: 0, done: false }
 ];
 
 function initMissions() {
@@ -2525,7 +2622,7 @@ function checkMission(id) {
     if (m.current >= m.target) {
         m.done = true;
         m.current = m.target;
-        showToast('������ɣ�' + m.desc);
+        showToast('任务完成：' + m.desc);
         boostFortune(8, 'mission_complete', 0);
     }
     renderMissions();
@@ -2609,37 +2706,37 @@ function openWelfareModal() {
 }
 
 
-// ================== ������ǩ Fortune Stick Logic ==================
+// ================== 赛博灵签（Fortune Stick）逻辑 ==================
 
 const fortuneDatabase = [
     {
-        level: '����ǩ',
-        poem: ['�ƿ���ɢ�վ���', '��������������'],
-        modern: '�ˣ���������һ�ι�����ƱƮ�죬���׳ɹ���99%��',
+        level: '上上签',
+        poem: ['风和日丽喜气盈', '跃马扬鞭万里程'],
+        modern: '今日运势极佳：项目顺利，贵人相助，宜大胆试新计划。',
         sound: 'success'
     },
     {
-        level: '�ϼ�ǩ',
-        poem: ['����������㼲', 'һ�տ���������'],
-        modern: '�ˣ���ְ��н�������ϰ����̲����ȥ����',
+        level: '上签',
+        poem: ['春风得意马蹄急', '一日看尽长安花'],
+        modern: '人气上升、机会来了但需把握细节，适合推进重要事项。',
         sound: 'coin'
     },
     {
-        level: '�м�ǩ',
-        poem: ['�������ĥ�³�', '÷�����Կຮ��'],
-        modern: '�ˣ����ͨ��Code Review���������򿨣���Ҫ��ҹ��',
+        level: '中签',
+        poem: ['云淡风轻日子好', '稳步前行收获多'],
+        modern: '平稳向好，按部就班可见成效，注意保持耐心与节奏。',
         sound: 'click'
     },
     {
-        level: '��ǩ',
-        poem: ['ʱ����ؽ�ͬ��', '��ȥӢ�۲�����'],
-        modern: '�ˣ�˳�ƶ�Ϊ������ֱ���������ʺ����Ʊ��',
+        level: '下签',
+        poem: ['路有坎坷需回头', '勿急勿躁守初心'],
+        modern: '遇到阻碍为常态，建议谨慎决策，避免高风险操作，稳住当前。',
         sound: 'levelUp'
     },
     {
-        level: '����ǩ', // Duplicate high roll
-        poem: ['��ٴ͸���»��', '���Ǹ���������'],
-        modern: '�ˣ�ȫջ���������׷��佱�������ݳ�����Ʊ��',
+        level: '末签',
+        poem: ['风雨兼程亦有时', '静待花开自有时'],
+        modern: '虽有小挫折，但一切皆可调整，心态平和最重要。',
         sound: 'success'
     }
 ];

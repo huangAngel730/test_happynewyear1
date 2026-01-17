@@ -2186,3 +2186,83 @@ body { padding-bottom: env(safe-area-inset-bottom); }
     display: flex;
 }
 
+/* Enhanced modal visuals */
+.modal-overlay .modal-content {
+    width: min(680px, 94vw);
+    max-width: 760px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.92));
+    color: var(--text-color);
+    border-radius: 14px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.45), 0 6px 20px rgba(0,0,0,0.2);
+    border: 1px solid rgba(0,0,0,0.08);
+    overflow: hidden;
+    transform: translateY(8px) scale(0.98);
+    opacity: 0;
+    transition: transform 0.36s cubic-bezier(.22,.9,.3,1), opacity 0.28s ease, box-shadow 0.28s;
+}
+.modal-overlay.active .modal-content {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
+.modal-overlay .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.03), rgba(0,0,0,0.02));
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+.modal-overlay .modal-header h2 { margin: 0; font-size: 1.1rem; color: var(--primary-color); }
+.modal-overlay .modal-body {
+    padding: 18px 22px;
+    max-height: 62vh;
+    overflow-y: auto;
+    line-height: 1.6;
+    color: var(--text-color);
+}
+.modal-overlay .modal-footer {
+    padding: 12px 18px;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    border-top: 1px solid rgba(0,0,0,0.04);
+    background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.01));
+}
+
+/* Close button refined */
+.modal-overlay .close-btn {
+    position: absolute;
+    right: 14px;
+    top: 14px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.85);
+    color: #333;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+    border: 1px solid rgba(0,0,0,0.06);
+    font-size: 20px;
+}
+.modal-overlay .close-btn:hover { transform: scale(1.04); color: var(--primary-color); }
+
+/* Decorative corner accents for share-card and special boxes */
+.modal-overlay .modal-content .corner-decor {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    pointer-events: none;
+    opacity: 0.12;
+}
+.modal-overlay .modal-content .corner-decor.tl { left: 8px; top: 8px; background: radial-gradient(circle at 30% 30%, var(--primary-color), transparent 40%); border-radius:6px; }
+.modal-overlay .modal-content .corner-decor.br { right: 8px; bottom: 8px; background: radial-gradient(circle at 70% 70%, var(--secondary-color), transparent 40%); border-radius:6px; }
+
+/* Responsive tweaks */
+@media (max-width: 680px) {
+    .modal-overlay .modal-content { width: 96vw; padding: 0; border-radius: 12px; }
+    .modal-overlay .modal-header, .modal-overlay .modal-body, .modal-overlay .modal-footer { padding-left: 14px; padding-right: 14px; }
+    .modal-overlay .close-btn { width: 36px; height: 36px; top: 10px; right: 10px; }
+}
+
