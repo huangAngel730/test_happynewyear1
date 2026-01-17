@@ -1991,6 +1991,30 @@ body::after {
     background: var(--primary-color);
     color: #fff;
 }
+
+/* ============ 移动端适配补丁 ============ */
+body.mobile {
+    font-size: 16px;
+}
+.mobile .theme-switcher { padding: 12px 8px; gap: 10px; }
+.mobile .theme-btn { padding: 12px 16px; font-size: 1rem; min-width: 72px; }
+.mobile .action-btn { padding: 14px 18px; font-size: 1.05rem; border-radius: 12px; }
+.mobile .action-btn.small { padding: 10px 12px; }
+.mobile .action-buttons { gap: 12px; flex-direction: column; align-items: stretch; }
+.mobile .game-area { min-height: 360px; }
+.mobile .game-item { touch-action: manipulation; }
+.mobile .pixel-item { width: 56px; height: 56px; font-size: 1rem; }
+
+/* 降低复杂动效以节省移动端资源 */
+@media (max-width: 768px) {
+    .orb { display: none; }
+    .grid-overlay { opacity: 0.15; }
+    body::before { opacity: 0.35; }
+}
+
+/* 确保底部安全区域兼容 iOS 刘海屏 */
+body { padding-bottom: env(safe-area-inset-bottom); }
+
 .share-btn {
     width: 100%;
     padding: 12px;
@@ -2008,3 +2032,157 @@ body::after {
     from { opacity: 0; transform: translateX(20px); }
     to { opacity: 1; transform: translateX(0); }
 }
+
+/* ================== ������ǩ (Fortune Stick) ================== */
+.fortune-stick-entry {
+    position: absolute;
+    right: 15%;
+    top: 55%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    animation: floating 3s ease-in-out infinite;
+    z-index: 15;
+    transition: transform 0.3s;
+}
+.fortune-stick-entry:hover {
+    transform: scale(1.1) rotate(5deg);
+}
+.stick-jar-icon {
+    font-size: 3rem;
+    filter: drop-shadow(0 0 10px var(--primary-color));
+}
+.fortune-stick-entry span {
+    background: var(--primary-color);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    margin-top: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.fortune-box {
+    text-align: center;
+    max-width: 400px;
+    background: var(--panel-bg);
+    border: 1px solid var(--primary-color);
+    backdrop-filter: blur(15px);
+}
+
+.divination-jar {
+    width: 100px;
+    height: 160px;
+    background: linear-gradient(135deg, #d23a28, #8a1c1c);
+    margin: 30px auto;
+    position: relative;
+    border-radius: 5px 5px 15px 15px;
+    border: 2px solid #f7d08a;
+    box-shadow: inset 5px 0 10px rgba(0,0,0,0.3);
+    transform-origin: bottom center;
+}
+.jar-body {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    text-align: center;
+    font-size: 40px;
+    color: #f7d08a;
+    font-family: 'Ma Shan Zheng', cursive;
+    opacity: 0.8;
+}
+.sticks-group {
+    position: absolute;
+    top: -20px;
+    left: 10px;
+    width: 80px;
+    height: 40px;
+    overflow: hidden;
+}
+.stick {
+    width: 8px;
+    height: 60px;
+    background: #f0e6d2;
+    position: absolute;
+    bottom: 0;
+    border-radius: 4px 4px 0 0;
+    border: 1px solid #cbbba0;
+}
+.stick.s1 { left: 10px; transform: rotate(-5deg); height: 50px; }
+.stick.s2 { left: 30px; transform: rotate(2deg); height: 55px; }
+.stick.s3 { left: 50px; transform: rotate(-3deg); height: 45px; }
+.stick.s4 { left: 65px; transform: rotate(5deg); height: 52px; }
+
+/* ҡǩ���� */
+@keyframes shakeJar {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(15deg) translateY(-10px); }
+    50% { transform: rotate(-15deg) translateY(-5px); }
+    75% { transform: rotate(10deg) translateY(-10px); }
+    100% { transform: rotate(0deg); }
+}
+.shaking .divination-jar {
+    animation: shakeJar 0.4s infinite linear;
+}
+
+/* ��ǩ��� */
+.result-card {
+    padding: 10px;
+    animation: slideUp 0.6s ease;
+}
+@keyframes slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+.fortune-level {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    font-weight: bold;
+    font-family: 'Ma Shan Zheng', cursive;
+    display: block;
+    margin-bottom: 15px;
+    text-shadow: 0 0 10px var(--glow-color);
+}
+.result-poem {
+    border-left: 3px solid var(--primary-color);
+    border-right: 3px solid var(--primary-color);
+    padding: 15px;
+    background: rgba(255,255,255,0.05);
+    margin: 15px 0;
+    font-family: serif;
+    font-size: 1.2rem;
+    line-height: 1.6;
+}
+.result-interpret {
+    background: rgba(0,0,0,0.1);
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+    color: var(--text-color);
+}
+.result-interpret h4 {
+    margin: 0 0 5px 0;
+    color: var(--secondary-color);
+}
+
+
+/* Ensure modals are hidden and overlay screen */
+.modal-overlay {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0; 
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+}
+.modal-overlay.active {
+    display: flex;
+}
+

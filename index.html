@@ -169,6 +169,44 @@
         </div>
     </div>
 
+    <!-- NEW: 赛博求签弹窗 -->
+    <div id="fortuneStickModal" class="modal-overlay" aria-hidden="true" onclick="closeFortuneStickModal(event)">
+        <div class="modal-content fortune-box">
+            <button class="close-btn" onclick="closeFortuneStickModal()">×</button>
+            <div class="fortune-stage" id="fortuneStageStart">
+                <h3>🧧 灵签问卜</h3>
+                <p>心中默念愿望，诚心摇动签筒</p>
+                <div class="divination-jar">
+                    <div class="sticks-group">
+                         <div class="stick s1"></div>
+                         <div class="stick s2"></div>
+                         <div class="stick s3"></div>
+                         <div class="stick s4"></div>
+                    </div>
+                    <div class="jar-body">签</div>
+                </div>
+                <button class="action-btn main-btn" onclick="shakeFortuneStick()">👋 摇一摇 / 抽签</button>
+            </div>
+            
+            <div class="fortune-stage" id="fortuneStageResult" style="display:none;">
+                <div class="result-card">
+                    <div class="result-header">
+                        <span class="fortune-level" id="fortuneLevel">上上签</span>
+                    </div>
+                    <div class="result-poem">
+                        <p class="poem-text" id="fortunePoem">风和日丽喜气盈</p>
+                        <p class="poem-text" id="fortunePoem2">跃马扬鞭万里程</p>
+                    </div>
+                    <div class="result-interpret">
+                        <h4>💡 赛博解签</h4>
+                        <p id="fortuneModern">宜：提交代码不报错，买彩票必中，相亲成功率+50%</p>
+                    </div>
+                    <button class="action-btn" onclick="resetFortuneStick()">再求一签</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- 成就解锁通知 Toast -->
     <div id="achievementToast" class="achievement-toast">
         <div class="toast-icon">🎉</div>
@@ -281,6 +319,12 @@
         </div>
 
         <div class="fu-badge" id="fuBadge" aria-label="点福得祝福">福</div>
+
+        <!-- NEW: 赛博求签入口 -->
+        <div class="fortune-stick-entry" onclick="openFortuneStickModal()">
+            <div class="stick-jar-icon">🥡</div>
+            <span>赛博求签</span>
+        </div>
 
         <!-- 2. 祝福分享与社交接力 -->
         <section class="social-section reveal">

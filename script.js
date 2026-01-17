@@ -1,7 +1,7 @@
 // 资源配置
 const assets = {
     'style-china': {
-        music: 'https://music.163.com/song/media/outer/url?id=1373206690.mp3', // 古筝国风长版
+        music: 'https://music.163.com/song/media/outer/url?id=26217171.mp3',
         wishes: [
             "2026丙午马年，愿您：马到功成，前程似锦！",
             "春风得意马蹄疾，一日看尽长安花。新春快乐！",
@@ -77,7 +77,7 @@ const assets = {
         }
     },
     'style-tech': {
-        music: 'https://music.163.com/song/media/outer/url?id=1950400155.mp3', // 赛博合成波长版
+        music: 'https://music.163.com/song/media/outer/url?id=443875283.mp3',
         wishes: [
             "System.out.println('Happy New Year 2026');",
             "Loading 2026... 100% Complete. Success!",
@@ -114,7 +114,8 @@ const assets = {
         }
     },
     'style-cute': {
-        music: 'https://music.163.com/song/media/outer/url?id=439915614.mp3', // 轻快可爱长版
+        // 原 ID 439915614 在部分环境返回 404，已替换为可用回退 ID
+        music: 'https://music.163.com/song/media/outer/url?id=1330348068.mp3', // 轻快可爱长版（替代）
         wishes: [
             "哒哒哒~ Q 版小马来送福啦！祝你天天开心鸭！",
             "2026，要做一个可爱的干饭马！🍚",
@@ -151,7 +152,7 @@ const assets = {
         }
     },
     'style-warm': {
-        music: 'https://music.163.com/song/media/outer/url?id=464904561.mp3', // 治愈钢琴长版
+        music: 'https://music.163.com/song/media/outer/url?id=28949052.mp3',
         wishes: [
             "围炉煮茶，灯火可亲，马年人间烟火最暖心。",
             "祝你新年每一顿饭都有人陪，每一句话都被温柔接住。",
@@ -188,7 +189,8 @@ const assets = {
         }
     },
     'style-pixel': {
-        music: 'https://music.163.com/song/media/outer/url?id=22616833.mp3', // 复古8bit长版
+        // 原 ID 22616833 在部分环境返回 404，已替换为可用回退 ID
+        music: 'https://music.163.com/song/media/outer/url?id=443875283.mp3', // 复古8bit长版（替代）
         wishes: [
             "↑↑↓↓←→←→AB，解锁 2026 好运彩蛋！",
             "像素马跳一跳，福气值 +99！",
@@ -262,6 +264,44 @@ const fortuneMax = 100;
 const fortuneCooldown = new Map();
 let currentScenario = 'general';
 
+// 可用的回退音乐（当某些外部链接失效时使用）
+const MUSIC_FALLBACKS = [
+    'https://cdn.jsdelivr.net/gh/huangAngel730/public-assets/music/fallback1.mp3',
+    'https://cdn.jsdelivr.net/gh/huangAngel730/public-assets/music/fallback2.mp3'
+];
+
+/**
+ * 为指定风格设置背景音乐，自动降级回退到备选源
+ * 支持字符串或数组类型的 assets[theme].music
+ */
+function setBgmSource(themeName) {
+    const m = assets[themeName] && assets[themeName].music;
+    let candidates = [];
+    if (!m) candidates = MUSIC_FALLBACKS.slice();
+    else if (Array.isArray(m)) candidates = m.concat(MUSIC_FALLBACKS);
+    else candidates = [m].concat(MUSIC_FALLBACKS);
+
+    let tried = 0;
+    function tryNext() {
+        if (tried >= candidates.length) {
+            console.warn('All bgm candidates failed to load.');
+            return;
+        }
+        const src = candidates[tried++];
+        bgm.src = src;
+        // attempt load; if error event fires, try next
+        const onError = () => {
+            bgm.removeEventListener('error', onError);
+            tryNext();
+        };
+        bgm.addEventListener('error', onError);
+        // start loading metadata to detect failures early
+        bgm.load();
+    }
+
+    tryNext();
+}
+
 // DOM 元素
 const body = document.body;
 const bgm = document.getElementById('bgm');
@@ -319,12 +359,14 @@ window.addEventListener('DOMContentLoaded', () => {
     if(sharedStyle && assets[sharedStyle]) {
         currentTheme = sharedStyle;
         body.className = currentTheme;
-        bgm.src = assets[currentTheme].music; // 同步音乐源
+        setBgmSource(currentTheme); // 同步音乐源并支持回退
     } else {
-        bgm.src = assets[currentTheme].music;
+        setBgmSource(currentTheme);
     }
 
     initMusic();
+    // 移动端标识，用于 CSS 选择器
+    if (isMobile) body.classList.add('mobile');
     generateWish();
     renderDeepWishes();
     setEnergy(0);
@@ -585,8 +627,9 @@ function switchTheme(themeName) {
     
     // 切换音乐（如果在播放，则平滑切换）
     const wasPlaying = !bgm.paused;
-    bgm.src = assets[themeName].music;
+    setBgmSource(themeName);
     if (wasPlaying) {
+        // 尝试在新源上播放，若被阻止会在 initMusic 的交互中提示
         bgm.play().catch(()=>console.log("Autoplay blocked"));
     }
     
@@ -1566,7 +1609,7 @@ function setupCatchGame() {
         const left = Math.random() * (gameArea.clientWidth - 30);
         item.style.left = `${left}px`;
         item.style.top = '-40px';
-        item.style.fontSize = '24px';
+        item.style.fontSize = (isMobile ? '32px' : '24px');
         item.style.transition = `transform ${prefersReducedMotion ? 2.2 : 3}s linear`;
         gameArea.appendChild(item);
         activeTargets.add(item);
@@ -1636,6 +1679,9 @@ function setupLanternGame() {
         const y = Math.random() * (gameArea.clientHeight - 120);
         lan.style.left = `${x}px`;
         lan.style.top = `${y}px`;
+        lan.style.fontSize = (isMobile ? '36px' : '26px');
+        lan.style.width = (isMobile ? '68px' : '54px');
+        lan.style.height = (isMobile ? '88px' : '72px');
         lan.onclick = () => handleLanternClick(lan);
         gameArea.appendChild(lan);
         const t = setTimeout(() => {
@@ -2510,5 +2556,104 @@ function openWelfareModal() {
         html = '<h4> ��δ����</h4><p>��ǰ���ȣ�' + doneCount + '/5</p><p>������������ɲ鿴�ռ�����Ŷ��</p><p>���ͣ����ܸ�����</p>';
     }
     openInfoModal(' ������', html);
+}
+
+
+// ================== ������ǩ Fortune Stick Logic ==================
+
+const fortuneDatabase = [
+    {
+        level: '����ǩ',
+        poem: ['�ƿ���ɢ�վ���', '��������������'],
+        modern: '�ˣ���������һ�ι�����ƱƮ�죬���׳ɹ���99%��',
+        sound: 'success'
+    },
+    {
+        level: '�ϼ�ǩ',
+        poem: ['����������㼲', 'һ�տ���������'],
+        modern: '�ˣ���ְ��н�������ϰ����̲����ȥ����',
+        sound: 'coin'
+    },
+    {
+        level: '�м�ǩ',
+        poem: ['�������ĥ�³�', '÷�����Կຮ��'],
+        modern: '�ˣ����ͨ��Code Review���������򿨣���Ҫ��ҹ��',
+        sound: 'click'
+    },
+    {
+        level: '��ǩ',
+        poem: ['ʱ����ؽ�ͬ��', '��ȥӢ�۲�����'],
+        modern: '�ˣ�˳�ƶ�Ϊ������ֱ���������ʺ����Ʊ��',
+        sound: 'levelUp'
+    },
+    {
+        level: '����ǩ', // Duplicate high roll
+        poem: ['��ٴ͸���»��', '���Ǹ���������'],
+        modern: '�ˣ�ȫջ���������׷��佱�������ݳ�����Ʊ��',
+        sound: 'success'
+    }
+];
+
+function openFortuneStickModal() {
+    document.getElementById('fortuneStickModal').classList.add('active');
+    document.getElementById('fortuneStickModal').setAttribute('aria-hidden', 'false');
+    resetFortuneStick();
+}
+
+function closeFortuneStickModal(e) {
+    if (e && e.target !== e.currentTarget && e.target.classList.contains('close-btn') === false) return;
+    document.getElementById('fortuneStickModal').classList.remove('active');
+    document.getElementById('fortuneStickModal').setAttribute('aria-hidden', 'true');
+}
+
+function resetFortuneStick() {
+    document.getElementById('fortuneStageStart').style.display = 'block';
+    document.getElementById('fortuneStageResult').style.display = 'none';
+    document.querySelector('.divination-jar').classList.remove('shaking');
+}
+
+function shakeFortuneStick() {
+    const jar = document.querySelector('.divination-jar');
+    
+    // 1. Play sound
+    try {
+        soundManager.playSound('click'); 
+        // Ideally loop a shaking sound, but click is distinct for now
+    } catch(e) {}
+
+    // 2. Add shake class
+    jar.classList.add('shaking');
+
+    // 3. Wait 1.5s then show result
+    setTimeout(() => {
+        jar.classList.remove('shaking');
+        showFortuneResult();
+    }, 1500);
+}
+
+function showFortuneResult() {
+    // Pick random fortune
+    const fortune = fortuneDatabase[Math.floor(Math.random() * fortuneDatabase.length)];
+    
+    // Update DOM
+    document.getElementById('fortuneLevel').textContent = fortune.level;
+    document.getElementById('fortunePoem').textContent = fortune.poem[0];
+    document.getElementById('fortunePoem2').textContent = fortune.poem[1] || ''; // Fallback
+    document.getElementById('fortuneModern').textContent = fortune.modern;
+
+    // Switch View
+    document.getElementById('fortuneStageStart').style.display = 'none';
+    document.getElementById('fortuneStageResult').style.display = 'block';
+
+    // Play effect
+    try {
+        soundManager.playSound(fortune.sound || 'success');
+    } catch(e){}
+
+    // Trigger mission for 'game_play' (using ID string)
+    if (typeof checkMission === 'function') {
+        checkMission('game_play'); 
+        boostFortune(2, 'fortune_stick', 0);
+    }
 }
 
