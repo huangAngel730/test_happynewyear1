@@ -114,8 +114,7 @@ const assets = {
         }
     },
     'style-cute': {
-        // 原 ID 439915614 在部分环境返回 404，已替换为可用回退 ID
-        music: 'https://music.163.com/song/media/outer/url?id=1330348068.mp3', // 轻快可爱长版（替代）
+        music: 'http://music.163.com/song/media/outer/url?id=444331505.mp3', // Mii Channel Theme (Funny/Cute)
         wishes: [
             "哒哒哒~ Q 版小马来送福啦！祝你天天开心鸭！",
             "2026，要做一个可爱的干饭马！🍚",
@@ -152,7 +151,7 @@ const assets = {
         }
     },
     'style-warm': {
-        music: 'https://music.163.com/song/media/outer/url?id=28949052.mp3',
+        music: 'http://music.163.com/song/media/outer/url?id=5239700.mp3', // The Truth That You Leave
         wishes: [
             "围炉煮茶，灯火可亲，马年人间烟火最暖心。",
             "祝你新年每一顿饭都有人陪，每一句话都被温柔接住。",
@@ -189,8 +188,7 @@ const assets = {
         }
     },
     'style-pixel': {
-        // 原 ID 22616833 在部分环境返回 404，已替换为可用回退 ID
-        music: 'https://music.163.com/song/media/outer/url?id=443875283.mp3', // 复古8bit长版（替代）
+        music: 'http://music.163.com/song/media/outer/url?id=425570952.mp3', // Super Mario Bros
         wishes: [
             "↑↑↓↓←→←→AB，解锁 2026 好运彩蛋！",
             "像素马跳一跳，福气值 +99！",
