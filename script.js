@@ -1,4 +1,5 @@
 // 资源配置
+console.log('[debug] script.js loaded');
 const assets = {
     'style-china': {
         music: 'https://music.163.com/song/media/outer/url?id=26217171.mp3',
@@ -9,40 +10,22 @@ const assets = {
             "龙马精神，万事如意。阖家欢乐，福寿安康！",
             "一马当先，步步高升！财源广进，五福临门！"
         ],
-        const menus = [
-            '<h4>活动说明</h4>',
-            '<li><strong>签到领取</strong> - 每日签到可获得福气能量与积分</li>',
-            '<li><strong>祝福接力</strong> - 发起或参与接力，让祝福被更多人看到</li>',
-            '<li><strong>赛博求签</strong> - 摇一摇抽取今日运势，带有现代解签</li>',
-            '<li><strong>成就系统</strong> - 完成任务解锁成就，获取奖励</li>',
-            '<li><strong>皮肤切换</strong> - 切换不同风格，体验不同视觉与音效</li>',
-            '<li><strong>反馈建议</strong> - 欢迎提交 issue 或 PR 改进内容</li>'
-        ];
-        openInfoModal('活动说明', menus.join(''));
-    }
-
-    function openTriviaModal() {
-        const trivia = [
-            '<h4>趣味小知识</h4>',
-            '<li>本页面为纯前端静态页面，支持直接部署到 GitHub Pages 或 Netlify。</li>',
-            '<li>祝福语与音乐均可通过 `script.js` 中的资源配置进行替换与自定义。</li>',
-            '<li>“赛博求签”为趣味交互，结果仅供娱乐。</li>',
-            '<li>移动端和开启“减少动态效果”时，部分复杂动画会自动降级以提升性能。</li>',
-            '<li>如需离线或自托管资源，建议把常用音频放入仓库或 CDN。</li>'
-        ];
-        openInfoModal('趣味小知识', trivia.join(''));
-    }
-
-    function openWelfareModal() {
-        const doneCount = missions.filter(m => m.done).length;
-        let html = '';
-        if (doneCount >= 5) {
-            html = '<h4>奖励已达成</h4><p>恭喜，你已完成所有福气任务，可领取限量奖励：</p><div style="margin-top:10px; padding:10px; background:rgba(0,128,0,0.06); border-radius:8px;">'<p><strong>兑换码：HORSE2026</strong></p><p>使用该码可在指定页面兑换节日礼物（示例文本）。</p></div>';
-        } else {
-            html = '<h4>未达成奖励</h4><p>当前进度：' + doneCount + '/5</p><p>完成更多福气任务可解锁奖励与成就。</p><p>快去完成签到、分享、抽签等任务吧！</p>';
+        fuWishes: [
+            "龙马精神，福气满满！",
+            "吉祥如意，恭喜发财！"
+        ],
+        particles: ['🧧', '🏮', '✨', '🐎', '🌸'],
+        deep: {
+            general: ["万事如意，心想事成。"],
+            career: ["步步高升，前程似锦。"],
+            health: ["身体健康，长命百岁。"],
+            family: ["阖家幸福，团团圆圆。"],
+            fortune: ["财源广进，金玉满堂。"]
         }
-        openInfoModal('福利公告', html);
-    }
+    },
+    'style-simple': {
+        music: 'https://music.163.com/song/media/outer/url?id=26213693.mp3',
+        wishes: [
             "简约不简单，新一年保持松弛与热爱。",
             "留白里有光，步伐里有梦，马年清爽启程。",
             "三分忙碌七分闲，日子慢慢，好运悄悄来。",
@@ -188,10 +171,6 @@ const assets = {
                 "常回家看看，拥抱和微笑是最好的礼物。"
             ],
             fortune: [
-               [
-            'https://music.163.com/song/media/outer/url?id=425570952.mp3', // Super Mario Bros
-            'https://music.163.com/song/media/outer/url?id=29747683.mp3'   // Popcorn 8bit style
-        ],
                 "好运像围炉的暖意，源源不绝，悄悄变多。"
             ]
         }
@@ -254,6 +233,17 @@ const assets = {
 };
 
 // 全局状态
+// 每个风格对应可玩的小游戏类型（可扩展、每种风格提供更独特的玩法）
+const themeGames = {
+    'style-china': ['calligraphy', 'lantern', 'fortune', 'riddle'],
+    'style-simple': ['breathHold', 'relaxTap', 'matchPairs'],
+    'style-tech': ['terminalHack', 'typingChallenge', 'hacker'],
+    'style-cute': ['petFeed', 'dressUp', 'balloon'],
+    'style-warm': ['teaPour', 'storyChoice', 'relaxTap'],
+    'style-pixel': ['pixelRun', 'coinCatch', 'retroShooter'],
+    'style-noble': ['orchestra', 'coinCatch', 'puzzle']
+};
+
 let currentTheme = 'style-china';
 let isMusicPlaying = false;
 let particleInterval = null;
@@ -448,27 +438,27 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // 开场入口
 function startExperience(triggeredByPill = false) {
-    const overlay = document.getElementById('entryOverlay');
-    if (!experienceStarted) {
-        experienceStarted = true;
-        setEnergy(0);
-        if (overlay) {
-            overlay.classList.add('hidden');
-            setTimeout(() => {
-                overlay.style.display = 'none';
-            }, 650);
+    console.log('[debug] startExperience invoked, experienceStarted=', experienceStarted);
+    try {
+        if (!experienceStarted) {
+            experienceStarted = true;
+            setEnergy(0);
+            if (entryOverlay) {
+                entryOverlay.classList.add('hidden');
+                setTimeout(() => {
+                    entryOverlay.style.display = 'none';
+                }, 650);
+            }
+            ensureAudioPlaying();
+            generateWish(true, true);
+            boostFortune(10, 'entry-start', 4000);
         }
-        ensureAudioPlaying();
-        generateWish(true, true);
-        boostFortune(10, 'entry-start', 4000);
-        
-        // 触发任务
-        if (typeof checkMission === 'function') {
-            checkMission('start');
+        if (triggeredByPill) {
+            scrollToMain();
         }
-    }
-    if (triggeredByPill) {
-        scrollToMain();
+    } catch (err) {
+        console.error('startExperience failed', err);
+        if (typeof showToast === 'function') showToast('启动体验时出错，请查看控制台');
     }
 }
 
@@ -772,9 +762,9 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// 通用复制函数（兼容移动端和非HTTPS环境）
+// 通用复制函数（增强版）
 function copyTextToClipboard(text, onSuccess) {
-    // 优先尝试现代API
+    // 1. 优先尝试现代 Clipboard API (仅限 localhost 或 HTTPS)
     if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(text).then(onSuccess).catch(() => {
             fallbackCopyText(text, onSuccess);
@@ -785,13 +775,15 @@ function copyTextToClipboard(text, onSuccess) {
 }
 
 function fallbackCopyText(text, onSuccess) {
+    // 2. 尝试传统的 execCommand 方法
     const textArea = document.createElement("textarea");
     textArea.value = text;
     
-    // 避免在移动端拉起键盘
+    // 避免滚动到底部
     textArea.style.top = "0";
     textArea.style.left = "0";
     textArea.style.position = "fixed";
+    textArea.style.opacity = "0"; // 隐藏但保留在DOM中
     
     document.body.appendChild(textArea);
     textArea.focus();
@@ -799,13 +791,17 @@ function fallbackCopyText(text, onSuccess) {
     
     try {
         const successful = document.execCommand('copy');
-        if(successful && onSuccess) onSuccess();
+        document.body.removeChild(textArea);
+        if (successful) {
+            if (onSuccess) onSuccess();
+        } else {
+            throw new Error('execCommand failed');
+        }
     } catch (err) {
-        console.error('Copy failed', err);
-        alert('复制失败，请手动长按文字复制');
+        document.body.removeChild(textArea);
+        // 3. 终极回退：弹窗让用户手动复制
+        prompt("浏览器限制自动复制，请手动长按复制下方链接：", text);
     }
-    
-    document.body.removeChild(textArea);
 }
 
 // 分场景祝福复制按钮事件委托
@@ -1464,7 +1460,7 @@ function closeGuide() {
 function openGameOverlay() {
     if (!gameOverlay) return;
     resetGame();
-    renderGameModeSelector(currentTheme);
+    renderGamePicker();
     gameOverlay.classList.add('show');
 }
 
@@ -1506,9 +1502,62 @@ function stopGame() {
 }
 
 function startRandomGame() {
-    // Prefer theme-specific modes when available
-    const themeModes = THEME_GAME_MAP[currentTheme] || ['catch', 'lantern', 'fireworks'];
-    const pick = themeModes[Math.floor(Math.random() * themeModes.length)];
+    const modes = (themeGames[currentTheme] && themeGames[currentTheme].slice()) || ['catch', 'lantern', 'fireworks'];
+    const pick = modes[Math.floor(Math.random() * modes.length)];
+    startGame(pick);
+}
+
+let selectedGame = null;
+function renderGamePicker() {
+    const picker = document.getElementById('gamePicker');
+    if (!picker) return;
+    picker.innerHTML = '';
+    const list = (themeGames[currentTheme] && themeGames[currentTheme].slice()) || ['catch','lantern','fireworks'];
+    list.forEach(g => {
+        const b = document.createElement('button');
+        b.className = 'action-btn small';
+        // 友好显示名称映射
+        const labelMap = {
+            catch: '接福袋',
+            lantern: '点灯笼',
+            fireworks: '烟花',
+            fortune: '摇签筒',
+            quickClick: '快速点点',
+            petFeed: '喂小马',
+            pixelRun: '像素跑',
+            coinCatch: '接金币',
+            riddle: '猜谜题',
+            relaxTap: '放松轻点',
+            puzzle: '拼图',
+            balloon: '气球',
+            retroShooter: '像素射手',
+            hacker: '黑客收包',
+            teaPour: '注茶',
+            orchestra: '点音符',
+            calligraphy: '书法追笔',
+            typingChallenge: '终端打字',
+            terminalHack: '终端调试',
+            matchPairs: '配对记忆',
+            dressUp: '换装小马',
+            breathHold: '深呼吸计时',
+            storyChoice: '温暖小故事'
+        };
+        b.textContent = labelMap[g] || g;
+        b.setAttribute('data-game', g);
+        b.onclick = () => {
+            selectedGame = g;
+            // highlight
+            picker.querySelectorAll('button').forEach(x=>x.classList.remove('active'));
+            b.classList.add('active');
+            setModeDisplay(g);
+            setDesc(getGameDesc(g));
+        };
+        picker.appendChild(b);
+    });
+}
+
+function startGameButton() {
+    const pick = selectedGame || (themeGames[currentTheme] && themeGames[currentTheme][Math.floor(Math.random()*themeGames[currentTheme].length)]) || 'catch';
     startGame(pick);
 }
 
@@ -1530,8 +1579,32 @@ function startGame(type) {
         setupCatchGame();
     } else if (type === 'lantern') {
         setupLanternGame();
-    } else if (type === 'pixel') {
-        setupPixelGame();
+    } else if (type === 'fortune') {
+        setupFortuneGame();
+    } else if (type === 'quickClick') {
+        setupQuickClickGame();
+    } else if (type === 'petFeed') {
+        setupPetFeedGame();
+    } else if (type === 'pixelRun') {
+        setupPixelRunGame();
+    } else if (type === 'coinCatch') {
+        setupCoinCatchGame();
+    } else if (type === 'riddle') {
+        setupRiddleGame();
+    } else if (type === 'puzzle') {
+        setupPuzzleGame();
+    } else if (type === 'balloon') {
+        setupBalloonGame();
+    } else if (type === 'retroShooter') {
+        setupRetroShooterGame();
+    } else if (type === 'hacker') {
+        setupHackerGame();
+    } else if (type === 'relaxTap') {
+        setupRelaxTapGame();
+    } else if (type === 'teaPour') {
+        setupTeaPourGame();
+    } else if (type === 'orchestra') {
+        setupOrchestraGame();
     } else {
         setupFireworkGame();
     }
@@ -1821,102 +1894,262 @@ function createEnhancedFirework(x, y, addScore = false) {
 }
 
 function getGameDesc(type) {
-    if (type === 'catch') return '左右移动接福袋，躲开空白掉落，30s 内多多得分。';
-    if (type === 'lantern') return '点击/轻点灯笼得分，灯笼会随机出现与消失。';
-    return '点击游戏区域触发烟花并得分，背景会有缓慢上升的光点。';
-}
-
-// ============ 主题 -> 可用小游戏 映射 ============
-const THEME_GAME_MAP = {
-    'style-china': ['lantern', 'catch'],
-    'style-tech': ['fireworks', 'catch'],
-    'style-cute': ['catch', 'fireworks'],
-    'style-pixel': ['pixel', 'catch'],
-    'style-warm': ['lantern', 'catch'],
-    'style-simple': ['fireworks', 'lantern'],
-    'style-noble': ['lantern', 'fireworks']
-};
-
-let selectedGameType = null;
-
-function renderGameModeSelector(theme) {
-    if (!gameOverlay) return;
-    // ensure container
-    let container = document.getElementById('gameModeSelector');
-    if (!container) {
-        container = document.createElement('div');
-        container.id = 'gameModeSelector';
-        container.style.display = 'flex';
-        container.style.gap = '8px';
-        container.style.justifyContent = 'center';
-        container.style.margin = '8px 0 12px 0';
-        const panel = document.querySelector('.game-panel');
-        if (panel) panel.insertBefore(container, document.getElementById('gameArea'));
+    switch(type) {
+        case 'catch': return '左右移动接福袋，躲开炸弹并多多得分。';
+        case 'lantern': return '点击灯笼得分，注意灯笼会消失。';
+        case 'fortune': return '摇一摇签筒，按时机点击以获取更高点数。';
+        case 'quickClick': return '短时间内快速点击目标，手速决定得分。';
+        case 'petFeed': return '给小马喂食，保持开心度以获得分数。';
+        case 'pixelRun': return '控制像素角色躲避障碍并收集金币。';
+        case 'coinCatch': return '接金币，避开坏币，累计更高财富。';
+        default: return '点击区域互动，触发特效并得分。';
     }
-    container.innerHTML = '';
-    const modes = THEME_GAME_MAP[theme] || ['catch','lantern','fireworks'];
-    modes.forEach(m => {
-        const btn = document.createElement('button');
-        btn.className = 'action-btn';
-        btn.textContent = (m === 'catch' ? '接福袋' : m === 'lantern' ? '点灯笼' : m === 'fireworks' ? '烟花' : m === 'pixel' ? '像素收集' : m);
-        btn.onclick = () => {
-            selectedGameType = m;
-            // highlight
-            container.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            setModeDisplay(btn.textContent);
-            setDesc(getGameDesc(m));
-        };
-        container.appendChild(btn);
-    });
-    // default select first
-    selectedGameType = modes[0];
-    const firstBtn = container.querySelector('button');
-    if (firstBtn) { firstBtn.classList.add('active'); setModeDisplay(firstBtn.textContent); setDesc(getGameDesc(selectedGameType)); }
 }
 
-// 在开始前，如果用户通过“开始”按钮触发，优先使用已选择的主题游戏
-const origStartRandom = startRandomGame;
-function startRandomGameForSelected() {
-    if (selectedGameType) startGame(selectedGameType);
-    else startRandomGame();
+// ----------------- 新增小游戏实现（轻量占位实现，便于后续扩展）
+function setupFortuneGame() {
+    // 玩家点击摇签区域，累积分数
+    const jar = document.createElement('div'); jar.className = 'game-fortune-jar'; jar.textContent = '摇！';
+    gameArea.appendChild(jar);
+    jar.onclick = () => {
+        const gain = Math.floor(Math.random() * 6) + 2;
+        updateScore(gain);
+        createEnhancedFirework(Math.random()*gameArea.clientWidth, Math.random()*gameArea.clientHeight, false);
+    };
 }
 
-// 小型：像素风游戏实现（用于 style-pixel）
-function setupPixelGame() {
-    // 在 gameArea 内生成若干可点击的像素物
-    const count = isMobile ? 6 : 10;
-    let collected = 0;
+function setupQuickClickGame() {
+    // 在规定时间内快速点击出现的目标
+    const spawn = () => {
+        const t = document.createElement('div'); t.className = 'game-item quick-target'; t.textContent = '⚡';
+        t.style.left = `${Math.random()*(gameArea.clientWidth-40)}px`;
+        t.style.top = `${Math.random()*(gameArea.clientHeight-40)}px`;
+        gameArea.appendChild(t);
+        t.onclick = () => { updateScore(3); t.remove(); };
+        setTimeout(()=>{ if(t.parentElement) t.remove(); }, 900);
+    };
+    gameIntervals.push(setInterval(spawn, prefersReducedMotion ? 800 : 500));
+}
+
+function setupPetFeedGame() {
+    const pet = document.createElement('div'); pet.className='game-pet'; pet.textContent='🐴'; pet.style.fontSize='48px';
+    pet.style.position='absolute'; pet.style.left='50%'; pet.style.top='50%'; pet.style.transform='translate(-50%,-50%)';
+    gameArea.appendChild(pet);
+    pet.onclick = () => { updateScore(5); createEnhancedFirework(Math.random()*gameArea.clientWidth, Math.random()*gameArea.clientHeight, false); };
+}
+
+function setupPixelRunGame() {
+    // 简易像素收集：点击屏幕收集金币
+    const spawn = () => {
+        const c = document.createElement('div'); c.className='game-item pixel-coin'; c.textContent='★';
+        c.style.left = `${Math.random()*(gameArea.clientWidth-30)}px`;
+        c.style.top = `${Math.random()*(gameArea.clientHeight-30)}px`;
+        gameArea.appendChild(c);
+        c.onclick = () => { updateScore(4); c.remove(); };
+        setTimeout(()=>{ if(c.parentElement) c.remove(); }, 2000);
+    };
+    gameIntervals.push(setInterval(spawn, prefersReducedMotion ? 900 : 600));
+}
+
+function setupCoinCatchGame() {
+    // 重用掉落逻辑但只产金币
+    const drop = () => {
+        const item = document.createElement('div'); item.className='game-item'; item.textContent='🪙';
+        const left = Math.random()*(gameArea.clientWidth-30); item.style.left=`${left}px`; item.style.top='-40px';
+        gameArea.appendChild(item);
+        requestAnimationFrame(()=>{ item.style.transform=`translateY(${gameArea.clientHeight+60}px)`});
+        const t = setTimeout(()=>{ item.remove(); }, prefersReducedMotion?2200:3000);
+        gameTimeouts.push(t);
+    };
+    gameIntervals.push(setInterval(drop, prefersReducedMotion?900:600));
+    gameIntervals.push(setInterval(()=>{ /* speedup if desired */ }, 500));
+}
+
+// ----------------- 额外完善的小游戏实现 -----------------
+function setupHackerGame() {
+    // 科技主题：捕获流动的数据包（0/1/<>）
+    const spawn = () => {
+        const el = document.createElement('div'); el.className='game-item hacker-burst';
+        const chars = ['0','1','<>','{ }','/* */']; el.textContent = chars[Math.floor(Math.random()*chars.length)];
+        el.style.left = `${Math.random()*(gameArea.clientWidth-60)}px`;
+        el.style.top = `${Math.random()*(gameArea.clientHeight-60)}px`;
+        gameArea.appendChild(el);
+        el.onclick = () => { updateScore(5); createEnhancedFirework(parseFloat(el.style.left), parseFloat(el.style.top), false); el.remove(); };
+        setTimeout(()=>{ if(el.parentElement) el.remove(); }, prefersReducedMotion?1500:2200);
+    };
+    gameIntervals.push(setInterval(spawn, prefersReducedMotion?500:360));
+}
+
+function setupRelaxTapGame() {
+    // 简约主题：轻点圆点放松计分
+    const spawn = () => {
+        const d = document.createElement('div'); d.className='game-item relax-dot'; d.textContent='◯';
+        d.style.left = `${Math.random()*(gameArea.clientWidth-60)}px`;
+        d.style.top = `${Math.random()*(gameArea.clientHeight-60)}px`;
+        d.style.fontSize = isMobile? '36px' : '28px';
+        gameArea.appendChild(d);
+        d.onclick = () => { updateScore(2); d.remove(); };
+        setTimeout(()=>{ if(d.parentElement) d.remove(); }, prefersReducedMotion?2000:3000);
+    };
+    gameIntervals.push(setInterval(spawn, prefersReducedMotion?900:650));
+}
+
+function setupTeaPourGame() {
+    // 温馨主题：点击水壶向杯中注水，注满一次得分
+    const cup = document.createElement('div'); cup.className='game-tea-cup'; cup.innerHTML = '<div class="tea-fill" style="width:0%"></div>';
+    cup.style.position='absolute'; cup.style.right='20px'; cup.style.bottom='20px'; cup.style.width='120px'; cup.style.height='90px';
+    gameArea.appendChild(cup);
+    let fill = 0;
+    const kettle = document.createElement('div'); kettle.className='game-kettle'; kettle.textContent='🫖'; kettle.style.position='absolute'; kettle.style.left='20px'; kettle.style.bottom='20px'; kettle.style.fontSize='36px';
+    gameArea.appendChild(kettle);
+    kettle.onclick = () => {
+        fill += 12; if (fill > 100) fill = 100;
+        const f = cup.querySelector('.tea-fill'); if(f) f.style.width = fill + '%';
+        if (fill >= 100) { updateScore(10); showToast('茶已注满，福气 +10'); fill = 0; if(f) f.style.width = '0%'; }
+    };
+    gameTimeouts.push(setTimeout(()=>{/* cup exists for duration */}, 999999));
+}
+
+function setupOrchestraGame() {
+    // 黑金/贵雅主题：点击落下的音符获得分数
+    const spawn = () => {
+        const n = document.createElement('div'); n.className='game-item note'; n.textContent='♪';
+        n.style.left = `${Math.random()*(gameArea.clientWidth-30)}px`;
+        n.style.top = '-30px'; n.style.transition = `transform ${prefersReducedMotion?2.0:3.0}s linear`;
+        gameArea.appendChild(n);
+        requestAnimationFrame(()=> n.style.transform = `translateY(${gameArea.clientHeight+60}px)`);
+        n.onclick = () => { updateScore(6); createEnhancedFirework(parseFloat(n.style.left), 40, false); n.remove(); };
+        const t = setTimeout(()=>{ if(n.parentElement) n.remove(); }, prefersReducedMotion?2000:3000);
+        gameTimeouts.push(t);
+    };
+    gameIntervals.push(setInterval(spawn, prefersReducedMotion?700:520));
+}
+
+// ----------------- 新增更独特的小游戏实现 -----------------
+function setupCalligraphyGame() {
+    // 依次点击笔触点，考验速度与顺序
+    const points = [];
+    const count = Math.min(6, Math.floor(gameArea.clientWidth / 80));
+    let idx = 0;
     for (let i = 0; i < count; i++) {
-        const el = document.createElement('div');
-        el.className = 'game-item pixel-item';
-        el.textContent = ['🧧','福','★','🪙'][i % 4];
-        el.style.position = 'absolute';
-        const w = gameArea.clientWidth, h = gameArea.clientHeight;
-        const x = Math.random() * (w - 40);
-        const y = Math.random() * (h - 40);
-        el.style.left = `${x}px`;
-        el.style.top = `${y}px`;
-        el.style.fontSize = isMobile ? '30px' : '20px';
-        el.onclick = () => {
-            collected += 1;
-            updateScore(2);
-            showScorePop(2);
-            el.remove();
-            if (collected >= Math.ceil(count * 0.6)) {
-                // 达成目标，提前结束并奖励
-                updateScore(8);
-                finishGame();
+        const p = document.createElement('div');
+        p.className = 'game-item calligraphy-point';
+        p.textContent = '•';
+        const left = 40 + i * (gameArea.clientWidth - 80) / Math.max(1, count - 1);
+        p.style.left = `${left}px`;
+        p.style.top = `${50 + Math.random() * (gameArea.clientHeight - 140)}px`;
+        gameArea.appendChild(p);
+        points.push(p);
+        p.onclick = () => {
+            if (points[idx] === p) {
+                updateScore(4);
+                createEnhancedFirework(parseFloat(p.style.left), parseFloat(p.style.top), false);
+                p.classList.add('collected');
+                idx++;
+                if (idx >= points.length) finishGame();
+            } else {
+                updateLives(-1);
             }
         };
-        gameArea.appendChild(el);
-        // 小幅漂浮动画
-        el.animate([
-            { transform: 'translateY(0)' },
-            { transform: 'translateY(-12px)' },
-            { transform: 'translateY(0)' }
-        ], { duration: 2200 + Math.random()*800, iterations: Infinity, easing: 'ease-in-out' });
     }
+}
+
+function setupTypingChallenge() {
+    // 给出一个词，输入框输入正确可得分
+    const words = ['deploy','optimize','iterate','release','merge','init'];
+    const target = words[Math.floor(Math.random()*words.length)];
+    const box = document.createElement('div'); box.className='typing-challenge';
+    box.innerHTML = `<div style="margin-bottom:8px">输入：<strong>${target}</strong></div>`;
+    const input = document.createElement('input'); input.type='text'; input.placeholder='快速输入并回车';
+    box.appendChild(input);
+    gameArea.appendChild(box);
+    input.focus();
+    input.addEventListener('keydown', function onKey(e){
+        if (e.key === 'Enter') {
+            if (this.value.trim() === target) {
+                updateScore(10);
+                showToast('打字成功！');
+                createEnhancedFirework(Math.random()*gameArea.clientWidth, Math.random()*gameArea.clientHeight, false);
+            } else {
+                updateLives(-1);
+            }
+            input.removeEventListener('keydown', onKey);
+            input.disabled = true;
+        }
+    });
+}
+
+function setupTerminalHackGame() {
+    // 点击带有 bug 的行获得分数
+    const lines = ['init()', 'fetchData()', 'render()', 'commit()', 'deploy()'];
+    lines.forEach((t, i) => {
+        const el = document.createElement('div'); el.className='game-item terminal-line'; el.textContent = t + (Math.random()>0.6 ? '  // bug' : '');
+        el.style.left = `${20}px`;
+        el.style.top = `${40 + i*36}px`;
+        el.style.fontFamily='monospace';
+        el.style.background='rgba(0,0,0,0.06)';
+        el.style.padding='6px 10px';
+        gameArea.appendChild(el);
+        el.onclick = () => {
+            if (el.textContent.includes('bug')) { updateScore(6); createEnhancedFirework(60, 40 + i*36, false); el.remove(); }
+            else { updateScore(2); el.remove(); }
+        };
+    });
+}
+
+function setupMatchPairsGame() {
+    // 简易配对记忆，4 对
+    const icons = ['🍊','🧧','🐴','✨'];
+    const deck = icons.concat(icons).sort(()=>Math.random()-0.5);
+    const opened = [];
+    deck.forEach((sym, i) => {
+        const c = document.createElement('div'); c.className='game-item match-card'; c.textContent='?';
+        c.style.left = `${20 + (i%4)*80}px`; c.style.top = `${20 + Math.floor(i/4)*80}px`;
+        c.dataset.val = sym; gameArea.appendChild(c);
+        c.onclick = () => {
+            if (c.classList.contains('matched') || opened.includes(c) ) return;
+            c.textContent = sym; opened.push(c);
+            if (opened.length === 2) {
+                const a = opened[0], b = opened[1];
+                if (a.dataset.val === b.dataset.val) { a.classList.add('matched'); b.classList.add('matched'); updateScore(5); opened.length=0; }
+                else { setTimeout(()=>{ a.textContent='?'; b.textContent='?'; opened.length=0; updateLives(-1); }, 600); }
+            }
+        };
+    });
+}
+
+function setupDressUpGame() {
+    // 可爱主题：点击切换装扮，匹配目标可得分
+    const pet = document.createElement('div'); pet.className='game-pet'; pet.textContent='🐴'; pet.style.fontSize='64px'; pet.style.left='50%'; pet.style.top='40%'; pet.style.position='absolute'; pet.style.transform='translate(-50%,-50%)';
+    gameArea.appendChild(pet);
+    const outfits = ['🎀','🧣','🎩','🕶️'];
+    let idx = 0; const target = outfits[Math.floor(Math.random()*outfits.length)];
+    const hint = document.createElement('div'); hint.className='game-item dress-hint'; hint.textContent=`目标：${target}`; hint.style.left='12px'; hint.style.top='12px'; gameArea.appendChild(hint);
+    pet.onclick = () => {
+        idx = (idx+1)%outfits.length; pet.textContent = '🐴' + outfits[idx];
+        if (outfits[idx] === target) { updateScore(8); showToast('配对成功！'); }
+    };
+}
+
+function setupBreathHoldGame() {
+    // 按住填充进度条，填满得分
+    const ctr = document.createElement('div'); ctr.className='game-item breath-ctr'; ctr.style.left='50%'; ctr.style.top='50%'; ctr.style.position='absolute'; ctr.style.transform='translate(-50%,-50%)';
+    ctr.innerHTML = `<div class="breath-bar" style="width:160px;height:22px;border:1px solid #fff;border-radius:12px;background:rgba(255,255,255,0.02);position:relative"><div class="breath-fill" style="height:100%;width:0%;background:linear-gradient(90deg,var(--secondary-color),var(--primary-color));border-radius:12px"></div></div><div style="font-size:12px;margin-top:6px">按住以充能</div>`;
+    gameArea.appendChild(ctr);
+    const fillEl = ctr.querySelector('.breath-fill'); let filling = 0; let holdId = null;
+    ctr.onpointerdown = () => { if (holdId) return; holdId = setInterval(()=>{ filling += 4; fillEl.style.width = filling + '%'; if (filling >= 100) { clearInterval(holdId); holdId = null; updateScore(12); showToast('深呼吸完成'); filling = 0; fillEl.style.width='0%'; } }, 120); };
+    ctr.onpointerup = () => { if (holdId) clearInterval(holdId); holdId = null; filling = 0; if (fillEl) fillEl.style.width='0%'; };
+    ctr.onpointerleave = ctr.onpointerup;
+}
+
+function setupStoryChoice() {
+    // 温馨主题：简单二选一小故事，选择给分
+    const c = document.createElement('div'); c.className='game-item story-choices'; c.style.left='20px'; c.style.top='20px';
+    const a = document.createElement('button'); a.className='action-btn small'; a.textContent='回家吃饭';
+    const b = document.createElement('button'); b.className='action-btn small'; b.textContent='约朋友逛街';
+    c.appendChild(a); c.appendChild(b); gameArea.appendChild(c);
+    a.onclick = ()=>{ updateScore(6); showToast('温暖的选择'); };
+    b.onclick = ()=>{ updateScore(6); showToast('社交的快乐'); };
 }
 
 /* ================== 成就系统逻辑 ================== */
@@ -2116,6 +2349,31 @@ function closeAchievements(e) {
         if (achievementManager) achievementManager.close();
     }
 }
+
+// 确保 `startExperience` 在全局可调用，并为入口按钮添加稳健的事件绑定（用于诊断按钮无响应）
+document.addEventListener('DOMContentLoaded', () => {
+    try {
+        // 明确导出到 window
+        window.startExperience = startExperience;
+
+        // 优先使用 id 绑定，兼容旧类名选择器作为后备
+        const btn = document.getElementById('entryStartBtn') || document.querySelector('.entry-overlay .entry-btn');
+        if (btn) {
+            // 移除内联 onclick（若存在），使用事件监听以便更可靠的错误捕获
+            try { btn.removeAttribute('onclick'); } catch(e) {}
+            btn.addEventListener('click', () => {
+                try {
+                    startExperience();
+                } catch (err) {
+                    console.error('entry button handler error', err);
+                    if (typeof showToast === 'function') showToast('启动体验失败，请查看控制台');
+                }
+            });
+        }
+    } catch (e) {
+        console.error('failed to bind startExperience', e);
+    }
+});
 
 /* ================== 钩子挂载 ================== */
 // Hook into switchTheme
@@ -2448,14 +2706,39 @@ class RelayManager {
         // Encode state into URL
         const jsonStr = JSON.stringify(this.chain);
         const encoded = encodeURIComponent(btoa(jsonStr));
-        const cleanUrl = window.location.origin + window.location.pathname; // Remove existing query
-        const shareUrl = `${cleanUrl}?relayData=${encoded}&style=${currentTheme}`; // Also keep theme
+        
+        let baseUrl = window.location.href.split('?')[0];
+        // 如果是本地 file 协议，尝试使用预设的 GitHub Pages 地址
+        if (baseUrl.startsWith('file://')) {
+             // 移除 index.html 后缀以获得目录路径，或者直接使用 __SHARE_BASE__
+             if (typeof window.__SHARE_BASE__ !== 'undefined') {
+                baseUrl = window.__SHARE_BASE__;
+             }
+        }
+        
+        const shareUrl = `${baseUrl}?relayData=${encoded}&style=${currentTheme}`; 
         const shareText = `🏃 我发起了新春祝福接力！已经传到第 ${this.chain.length} 棒啦！\n快来点击加入：${shareUrl}`;
 
-        // 使用通用的 copyTextToClipboard 函数，支持 fallback
-        copyTextToClipboard(shareText, () => {
-             if (achievementManager) achievementManager.showCustomToast('复制成功', '链接已复制，去发送给好友吧！', '🔗');
-        });
+        // 优先使用 Web Share API (移动端体验更好)
+        if (navigator.share && isMobile) {
+            navigator.share({
+                title: '2026 马年新春祝福接力',
+                text: `🏃 接力第 ${this.chain.length} 棒！\n${shareUrl}`,
+                url: shareUrl
+            }).then(() => {
+                 if (achievementManager) achievementManager.showCustomToast('分享成功', '接力棒已传递！', '🚀');
+            }).catch(() => {
+                // Share cancelled or failed, fallback to copy
+                copyTextToClipboard(shareText, () => {
+                     if (achievementManager) achievementManager.showCustomToast('复制成功', '链接已复制，去发送给好友吧！', '🔗');
+                });
+            });
+        } else {
+            // PC 端或不支持 Share API
+            copyTextToClipboard(shareText, () => {
+                 if (achievementManager) achievementManager.showCustomToast('复制成功', '链接已复制，去发送给好友吧！', '🔗');
+            });
+        }
     }
 
     open(isInvite = false) {
@@ -2809,5 +3092,253 @@ function showFortuneResult() {
         checkMission('game_play'); 
         boostFortune(2, 'fortune_stick', 0);
     }
+}
+
+
+// Mobile view height fix
+function setMobileVh() {
+    let vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', vh + 'px');
+}
+
+window.addEventListener('resize', setMobileVh);
+window.addEventListener('orientationchange', setMobileVh);
+setMobileVh();
+
+
+// --- Game: Riddle (猜谜) ---
+function setupRiddleGame() {
+    const questions = [
+        { q: '头顶一只角，走路一摇头，猜一种动物。', a: '鹿' },
+        { q: '有头无颈，有眼无眸，有脚不能走，是什么？', a: '针' },
+        { q: '身穿彩衣会飞，不会叫也不会走，是什么？', a: '蝴蝶' },
+        { q: '一物长在树上，落地五份开，名字一分成，猜是什么？', a: '橘子（桔）' },
+        { q: '有面无口，有脚不能走，是什么？', a: '桌子' }
+    ];
+    let qIdx = 0;
+
+    function showQ() {
+        gameArea.innerHTML = '';
+        if (qIdx >= questions.length) {
+            setDesc('谜题已全部完成，祝你新年快乐！');
+            finishGame();
+            return;
+        }
+
+        const card = document.createElement('div');
+        card.className = 'game-item riddle-card';
+        card.style.position = 'relative';
+        card.style.padding = '20px';
+        card.style.background = 'rgba(255,255,255,0.95)';
+        card.style.color = '#222';
+        card.style.borderRadius = '12px';
+        card.style.width = '80%';
+        card.style.left = '10%';
+        card.style.top = '12%';
+
+        const qEl = document.createElement('div');
+        qEl.style.fontSize = '18px';
+        qEl.style.lineHeight = '1.6';
+        qEl.textContent = questions[qIdx].q;
+        card.appendChild(qEl);
+
+        const btnReveal = document.createElement('button');
+        btnReveal.className = 'action-btn small';
+        btnReveal.textContent = '查看答案';
+        btnReveal.style.marginTop = '14px';
+        btnReveal.onclick = () => {
+            const ans = document.createElement('div');
+            ans.style.color = 'green';
+            ans.style.fontWeight = '700';
+            ans.style.marginTop = '10px';
+            ans.textContent = '答案：' + questions[qIdx].a;
+            card.appendChild(ans);
+            updateScore(10);
+            btnReveal.disabled = true;
+
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'action-btn small';
+            nextBtn.textContent = '下一题';
+            nextBtn.style.marginLeft = '10px';
+            nextBtn.onclick = () => { qIdx++; showQ(); };
+            card.appendChild(nextBtn);
+        };
+
+        card.appendChild(btnReveal);
+        gameArea.appendChild(card);
+    }
+
+    showQ();
+}
+
+// --- Game: ƴͼ (Puzzle) ---
+function setupPuzzleGame() {
+    // ���� 3x3 ƴͼ (�������)
+    const gridSize = 3;
+    const pieces = [];
+    const rightOrder = [0,1,2,3,4,5,6,7,8]; 
+    let currentOrder = [...rightOrder].sort(() => Math.random() - 0.5);
+    
+    gameArea.style.display = 'grid';
+    gameArea.style.gridTemplateColumns = 'repeat(3, 1fr)';
+    gameArea.style.gap = '2px';
+    gameArea.style.padding = '20px';
+    
+    let selected = null;
+    
+    function render() {
+        gameArea.innerHTML = '';
+        currentOrder.forEach((val, idx) => {
+            const p = document.createElement('div');
+            p.className = 'game-item puzzle-piece';
+            p.textContent = val === 8 ? '' : (val+1); // 8 is empty space logic usually, but here just swap
+            p.style.background = val === 8 ? 'transparent' : 'var(--primary-color)';
+            p.style.color = '#fff';
+            p.style.display = 'flex';
+            p.style.alignItems = 'center';
+            p.style.justifyContent = 'center';
+            p.style.fontSize = '24px';
+            p.style.cursor = 'pointer';
+            p.style.border = selected === idx ? '2px solid yellow' : '1px solid rgba(255,255,255,0.3)';
+            
+            p.onclick = () => {
+                if (selected === null) {
+                    selected = idx;
+                    render();
+                } else {
+                    // swap
+                    [currentOrder[selected], currentOrder[idx]] = [currentOrder[idx], currentOrder[selected]];
+                    selected = null;
+                    updateScore(2);
+                    render();
+                    checkWin();
+                }
+            };
+            gameArea.appendChild(p);
+        });
+    }
+    
+    function checkWin() {
+        if (JSON.stringify(currentOrder) === JSON.stringify(rightOrder)) {
+            showToast('ƴͼ��ɣ�');
+            updateScore(50);
+            window.dispatchEvent(new Event('sfx-success'));
+        }
+    }
+    
+    render();
+}
+
+// --- Game: Balloon (气球) ---
+function setupBalloonGame() {
+    const colors = ['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3'];
+    const spawn = () => {
+        const b = document.createElement('div');
+        b.className = 'game-item game-balloon';
+        b.textContent = '🎈';
+        b.style.fontSize = isMobile ? '40px' : '48px';
+        b.style.position = 'absolute';
+        const startX = Math.random() * Math.max(0, (gameArea.clientWidth - 60));
+        b.style.left = `${startX}px`;
+        b.style.bottom = '-60px';
+        b.style.transition = `transform ${prefersReducedMotion ? 2.2 : 3.2}s linear, opacity 0.6s`;
+        b.style.filter = 'drop-shadow(0 0 6px rgba(0,0,0,0.25))';
+        b.style.cursor = 'pointer';
+
+        b.onclick = () => {
+            // Pop effect
+            b.textContent = '';
+            b.style.opacity = '0';
+            updateScore(5);
+            window.dispatchEvent(new Event('sfx-pop'));
+            setTimeout(() => { if (b.parentElement) b.remove(); }, 300);
+        };
+
+        gameArea.appendChild(b);
+        requestAnimationFrame(() => {
+            const travel = gameArea.clientHeight + 120;
+            b.style.transform = `translateY(-${travel}px)`;
+        });
+
+        setTimeout(() => { if (b.parentElement) b.remove(); }, prefersReducedMotion ? 2200 : 3400);
+    };
+    gameIntervals.push(setInterval(spawn, prefersReducedMotion ? 700 : 600));
+}
+
+// --- Game: �������� (RetroShooter) ---
+function setupRetroShooterGame() {
+    // ��ҿ��Ƶײ���̨����������ӵ��������
+    const player = document.createElement('div');
+    player.textContent = '';
+    player.style.position = 'absolute';
+    player.style.bottom = '10px';
+    player.style.left = '50%';
+    player.style.fontSize = '32px';
+    player.style.marginLeft = '-16px';
+    gameArea.appendChild(player);
+    
+    let px = 50;
+    gameArea.onpointermove = (e) => {
+        px = (e.offsetX / gameArea.clientWidth) * 100;
+        player.style.left = px + '%';
+    };
+    
+    gameArea.onpointerdown = (e) => {
+        // Shoot
+        const b = document.createElement('div');
+        b.className = 'game-bullet';
+        b.style.width = '4px'; b.style.height = '10px'; b.style.background = '#ff0';
+        b.style.position = 'absolute';
+        b.style.left = player.style.left;
+        b.style.bottom = '45px';
+        gameArea.appendChild(b);
+        
+        const anim = b.animate([
+            { transform: 'translateY(0)' },
+            { transform: 	ranslateY(-px) }
+        ], { duration: 800, fill: 'forwards' });
+        
+        anim.onfinish = () => b.remove();
+        
+        // Simple collision check loop (not performant but works for small amounts)
+        const checkHit = setInterval(() => {
+            if (!b.parentElement) { clearInterval(checkHit); return; }
+            const bRect = b.getBoundingClientRect();
+            document.querySelectorAll('.game-enemy').forEach(en => {
+                const eRect = en.getBoundingClientRect();
+                if (bRect.top < eRect.bottom && bRect.bottom > eRect.top && 
+                    bRect.left < eRect.right && bRect.right > eRect.left) {
+                    en.remove();
+                    b.remove();
+                    updateScore(10);
+                    clearInterval(checkHit);
+                    createEnhancedFirework(eRect.left, eRect.top, false);
+                }
+            });
+        }, 50);
+    };
+    
+    const spawnEnemy = () => {
+        const en = document.createElement('div');
+        en.className = 'game-item game-enemy';
+        en.textContent = '';
+        en.style.position = 'absolute';
+        en.style.top = '0';
+        en.style.left = Math.random() * 90 + '%';
+        en.style.fontSize = '24px';
+        gameArea.appendChild(en);
+        
+        en.animate([
+            { transform: 'translateY(0)' },
+            { transform: 	ranslateY(px) }
+        ], { duration: 4000 }).onfinish = () => {
+            if(en.parentElement) {
+                en.remove();
+                updateLives(-1); // Enemy reached bottom
+            }
+        };
+    };
+    
+    gameIntervals.push(setInterval(spawnEnemy, 1000));
 }
 

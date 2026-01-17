@@ -31,7 +31,7 @@
             <p class="entry-kicker">2026 丙午马年 · 限定体验</p>
             <h1>灵马踏春 · 福满乾坤</h1>
             <p class="entry-note">这一场关于新春的奇遇，包含传统、科技与治愈。点击开始，开启您的专属祝福旅程。</p>
-            <button class="entry-btn" onclick="startExperience()">开启旅程</button>
+            <button id="entryStartBtn" class="entry-btn">开启旅程</button>
         </div>
     </section>
 
@@ -463,7 +463,7 @@
                 <h2>🎮 跨年小游戏</h2>
                 <span class="close-btn" onclick="closeGameOverlay()">×</span>
             </div>
-            <p id="gameDescription" class="game-desc">点击开始，随机体验接福袋 / 点灯笼 / 烟花快点三款轻量小游戏。</p>
+            <p id="gameDescription" class="game-desc">根据当前风格选择或随机体验该风格的小游戏，支持更多主题专属玩法。</p>
             <div class="game-info">
                 <span class="game-badge">模式：<strong id="gameMode">待选择</strong></span>
                 <span class="game-badge">得分：<strong id="gameScore">0</strong></span>
@@ -472,8 +472,9 @@
                 <span class="game-badge">连击：<strong id="gameCombo">0</strong>x</span>
             </div>
             <div id="gameArea" class="game-area" tabindex="0"></div>
+            <div id="gamePicker" class="game-picker"></div>
             <div class="game-actions">
-                <button class="action-btn" onclick="startRandomGame()">▶ 开始</button>
+                <button class="action-btn" onclick="startGameButton()">▶ 开始</button>
                 <button class="action-btn ghost" onclick="closeGameOverlay()">退出</button>
             </div>
             <p class="game-hint">提示：竖屏体验最佳，移动端用左右滑动/轻点，桌面可用左右键。</p>
