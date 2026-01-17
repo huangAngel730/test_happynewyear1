@@ -9,40 +9,40 @@ const assets = {
             "龙马精神，万事如意。阖家欢乐，福寿安康！",
             "一马当先，步步高升！财源广进，五福临门！"
         ],
-        fuWishes: [
-            "福到新春到，马啸九州添鸿运！",
-            "鎏金赐福，红运相随；龙马精神，稳步腾飞！",
-            "祥云缭绕，家兴业旺；春风得意，万事顺遂！",
-            "福气临门，金玉满堂；马到成功，步步高升！"
-        ],
-        particles: ['🧧', '🏮', '✨', '🐴', '🧨', '福', '云'],
-        deep: {
-            general: [
-                "春风得意马蹄疾，福运随行步步高。",
-                "龙马精神常相伴，阖家欢乐好运连。"
-            ],
-            career: [
-                "丹心执笔，事业添锦绣；骏马奔程，步步踏高台。",
-                "贵人同行，项目顺利落地，前路光明万里。"
-            ],
-            health: [
-                "松鹤延年，身轻如燕；早睡早起，神清气爽。",
-                "茶香入骨，气血调和，少病少忧，心境安宁。"
-            ],
-            family: [
-                "灯火可亲，笑语盈门，家和万事兴。",
-                "长辈安康，晚辈顺遂，团圆常在。"
-            ],
-            fortune: [
-                "财源滚滚，福泽连绵，红包与惊喜齐来。",
-                "路逢贵马，机遇频催，投资与收获双丰。"
-            ]
+        const menus = [
+            '<h4>活动说明</h4>',
+            '<li><strong>签到领取</strong> - 每日签到可获得福气能量与积分</li>',
+            '<li><strong>祝福接力</strong> - 发起或参与接力，让祝福被更多人看到</li>',
+            '<li><strong>赛博求签</strong> - 摇一摇抽取今日运势，带有现代解签</li>',
+            '<li><strong>成就系统</strong> - 完成任务解锁成就，获取奖励</li>',
+            '<li><strong>皮肤切换</strong> - 切换不同风格，体验不同视觉与音效</li>',
+            '<li><strong>反馈建议</strong> - 欢迎提交 issue 或 PR 改进内容</li>'
+        ];
+        openInfoModal('活动说明', menus.join(''));
+    }
+
+    function openTriviaModal() {
+        const trivia = [
+            '<h4>趣味小知识</h4>',
+            '<li>本页面为纯前端静态页面，支持直接部署到 GitHub Pages 或 Netlify。</li>',
+            '<li>祝福语与音乐均可通过 `script.js` 中的资源配置进行替换与自定义。</li>',
+            '<li>“赛博求签”为趣味交互，结果仅供娱乐。</li>',
+            '<li>移动端和开启“减少动态效果”时，部分复杂动画会自动降级以提升性能。</li>',
+            '<li>如需离线或自托管资源，建议把常用音频放入仓库或 CDN。</li>'
+        ];
+        openInfoModal('趣味小知识', trivia.join(''));
+    }
+
+    function openWelfareModal() {
+        const doneCount = missions.filter(m => m.done).length;
+        let html = '';
+        if (doneCount >= 5) {
+            html = '<h4>奖励已达成</h4><p>恭喜，你已完成所有福气任务，可领取限量奖励：</p><div style="margin-top:10px; padding:10px; background:rgba(0,128,0,0.06); border-radius:8px;">'<p><strong>兑换码：HORSE2026</strong></p><p>使用该码可在指定页面兑换节日礼物（示例文本）。</p></div>';
+        } else {
+            html = '<h4>未达成奖励</h4><p>当前进度：' + doneCount + '/5</p><p>完成更多福气任务可解锁奖励与成就。</p><p>快去完成签到、分享、抽签等任务吧！</p>';
         }
-    },
-    'style-simple': {
-        music: 'https://music.163.com/song/media/outer/url?id=1330348068.mp3', // 轻柔lofi长版
-        wishes: [
-            "浅浅春风，轻轻心愿，2026 纯净而来。",
+        openInfoModal('福利公告', html);
+    }
             "简约不简单，新一年保持松弛与热爱。",
             "留白里有光，步伐里有梦，马年清爽启程。",
             "三分忙碌七分闲，日子慢慢，好运悄悄来。",
@@ -114,7 +114,10 @@ const assets = {
         }
     },
     'style-cute': {
-        music: 'https://music.163.com/song/media/outer/url?id=444331505.mp3', // Mii Channel Theme (Funny/Cute)
+        music: [
+            'https://music.163.com/song/media/outer/url?id=425983617.mp3', // Popcorn
+            'https://music.163.com/song/media/outer/url?id=436514312.mp3'  // Baby Elephant Walk
+        ],
         wishes: [
             "哒哒哒~ Q 版小马来送福啦！祝你天天开心鸭！",
             "2026，要做一个可爱的干饭马！🍚",
@@ -151,7 +154,10 @@ const assets = {
         }
     },
     'style-warm': {
-        music: 'https://music.163.com/song/media/outer/url?id=5239700.mp3', // The Truth That You Leave
+        music: [
+            'https://music.163.com/song/media/outer/url?id=26213693.mp3', // River Flows In You
+            'https://music.163.com/song/media/outer/url?id=441552.mp3'    // 夏夕空
+        ],
         wishes: [
             "围炉煮茶，灯火可亲，马年人间烟火最暖心。",
             "祝你新年每一顿饭都有人陪，每一句话都被温柔接住。",
@@ -182,7 +188,10 @@ const assets = {
                 "常回家看看，拥抱和微笑是最好的礼物。"
             ],
             fortune: [
-                "稳健理财，温柔增值，安心感就是最好的收益。",
+               [
+            'https://music.163.com/song/media/outer/url?id=425570952.mp3', // Super Mario Bros
+            'https://music.163.com/song/media/outer/url?id=29747683.mp3'   // Popcorn 8bit style
+        ],
                 "好运像围炉的暖意，源源不绝，悄悄变多。"
             ]
         }
@@ -2558,27 +2567,34 @@ function closeInfoModal() {
 
 function openMenuModal() {
     const menus = [
-        '<h4> ��Ϧ��Բ��</h4>',
-        '<li><strong>���˵�ͷ</strong> (�罷��ͷ) - Ԣ������</li>',
-        '<li><strong>�вƽ���</strong> (������) - Ԣ�⸻����</li>',
-        '<li><strong>��������</strong> (��������) - Ԣ����������</li>',
-        '<li><strong>��������</strong> (�����Ź�) - Ԣ����ҵ����</li>',
-        '<li><strong>����ԲԲ</strong> (����Բ��) - Ԣ���ؼһ���</li>',
-        '<li><strong>�帣����</strong> (�帣ƴ��) - ±ζ����ƴ��</li>'
+        '<h4>年夜饭推荐（活力时刻）</h4>',
+        '<ul>',
+        '<li><strong>红烧狮子头</strong>：寓意团团圆圆，肉汁丰富，适合家庭共享。</li>',
+        '<li><strong>清蒸石斑或鲈鱼</strong>：象征年年有余，口感鲜嫩，保留原味。</li>',
+        '<li><strong>蒜蓉蒸虾</strong>：鲜甜弹牙，寓意“节节高升”。</li>',
+        '<li><strong>干煸四季豆</strong>：清爽下饭，增加蔬菜营养平衡。</li>',
+        '<li><strong>八宝饭 / 糯米藕</strong>：甜品类，象征甜甜蜜蜜与美好收获。</li>',
+        '<li><strong>年糕（炒/蒸）</strong>：寓意“年年高”，可甜可咸，多样呈现。</li>',
+        '<li><strong>汤品（海鲜汤或鸡汤）</strong>：温暖暖身，象征幸福与健康。</li>',
+        '</ul>',
+        '<p style="margin-top:8px;">小贴士：备一盘寓意吉祥的小菜（如发菜扣肉、橘子盘），并考虑备些儿童/老人喜欢的软食。</p>'
     ];
-    openInfoModal(' ��ҹ���Ƽ�', menus.join(''));
+    openInfoModal('年夜饭推荐', menus.join(''));
 }
 
 function openTriviaModal() {
     const trivia = [
-        '<h4> ������֪ʶ</h4>',
-        '<li><strong>��������</strong>��2026����ũ�������꣬���Ϊ�����𣩣���֧Ϊ�磨��������Ҳ�ƻ����ꡣ</li>',
-        '<li><strong>��������</strong>����ʱ��11:00-13:00��������ʢ�����ڴ�ʱ������Ϊ��Ծ�������Ż������ϵ���������</li>',
-        '<li><strong>��������</strong>��ԭ��ָ��˵�е�һ���������������˾�������</li>',
-        '<li><strong>����ʶ;</strong>������������ӡ��������о��������Ϥ����������������á�</li>',
-        '<li><strong>�����ɹ�</strong>��������ףԸ������һ�ֶ�Ч�ʺͽ�������ţ�</li>'
+        '<h4>马年冷知识</h4>',
+        '<ul>',
+        '<li><strong>生肖马的性格</strong>：传统上认为马活泼好动、精力充沛、外向自信，适合社交与冒险。</li>',
+        '<li><strong>马在中国文化</strong>：古代马为重要交通与军事力量，常被视为忠诚与速度的象征。</li>',
+        '<li><strong>马年习俗</strong>：马年到来时，人们常以“马到成功”祝福彼此，寓意事业顺利快速发展。</li>',
+        '<li><strong>马图腾与方向</strong>：在风水中，奔马图可用以增进事业运，但应注意方向与方位搭配。</li>',
+        '<li><strong>趣味事实</strong>：马的平均奔跑速度可达每小时40–48公里，耐力也很强；此外，马的记忆力与社会性都很出色。</li>',
+        '</ul>',
+        '<p style="margin-top:8px;">小贴士：在马年送礼可选与马相关的吉祥物或带“速”“进”“顺”寓意的小物件。</p>'
     ];
-    openInfoModal(' ������֪ʶ', trivia.join(''));
+    openInfoModal('马年冷知识', trivia.join(''));
 }
 
 function openWelfareModal() {
