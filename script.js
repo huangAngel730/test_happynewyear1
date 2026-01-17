@@ -1,7 +1,7 @@
 // 资源配置
 const assets = {
     'style-china': {
-        music: 'https://music.163.com/song/media/outer/url?id=26217171.mp3',
+        music: 'https://music.163.com/song/media/outer/url?id=1373206690.mp3', // 古筝国风长版
         wishes: [
             "2026丙午马年，愿您：马到功成，前程似锦！",
             "春风得意马蹄疾，一日看尽长安花。新春快乐！",
@@ -40,7 +40,7 @@ const assets = {
         }
     },
     'style-simple': {
-        music: 'https://music.163.com/song/media/outer/url?id=25842278.mp3',
+        music: 'https://music.163.com/song/media/outer/url?id=1330348068.mp3', // 轻柔lofi长版
         wishes: [
             "浅浅春风，轻轻心愿，2026 纯净而来。",
             "简约不简单，新一年保持松弛与热爱。",
@@ -77,7 +77,7 @@ const assets = {
         }
     },
     'style-tech': {
-        music: 'https://music.163.com/song/media/outer/url?id=443875283.mp3',
+        music: 'https://music.163.com/song/media/outer/url?id=1950400155.mp3', // 赛博合成波长版
         wishes: [
             "System.out.println('Happy New Year 2026');",
             "Loading 2026... 100% Complete. Success!",
@@ -114,7 +114,7 @@ const assets = {
         }
     },
     'style-cute': {
-        music: 'https://music.163.com/song/media/outer/url?id=1387581250.mp3',
+        music: 'https://music.163.com/song/media/outer/url?id=439915614.mp3', // 轻快可爱长版
         wishes: [
             "哒哒哒~ Q 版小马来送福啦！祝你天天开心鸭！",
             "2026，要做一个可爱的干饭马！🍚",
@@ -151,7 +151,7 @@ const assets = {
         }
     },
     'style-warm': {
-        music: 'https://music.163.com/song/media/outer/url?id=28949052.mp3',
+        music: 'https://music.163.com/song/media/outer/url?id=464904561.mp3', // 治愈钢琴长版
         wishes: [
             "围炉煮茶，灯火可亲，马年人间烟火最暖心。",
             "祝你新年每一顿饭都有人陪，每一句话都被温柔接住。",
@@ -188,7 +188,7 @@ const assets = {
         }
     },
     'style-pixel': {
-        music: 'https://music.163.com/song/media/outer/url?id=1901371647.mp3',
+        music: 'https://music.163.com/song/media/outer/url?id=22616833.mp3', // 复古8bit长版
         wishes: [
             "↑↑↓↓←→←→AB，解锁 2026 好运彩蛋！",
             "像素马跳一跳，福气值 +99！",
@@ -222,6 +222,24 @@ const assets = {
                 "金币掉落率上升，理财暴击，资产升级。",
                 "隐藏宝箱就在前方，保持探索就有惊喜。"
             ]
+        }
+    },
+    'style-noble': {
+        music: 'https://music.163.com/song/media/outer/url?id=562590175.mp3', // 交响尊享长版
+        wishes: [
+            "黑金贺岁，荣启新篇。祝您 2026 鼎盛昌平。",
+            "岁序常易，华章日新。马年大吉，万事如意。",
+            "金戈铁马气如虹，志在千里创辉煌。",
+            "愿您新一年，步履生辉，格局大开。"
+        ],
+        fuWishes: ["金墨赐福，尊享祥瑞。", "马跃檀金，福满乾坤。"],
+        particles: ['✨', '💎', '👑', '🐴', '🌟'],
+        deep: {
+            general: ["金墨流韵，祝您新年运势如虹。"],
+            career: ["高瞻远瞩，开拓不凡境界；稳操胜券，成就锦绣前程。"],
+            health: ["身如劲松，神采奕奕；心境旷达，岁岁平安。"],
+            family: ["门庭显赫，家声远振；团圆富足，阖家安康。"],
+            fortune: ["汇聚八方之财，坐拥金玉满堂；投资稳健，收益倍增。"]
         }
     }
 };
@@ -288,6 +306,7 @@ const toastEl = document.getElementById('toast');
 const pixelHud = document.getElementById('pixelHud');
 const pixelCountEl = document.getElementById('pixelCount');
 const fortuneCounter = document.getElementById('fortuneCounter');
+const scrollTopBtn = document.getElementById('scrollTopBtn');
 
 // 初始化
 window.addEventListener('DOMContentLoaded', () => {
@@ -314,6 +333,21 @@ window.addEventListener('DOMContentLoaded', () => {
     bindFuBadge();
     resetPixelQuest();
     updateFortuneDisplay();
+    initDanmu(); // 初始化弹幕
+    initMissions(); // 初始化任务
+    
+    // 弹幕回车发送
+    const dInput = document.getElementById('danmuInput');
+    if(dInput) {
+        dInput.addEventListener('keydown', (e) => {
+            if(e.key === 'Enter') sendDanmu();
+        });
+    }
+
+    // 初始化激活按钮状态
+    document.querySelectorAll('.theme-btn').forEach(btn => {
+        if(btn.dataset.theme === currentTheme) btn.classList.add('active');
+    });
 
     // 等待入口按钮确认后再真正开始有声播放
     if (entryOverlay) {
@@ -350,6 +384,17 @@ window.addEventListener('DOMContentLoaded', () => {
         clearInterval(particleInterval);
         startFallingEffect(1600); // 降低频率
     }
+
+    // 滚动监听：显示/隐藏回到顶部按钮
+    window.addEventListener('scroll', () => {
+        if (scrollTopBtn) {
+            if (window.scrollY > 500) {
+                scrollTopBtn.style.display = 'flex';
+            } else {
+                scrollTopBtn.style.display = 'none';
+            }
+        }
+    });
 });
 
 // 开场入口
@@ -431,6 +476,10 @@ function handleFuClick() {
     flashWishCard();
     showToast(msg);
     boostFortune(5, 'fu-badge', 1200);
+    checkMission('click_wish');
+    
+    // 播放音效
+    window.dispatchEvent(new Event('sfx-pop'));
 }
 
 function showToast(msg) {
@@ -516,7 +565,14 @@ function handlePixelCollect(el) {
 function switchTheme(themeName) {
     if (currentTheme === themeName) return;
     boostFortune(5, 'switch-theme', 1200);
-    
+    checkMission('theme_switch');
+
+    // 更新按钮激活态
+    document.querySelectorAll('.theme-btn').forEach(btn => {
+        if(btn.dataset.theme === themeName) btn.classList.add('active');
+        else btn.classList.remove('active');
+    });
+
     // 更新URL参数状态（方便分享）
     const newUrl = new URL(window.location);
     newUrl.searchParams.set('style', themeName);
@@ -526,7 +582,6 @@ function switchTheme(themeName) {
     body.className = themeName;
     currentTheme = themeName;
     deepState = {};
-    resetPixelQuest();
     
     // 切换音乐（如果在播放，则平滑切换）
     const wasPlaying = !bgm.paused;
@@ -535,18 +590,18 @@ function switchTheme(themeName) {
         bgm.play().catch(()=>console.log("Autoplay blocked"));
     }
     
-    // 刷新祝福语 style
+    // 刷新内容
     generateWish(true);
     renderDeepWishes();
     
-    // 更新粒子效果
-    clearInterval(particleInterval);
+    // 重置特效与任务
     startFallingEffect();
-
-    // 主题特定交互：像素收集和暖心火花
     resetPixelQuest();
 
-    // The pixel quest reset was duplicated in original code, keeping it clean
+    // 更新按钮激活状态
+    document.querySelectorAll('.theme-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.theme === themeName);
+    });
 }
 
 function switchScenario(scenario) {
@@ -1013,42 +1068,62 @@ function closeShareCard() {
 }
 
 // ================== 飘落特效系统 ==================
-function startFallingEffect(interval = 800) {
-    if (prefersReducedMotion) return; // 尊重系统设置
-    particleInterval = setInterval(() => {
-        createParticle();
-    }, interval);
+const PARTICLE_POOL_SIZE = isMobile ? 25 : 45;
+const particlePool = [];
+let poolInitialized = false;
+
+function initParticlePool() {
+    if (poolInitialized) return;
+    for (let i = 0; i < PARTICLE_POOL_SIZE; i++) {
+        const p = document.createElement('div');
+        p.className = 'falling-item';
+        p.style.display = 'none';
+        p.style.position = 'absolute';
+        p.style.pointerEvents = 'none';
+        fallingContainer.appendChild(p);
+        particlePool.push(p);
+    }
+    poolInitialized = true;
 }
 
-function createParticle() {
+function startFallingEffect(interval = 800) {
     if (prefersReducedMotion) return;
-    const particle = document.createElement('div');
+    initParticlePool();
+    if (particleInterval) clearInterval(particleInterval);
+    particleInterval = setInterval(() => {
+        recycleParticle();
+    }, isMobile ? interval * 1.5 : interval);
+}
+
+function recycleParticle() {
+    if (prefersReducedMotion) return;
+    const particle = particlePool.find(p => p.style.display === 'none');
+    if (!particle) return;
+
     const items = assets[currentTheme].particles;
-    
     particle.innerText = items[Math.floor(Math.random() * items.length)];
-    particle.classList.add('falling-item');
+    particle.style.display = 'block';
     
-    // 随机位置和属性
     const startLeft = Math.random() * 100;
-    const duration = Math.random() * 3 + 3; // 3-6s
-    let size = Math.random() * 20 + 15; // 15-35px
-    if (window.innerWidth < 768) size = Math.max(12, size * 0.7); // 手机上更小尺寸
+    const duration = Math.random() * 3 + 3;
+    let size = Math.random() * 20 + 15;
+    if (isMobile) size = Math.max(12, size * 0.7);
     
     particle.style.left = startLeft + 'vw';
     particle.style.fontSize = size + 'px';
-    particle.style.animationDuration = duration + 's';
+    particle.style.animation = `fall ${duration}s linear forwards`;
     
-    // 只有科技风是白色/霓虹色，其他保持原色
     if(currentTheme === 'style-tech') {
         particle.style.color = Math.random() > 0.5 ? '#00f3ff' : '#bc13fe';
         particle.style.textShadow = '0 0 5px currentColor';
+    } else {
+        particle.style.color = '';
+        particle.style.textShadow = '';
     }
 
-    fallingContainer.appendChild(particle);
-
-    // 动画结束后移除
     setTimeout(() => {
-        particle.remove();
+        particle.style.display = 'none';
+        particle.style.animation = '';
     }, duration * 1000);
 }
 
@@ -1074,7 +1149,9 @@ function createBurst(x, y) {
         requestAnimationFrame(() => {
             const angle = (Math.PI * 2 * i) / count;
             const velocity = 100;
-            p.style.transform = `translate(${Math.cos(angle)*velocity}px, ${Math.sin(angle)*velocity}px) scale(0)`;
+            const tx = Math.cos(angle) * velocity;
+            const ty = Math.sin(angle) * velocity;
+            p.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(0)`;
             p.style.opacity = 0;
         });
 
@@ -1172,7 +1249,48 @@ function setupCounters() {
         });
     }, { threshold: 0.6 });
     counters.forEach(el => observer.observe(el));
+    
+    // 设置倒计时
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+    
+    // Beat percent random logic
+    const beatEl = document.getElementById('beatPercent');
+    if (beatEl) {
+        let beatVal = 12;
+        setInterval(() => {
+            if (fortuneScore > 20) beatVal = Math.min(99, Math.floor(fortuneScore * 0.95 + Math.random() * 5));
+            beatEl.innerText = beatVal;
+        }, 5000);
+    }
 }
+
+function updateCountdown() {
+    const now = new Date();
+    // 2026年春节是2026年2月17日
+    const target = new Date('2026-02-17T00:00:00');
+    const diff = target - now;
+    
+    if (diff <= 0) {
+        // 已过年
+        document.getElementById('cDay').innerText = "00";
+        document.getElementById('cHour').innerText = "00";
+        document.getElementById('cMin').innerText = "00";
+        return;
+    }
+    
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    
+    const dEl = document.getElementById('cDay');
+    const hEl = document.getElementById('cHour');
+    const mEl = document.getElementById('cMin');
+    if (dEl) dEl.innerText = days.toString().padStart(2, '0');
+    if (hEl) hEl.innerText = hours.toString().padStart(2, '0');
+    if (mEl) mEl.innerText = mins.toString().padStart(2, '0');
+}
+
 
 function animateCounter(el) {
     const target = Number(el.dataset.target) || 0;
@@ -1307,6 +1425,7 @@ function startGame(type) {
     gameScore = 0;
     updateScore();
     boostFortune(4, 'game-start', 2500);
+    checkMission('game_play');
     setModeDisplay(type === 'catch' ? '接福袋' : type === 'lantern' ? '点灯笼' : '烟花快点');
     const duration = prefersReducedMotion ? 18 : 25;
     setTimerDisplay(duration);
@@ -1352,13 +1471,21 @@ function finishGame() {
 
 function updateScore(delta = 0) {
     gameScore = Math.max(0, gameScore + delta);
-    if (gameScoreEl) gameScoreEl.textContent = gameScore;
+    if (gameScoreEl) {
+        gameScoreEl.textContent = gameScore;
+        if (delta > 0) {
+            showScorePop(delta);
+        }
+    }
     if (delta > 0) {
-        // 轻微得分音效（如果可以复用playClick，或者pop）
+        // 轻微得分音效
         if(window.soundManager) window.soundManager.playClick();
         
         combo += 1;
         updateCombo();
+        if (combo > 5 && combo % 5 === 0) {
+            showComboEffect(combo);
+        }
         if (typeof achievementManager !== 'undefined' && achievementManager) {
             achievementManager.check('combo_master');
             achievementManager.check('score_100'); // 实时检查是否破百
@@ -1366,6 +1493,22 @@ function updateScore(delta = 0) {
         if (comboTimeout) clearTimeout(comboTimeout);
         comboTimeout = setTimeout(() => { combo = 0; updateCombo(); }, 2000);
     }
+}
+
+function showScorePop(delta) {
+    const pop = document.createElement('div');
+    pop.className = 'score-pop';
+    pop.textContent = `+${delta}`;
+    gameScoreEl.parentElement.appendChild(pop);
+    setTimeout(() => pop.remove(), 800);
+}
+
+function showComboEffect(count) {
+    const tip = document.createElement('div');
+    tip.className = 'combo-tip';
+    tip.textContent = `${count} COMBO!`;
+    gameArea.appendChild(tip);
+    setTimeout(() => tip.remove(), 1000);
 }
 
 function setTimerDisplay(val) {
@@ -1447,19 +1590,40 @@ function setupCatchGame() {
 function checkCatchCollision(speed = 4) {
     if (!basketEl) return;
     const basketRect = basketEl.getBoundingClientRect();
+    const areaRect = gameArea.getBoundingClientRect();
+    
     activeTargets.forEach(item => {
         const rect = item.getBoundingClientRect();
         if (rect.bottom >= basketRect.top && rect.left <= basketRect.right && rect.right >= basketRect.left) {
             if (item.dataset.bad) {
                 updateLives(-1);
-                combo = 0; updateCombo();
+                combo = 0; 
+                updateCombo();
+                // 爆炸红光反馈
+                gameArea.style.boxShadow = 'inset 0 0 50px rgba(255, 0, 0, 0.4)';
+                setTimeout(() => { gameArea.style.boxShadow = ''; }, 300);
             } else {
                 updateScore(2 + (combo >= 3 ? 1 : 0));
+                // 捕获粒子效果
+                createEnhancedFirework(rect.left - areaRect.left + 15, rect.top - areaRect.top + 15, false);
             }
             activeTargets.delete(item);
             item.remove();
         }
     });
+}
+
+function handleLanternClick(lan) {
+    updateScore(3 + (combo >= 4 ? 1 : 0));
+    
+    // 灯笼炸开粒子效果
+    const rect = lan.getBoundingClientRect();
+    const areaRect = gameArea.getBoundingClientRect();
+    createEnhancedFirework(rect.left - areaRect.left + 32, rect.top - areaRect.top + 36, false);
+    
+    lan.style.transform = 'scale(1.5)';
+    lan.style.opacity = '0';
+    setTimeout(() => lan.remove(), 180);
 }
 
 // --- Game: 点灯笼 ---
@@ -1472,13 +1636,11 @@ function setupLanternGame() {
         const y = Math.random() * (gameArea.clientHeight - 120);
         lan.style.left = `${x}px`;
         lan.style.top = `${y}px`;
-        lan.onclick = () => {
-            updateScore(3 + (combo >= 4 ? 1 : 0));
-            lan.style.opacity = '0';
-            setTimeout(() => lan.remove(), 180);
-        };
+        lan.onclick = () => handleLanternClick(lan);
         gameArea.appendChild(lan);
-        const t = setTimeout(() => lan.remove(), prefersReducedMotion ? 2000 : 2400);
+        const t = setTimeout(() => {
+            if (lan.parentElement) lan.remove();
+        }, prefersReducedMotion ? 2000 : 2400);
         gameTimeouts.push(t);
     };
     gameIntervals.push(setInterval(spawn, prefersReducedMotion ? 1100 : 720));
@@ -1487,7 +1649,8 @@ function setupLanternGame() {
 // --- Game: 烟花快点 ---
 function setupFireworkGame() {
     gameArea.onclick = (e) => {
-        createFirework(e.offsetX, e.offsetY, true);
+        const rect = gameArea.getBoundingClientRect();
+        createEnhancedFirework(e.clientX - rect.left, e.clientY - rect.top, true);
     };
     const spawnFloating = () => {
         const dot = document.createElement('div');
@@ -1509,17 +1672,53 @@ function setupFireworkGame() {
     gameIntervals.push(setInterval(spawnFloating, prefersReducedMotion ? 950 : 600));
 }
 
-function createFirework(x, y, addScore = false) {
+function createEnhancedFirework(x, y, addScore = false) {
+    if (addScore) {
+        updateScore(1 + (combo >= 5 ? 1 : 0));
+        // 点击反馈：轻微抖动
+        gameArea.classList.remove('shake');
+        void gameArea.offsetWidth;
+        gameArea.classList.add('shake');
+    }
+
+    const colors = ['#ff4', '#f06', '#0f6', '#0cf', '#f90', '#fef'];
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const particleCount = prefersReducedMotion ? 12 : 24;
+
+    for (let i = 0; i < particleCount; i++) {
+        const p = document.createElement('div');
+        p.className = 'firework-particle';
+        p.style.backgroundColor = color;
+        p.style.left = `${x}px`;
+        p.style.top = `${y}px`;
+        p.style.boxShadow = `0 0 6px ${color}`;
+        gameArea.appendChild(p);
+
+        const angle = (Math.PI * 2 * i) / particleCount;
+        const velocity = Math.random() * 60 + 40;
+        const tx = Math.cos(angle) * velocity;
+        const ty = Math.sin(angle) * velocity;
+
+        p.animate([
+            { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+            { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
+        ], {
+            duration: 800,
+            easing: 'cubic-bezier(0.1, 0.8, 0.3, 1)',
+            fill: 'forwards'
+        }).onfinish = () => p.remove();
+    }
+    
+    // 原有的核心爆炸视觉
     const burst = document.createElement('div');
     burst.className = 'firework-burst';
-    burst.style.left = `${x - 12}px`;
-    burst.style.top = `${y - 12}px`;
-    burst.style.width = '24px';
-    burst.style.height = '24px';
-    burst.style.background = `radial-gradient(circle, ${getComputedStyle(body).getPropertyValue('--primary-color') || '#ff4'} 0%, transparent 70%)`;
+    burst.style.left = `${x - 20}px`;
+    burst.style.top = `${y - 20}px`;
+    burst.style.width = '40px';
+    burst.style.height = '40px';
+    burst.style.background = `radial-gradient(circle, ${color} 0%, transparent 70%)`;
     gameArea.appendChild(burst);
-    setTimeout(() => burst.remove(), 900);
-    if (addScore) updateScore(1 + (combo >= 5 ? 1 : 0));
+    setTimeout(() => burst.remove(), 800);
 }
 
 function getGameDesc(type) {
@@ -2148,4 +2347,168 @@ window.finishGame = function() {
         localStorage.setItem('highScore', cleanScore);
     }
 };
+
+
+// ================== ��Ļϵͳ ==================
+const danmuLayer = document.getElementById('danmuLayer');
+const defaultDanmus = [
+    'ף���2026���������⣡', '����󼪣����彡����', 'offer�õ�������', '��������������', 
+    '����ƽ������', '˳����ҵ��', '��Ҫ���ʳɹ���', '������Bug��',
+    '�һ�����������', '��Ʊ���ǣ�', '���쿪�ģ�', '�����ɹ���'
+];
+
+function initDanmu() {
+    if (!danmuLayer) return;
+    // Ԥ���һЩ��Ļ
+    for (let i = 0; i < 6; i++) {
+        setTimeout(() => spawnDanmu(defaultDanmus[Math.floor(Math.random() * defaultDanmus.length)]), i * 1500);
+    }
+    // ��������
+    setInterval(() => {
+        if (!document.hidden) {
+            spawnDanmu(defaultDanmus[Math.floor(Math.random() * defaultDanmus.length)]);
+        }
+    }, 2500);
+}
+
+function spawnDanmu(text, isSelf = false) {
+    if (!danmuLayer) return;
+    const item = document.createElement('div');
+    item.className = 'danmu-item';
+    item.textContent = text;
+    if (isSelf) {
+        item.style.border = '2px solid #ffd700';
+        item.style.zIndex = 1001;
+        item.style.backgroundColor = 'rgba(255, 0, 0, 0.6)';
+    }
+    
+    // ������ (0-3)
+    const track = Math.floor(Math.random() * 4);
+    item.style.top = (track * 30 + 10) + 'px';
+    
+    // ����ٶ�
+    const duration = isSelf ? 8 : Math.random() * 5 + 8; // 8-13s
+    item.style.animationDuration = duration + 's';
+    
+    danmuLayer.appendChild(item);
+    
+    // �����������Ƴ�
+    setTimeout(() => {
+        item.remove();
+    }, duration * 1000);
+}
+
+function sendDanmu() {
+    const input = document.getElementById('danmuInput');
+    if (!input || !input.value.trim()) {
+        showToast('����������Ŷ~');
+        return;
+    }
+    const text = input.value.trim();
+    spawnDanmu(text, true);
+    input.value = '';
+    showToast('���ͳɹ�������ֵ +5');
+    boostFortune(5, 'danmu', 0);
+    checkMission('send_danmu');
+}
+
+// ================== ����ϵͳ ==================
+const missions = [
+    { id: 'start', desc: '�����ó�', target: 1, current: 0, done: false },
+    { id: 'click_wish', desc: '�������', target: 1, current: 0, done: false },
+    { id: 'send_danmu', desc: '���͵�Ļ', target: 1, current: 0, done: false },
+    { id: 'theme_switch', desc: '�л����', target: 3, current: 0, done: false },
+    { id: 'game_play', desc: '��С��Ϸ', target: 1, current: 0, done: false }
+];
+
+function initMissions() {
+    renderMissions();
+    // ����ʼ״̬
+    if (experienceStarted) checkMission('start');
+}
+
+function checkMission(id) {
+    if (!id) { renderMissions(); return; }
+    const m = missions.find(x => x.id === id);
+    if (!m || m.done) return;
+    
+    m.current += 1;
+    if (m.current >= m.target) {
+        m.done = true;
+        m.current = m.target;
+        showToast('������ɣ�' + m.desc);
+        boostFortune(8, 'mission_complete', 0);
+    }
+    renderMissions();
+}
+
+function renderMissions() {
+    const list = document.getElementById('missionList');
+    const progressText = document.getElementById('missionProgressText');
+    if (!list) return;
+    
+    const doneCount = missions.filter(m => m.done).length;
+    if (progressText) progressText.textContent = doneCount + '/5';
+    
+    list.innerHTML = '';
+    missions.forEach(m => {
+        const div = document.createElement('div');
+        div.className = 'mission-item ' + (m.done ? 'done' : '');
+        div.innerHTML = '<div class=\'mission-checkbox\'></div><span>' + m.desc + ' (' + m.current + '/' + m.target + ')</span>';
+        list.appendChild(div);
+    });
+}
+
+// ================== ͨ�õ����߼� ==================
+const infomodal = document.getElementById('infoModal');
+const infoTitle = document.getElementById('infoTitle');
+const infoBody = document.getElementById('infoBody');
+
+function openInfoModal(title, htmlContent) {
+    if (!infomodal) return;
+    infoTitle.textContent = title;
+    infoBody.innerHTML = htmlContent;
+    infomodal.style.display = 'flex';
+    boostFortune(2, 'read_info', 2000);
+}
+
+function closeInfoModal() {
+    if (infomodal) infomodal.style.display = 'none';
+}
+
+function openMenuModal() {
+    const menus = [
+        '<h4> ��Ϧ��Բ��</h4>',
+        '<li><strong>���˵�ͷ</strong> (�罷��ͷ) - Ԣ������</li>',
+        '<li><strong>�вƽ���</strong> (������) - Ԣ�⸻����</li>',
+        '<li><strong>��������</strong> (��������) - Ԣ����������</li>',
+        '<li><strong>��������</strong> (�����Ź�) - Ԣ����ҵ����</li>',
+        '<li><strong>����ԲԲ</strong> (����Բ��) - Ԣ���ؼһ���</li>',
+        '<li><strong>�帣����</strong> (�帣ƴ��) - ±ζ����ƴ��</li>'
+    ];
+    openInfoModal(' ��ҹ���Ƽ�', menus.join(''));
+}
+
+function openTriviaModal() {
+    const trivia = [
+        '<h4> ������֪ʶ</h4>',
+        '<li><strong>��������</strong>��2026����ũ�������꣬���Ϊ�����𣩣���֧Ϊ�磨��������Ҳ�ƻ����ꡣ</li>',
+        '<li><strong>��������</strong>����ʱ��11:00-13:00��������ʢ�����ڴ�ʱ������Ϊ��Ծ�������Ż������ϵ���������</li>',
+        '<li><strong>��������</strong>��ԭ��ָ��˵�е�һ���������������˾�������</li>',
+        '<li><strong>����ʶ;</strong>������������ӡ��������о��������Ϥ����������������á�</li>',
+        '<li><strong>�����ɹ�</strong>��������ףԸ������һ�ֶ�Ч�ʺͽ�������ţ�</li>'
+    ];
+    openInfoModal(' ������֪ʶ', trivia.join(''));
+}
+
+function openWelfareModal() {
+    const doneCount = missions.filter(m => m.done).length;
+    let html = '';
+    if (doneCount >= 5) {
+        html = '<h4> ��ϲ��ɣ�</h4><p>��������������񣬽����ռ�������</p><div style=\'margin-top:10px; padding:10px; background:rgba(255,0,0,0.1); border-radius:8px;\'><p><strong> ר�������룺HORSE2026</strong></p><p>��ƾ�˽�ͼ�������߶һ�����С����/���Ӻؿ���</p></div>';
+    } else {
+        html = '<h4> ��δ����</h4><p>��ǰ���ȣ�' + doneCount + '/5</p><p>������������ɲ鿴�ռ�����Ŷ��</p><p>���ͣ����ܸ�����</p>';
+    }
+    openInfoModal(' ������', html);
+}
 

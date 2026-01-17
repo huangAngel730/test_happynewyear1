@@ -2,7 +2,8 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#d93a28">
     <title>2026 丙午马年新春祝福</title>
     <link rel="stylesheet" href="style.css">
     <script>
@@ -27,10 +28,10 @@
     <!-- 入口引导 -->
     <section class="entry-overlay" id="entryOverlay" aria-label="进入体验">
         <div class="entry-box">
-            <p class="entry-kicker">马年限定体验</p>
-            <h1>你准备好了吗？</h1>
-            <p class="entry-note">点击开始，将解锁音乐与国风主题，随后可自由切换风格。</p>
-            <button class="entry-btn" onclick="startExperience()">开始旅程</button>
+            <p class="entry-kicker">2026 丙午马年 · 限定体验</p>
+            <h1>灵马踏春 · 福满乾坤</h1>
+            <p class="entry-note">这一场关于新春的奇遇，包含传统、科技与治愈。点击开始，开启您的专属祝福旅程。</p>
+            <button class="entry-btn" onclick="startExperience()">开启旅程</button>
         </div>
     </section>
 
@@ -42,6 +43,7 @@
         <button class="theme-btn" data-theme="style-tech" onclick="switchTheme('style-tech')">🚀 科技未来</button>
         <button class="theme-btn" data-theme="style-warm" onclick="switchTheme('style-warm')">🧧 温馨治愈</button>
         <button class="theme-btn" data-theme="style-pixel" onclick="switchTheme('style-pixel')">🕹️ 像素复古</button>
+        <button class="theme-btn" data-theme="style-noble" onclick="switchTheme('style-noble')">✨ 黑金贵雅</button>
     </nav>
     
     <!-- 祝福接力弹窗 -->
@@ -187,8 +189,47 @@
 
     <!-- 主要内容区 -->
     <main class="container">
-        <!-- 马年视觉元素 (SVG绘制，确保无外部依赖) -->
-        <div class="visual-center">
+        
+        <!-- 标题区域 -->
+        <h1 class="main-title">
+            <div class="year-glitch" data-text="2026">2026</div>
+            <div class="china-title">
+                <span class="char" style="--i:1">丙</span>
+                <span class="char" style="--i:2">午</span>
+                <span class="char" style="--i:3">马</span>
+                <span class="char" style="--i:4">年</span>
+            </div>
+        </h1>
+        <p class="tagline reveal">国风雅韵 · 科技赋能 · 沉浸式祈福</p>
+
+        <!-- 1. 核心功能：选择场景并生成祝福 -->
+        <section class="core-section reveal">
+            <div class="scenario-switcher" aria-label="选择祝福场景">
+                <button class="scenario-btn active" data-scenario="general" onclick="switchScenario('general')">通用</button>
+                <button class="scenario-btn" data-scenario="career" onclick="switchScenario('career')">事业</button>
+                <button class="scenario-btn" data-scenario="study" onclick="switchScenario('study')">学业</button>
+                <button class="scenario-btn" data-scenario="health" onclick="switchScenario('health')">健康</button>
+                <button class="scenario-btn" data-scenario="family" onclick="switchScenario('family')">家庭</button>
+                <button class="scenario-btn" data-scenario="wealth" onclick="switchScenario('wealth')">财富</button>
+                <button class="scenario-btn" data-scenario="travel" onclick="switchScenario('travel')">出行</button>
+                <button class="scenario-btn" data-scenario="friends" onclick="switchScenario('friends')">友情</button>
+            </div>
+
+            <div class="wish-card" aria-live="polite">
+                <p id="wishText" class="typing-effect">策马奔腾赴前程，春风得意马蹄疾！祝您2026年万事如意！</p>
+                <div class="action-buttons">
+                    <button class="action-btn primary" onclick="generateWish(true, true)">✨ 换一句祝福</button>
+                    <button class="action-btn" onclick="toggleEdit()">✍ 自定义内容</button>
+                </div>
+                <div id="customWishArea" style="display:none; margin-top:15px;">
+                    <input type="text" id="customInput" placeholder="输入您的专属祝福..." style="width:75%; padding:8px; border-radius:8px; border:1px solid var(--primary-color);">
+                    <button class="action-btn small" onclick="confirmCustomBase()">确认</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 视觉装饰：马年视觉元素 -->
+        <div class="visual-center reveal">
             <div class="horse-wrapper">
                 <!-- 国风机甲马：融合传统剪纸与科技线路 -->
                 <div class="mecha-horse-group china-horse">
@@ -241,119 +282,88 @@
 
         <div class="fu-badge" id="fuBadge" aria-label="点福得祝福">福</div>
 
-        <!-- 标题区域升级 -->
-        <h1 class="main-title">
-            <div class="year-glitch" data-text="2026">2026</div>
-            <div class="china-title">
-                <span class="char" style="--i:1">丙</span>
-                <span class="char" style="--i:2">午</span>
-                <span class="char" style="--i:3">马</span>
-                <span class="char" style="--i:4">年</span>
-            </div>
-            <div class="sub-title-tech">
-                <span class="line"></span>
-                <span class="text">HAPPY NEW YEAR</span>
-                <span class="line"></span>
-            </div>
-        </h1>
-        <p class="tagline reveal">国风雅韵 · 科技赋能 · 沉浸式祈福</p>
-
-        <!-- 倒计时挂件 -->
-        <div class="countdown-widget reveal">
-            <span>距离农历新年还剩：</span>
-            <span id="cDay">00</span>天 <span id="cHour">00</span>时 <span id="cMin">00</span>分
-        </div>
-
-
-        <!-- 场景切换器：不同场景生成对应祝福 -->
-        <div class="scenario-switcher reveal" aria-label="选择祝福场景">
-            <button class="scenario-btn active" data-scenario="general" onclick="switchScenario('general')">通用</button>
-            <button class="scenario-btn" data-scenario="career" onclick="switchScenario('career')">事业</button>
-            <button class="scenario-btn" data-scenario="study" onclick="switchScenario('study')">学业</button>
-            <button class="scenario-btn" data-scenario="health" onclick="switchScenario('health')">健康</button>
-            <button class="scenario-btn" data-scenario="family" onclick="switchScenario('family')">家庭</button>
-            <button class="scenario-btn" data-scenario="wealth" onclick="switchScenario('wealth')">财富</button>
-            <button class="scenario-btn" data-scenario="travel" onclick="switchScenario('travel')">出行</button>
-            <button class="scenario-btn" data-scenario="friends" onclick="switchScenario('friends')">友情</button>
-        </div>
-
-        <div class="status-pills reveal">
-            <button class="pill" data-action-pill="start">⚡ 即刻开跑</button>
-            <button class="pill" data-action-pill="listen">🎧 沉浸聆听</button>
-            <button class="pill" data-action-pill="inspire">🪄 灵感随心</button>
-        </div>
-
-        <div class="pixel-hud" id="pixelHud" aria-label="像素收集进度" style="display:none;">
-            <span class="pixel-label">福袋进度</span>
-            <span id="pixelCount">0/5</span>
-        </div>
-
-        <!-- 祝福语卡片 -->
-        <div class="wish-card reveal" aria-live="polite">
-            <p id="wishText" class="typing-effect">策马奔腾赴前程，春风得意马蹄疾！祝您2026年万事如意！</p>
+        <!-- 2. 祝福分享与社交接力 -->
+        <section class="social-section reveal">
+            <h3 class="section-title">传播福气</h3>
             <div class="action-buttons">
-                <button class="action-btn" onclick="generateWish(true, true)">✨ 生成祝福</button>
-                <button class="action-btn" onclick="toggleEdit()">✍ 自定义</button>
-                <button class="action-btn" onclick="openShareCard()">📸 生成卡片</button>
-                <button class="action-btn" onclick="openRelayModal()" style="background:var(--secondary-color); color:#000;">🏃 祝福接力</button>
-                <button class="action-btn" onclick="copyWish()">📋 复制文本</button>
-                <button class="action-btn" onclick="copyPageLink()">🔗 分享网页</button>
-                <button class="action-btn ghost" onclick="openGuide()">❔ 使用指南</button>
-                <button class="action-btn ghost" onclick="openGameOverlay()">🎮 跨年小游戏</button>
-            </div>
-            <div id="customWishArea" style="display:none; margin-top:10px;">
-                <input type="text" id="customInput" placeholder="输入您的祝福..." style="width:70%; padding:5px;">
-                <button onclick="confirmCustomBase()">确认</button>
-            </div>
-        </div>
-
-        <section class="highlight-meta reveal" aria-label="氛围与进度">
-            <div class="progress-track">
-                <div class="progress-label-row">
-                    <div class="progress-label">祝福能量</div>
-                    <div class="progress-value" id="energyNumber">0%</div>
-                </div>
-                <div class="progress-bar">
-                    <span class="progress-fill" id="energyFill"></span>
-                </div>
-                <small class="progress-hint">灵感来自优秀站点的发光进度条，随主题变色。</small>
+                <button class="action-btn social-btn share-card-trigger" onclick="openShareCard()">📸 生成精美卡片</button>
+                <button class="action-btn social-btn relay-btn-trigger" onclick="openRelayModal()">🏃 参与祝福接力</button>
+                <button class="action-btn social-btn" onclick="copyWish()">📋 复制祝福文案</button>
+                <button class="action-btn social-btn" onclick="copyPageLink()">🔗 分享活动链接</button>
             </div>
         </section>
 
-        <section class="info-grid reveal" aria-label="今年亮点">
-            <article class="info-card">
-                <div class="card-top">福气指数</div>
-                <div class="card-body">
-                    <div class="counter" id="fortuneCounter" aria-live="polite">0%</div>
-                    <p>互动得福气，已击败 <span id="beatPercent">0</span>% 网友</p>
-                </div>
-            </article>
-            <article class="info-card mission-card">
-                <div class="card-top">福气任务</div>
-                <div class="card-body">
-                    <div class="mission-header">
-                        <span id="missionProgressText">0/5</span>
-                        <small>完成任务解锁<button onclick="openWelfareModal()" style="border:none;background:none;color:var(--primary-color);text-decoration:underline;cursor:pointer;">福利</button></small>
+        <!-- 3. 成就里程碑与数据 -->
+        <section class="milestone-section reveal">
+            <h3 class="section-title">我的马年足迹</h3>
+            <div class="info-grid">
+                <article class="info-card">
+                    <div class="card-top">福气指数</div>
+                    <div class="card-body">
+                        <div class="counter" id="fortuneCounter" aria-live="polite">0%</div>
+                        <p>击败 <span id="beatPercent">0</span>% 网友</p>
                     </div>
-                    <div class="mission-list" id="missionList">
-                        <!-- 动态生成的任务 -->
+                </article>
+                <article class="info-card">
+                    <div class="card-top">成就探索</div>
+                    <div class="card-body">
+                        <div class="achievement-brief" onclick="openAchievements()">
+                            <span id="achieveCount">0</span> 项成就已达成
+                        </div>
+                        <button class="action-btn ghost small" onclick="openAchievements()" style="margin-top:10px;">查看里程碑</button>
+                    </div>
+                </article>
+                <article class="info-card mission-card">
+                    <div class="card-top">福气任务</div>
+                    <div class="card-body">
+                        <div class="mission-header">
+                            <span id="missionProgressText">0/5</span>
+                        </div>
+                        <div class="mission-list" id="missionList"></div>
+                    </div>
+                </article>
+            </div>
+
+            <!-- 祝福能量进度 -->
+            <div class="highlight-meta">
+                <div class="progress-track">
+                    <div class="progress-label-row">
+                        <div class="progress-label">福气能量收集</div>
+                        <div class="progress-value" id="energyNumber">0%</div>
+                    </div>
+                    <div class="progress-bar">
+                        <span class="progress-fill" id="energyFill"></span>
                     </div>
                 </div>
-            </article>
-            <article class="info-card">
-                <div class="card-top">活力时刻</div>
-                <div class="card-body">
-                    <button class="menu-btn" onclick="openMenuModal()">🍽️ 年夜饭推荐</button>
-                    <button class="menu-btn" onclick="openTriviaModal()">🐴 马年冷知识</button>
-                </div>
-            </article>
+            </div>
         </section>
 
+        <!-- 风格与玩法入口 -->
+        <section class="other-section reveal">
+            <h3 class="section-title">更多体验</h3>
+            <div class="info-grid">
+                <article class="info-card">
+                    <div class="card-top">活力时刻</div>
+                    <div class="card-body">
+                        <button class="menu-btn" onclick="openMenuModal()">🍽️ 年夜饭推荐</button>
+                        <button class="menu-btn" onclick="openTriviaModal()">🐴 马年冷知识</button>
+                    </div>
+                </article>
+                <article class="info-card">
+                    <div class="card-top">休闲娱乐</div>
+                    <div class="card-body">
+                        <button class="action-btn ghost" onclick="openGameOverlay()">🎮 跨年小游戏</button>
+                        <button class="action-btn ghost" onclick="openGuide()">❔ 使用指南</button>
+                    </div>
+                </article>
+            </div>
+        </section>
 
+        <!-- 分场景列表区 -->
         <section class="deep-wishes reveal" aria-label="分场景祝福">
             <div class="section-head">
-                <h2>分场景祝福</h2>
-                <p>下滑查看通用、事业、健康、家庭、财富祝愿，可一键切换句子，随风格同步。</p>
+                <h2>全场景祝愿</h2>
+                <p>为您精选不同生活场景的诚挚话语</p>
             </div>
             <div class="deep-grid">
                 <article class="deep-card" data-deep-key="general">
@@ -429,6 +439,11 @@
     <footer style="text-align: center; padding: 20px; color: var(--text-color); opacity: 0.8; font-size: 0.9rem; margin-top: 30px;">
         本祝福网站由huangshiqi制作，如有模仿请注明出处
     </footer>
+
+    <!-- 回到顶部 -->
+    <button id="scrollTopBtn" class="scroll-top-btn" onclick="window.scrollTo({top:0, behavior:'smooth'})" aria-label="回到顶部">
+        ↑
+    </button>
 
     <!-- 脚本引用 -->
     <script src="script.js"></script>
